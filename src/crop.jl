@@ -3,7 +3,7 @@
 ### Copyright 2014              ###
 
 ### Crop map elements without copying data ###
-function cropMap!( nodes::Dict{Int64,LatLon},
+function cropMap!( nodes::Dict{Int64,LLA},
                    bounds::Bounds;
                    highways::Array{Highway,1}=nothing,
                    buildings::Array{Building,1}=nothing,
@@ -30,7 +30,7 @@ function cropMap!( nodes::Dict{Int64,LatLon},
 end
 
 ### Crop nodes ###
-function crop!(nodes::Dict{Int64,LatLon}, bounds::Bounds)
+function crop!(nodes::Dict{Int64,LLA}, bounds::Bounds)
     for key in keys(nodes)
         if !inBounds(nodes[key],bounds)
             delete!(nodes,key)
@@ -41,7 +41,7 @@ function crop!(nodes::Dict{Int64,LatLon}, bounds::Bounds)
 end
 
 ### Crop highways ###
-function crop!(nodes::Dict{Int64,LatLon}, bounds::Bounds, highways::Array{Highway,1})
+function crop!(nodes::Dict{Int64,LLA}, bounds::Bounds, highways::Array{Highway,1})
     crop_list = falses(length(highways))
 
     for k = 1:length(highways)
@@ -68,7 +68,7 @@ function crop!(nodes::Dict{Int64,LatLon}, bounds::Bounds, highways::Array{Highwa
 end
 
 ### Crop buildings ###
-function crop!(nodes::Dict{Int64,LatLon}, bounds::Bounds, buildings::Array{Building,1})
+function crop!(nodes::Dict{Int64,LLA}, bounds::Bounds, buildings::Array{Building,1})
     crop_list = falses(length(buildings))
 
     for k = 1:length(buildings)
@@ -94,7 +94,7 @@ function crop!(nodes::Dict{Int64,LatLon}, bounds::Bounds, buildings::Array{Build
 end
 
 ### Crop features ###
-function crop!(nodes::Dict{Int64,LatLon}, bounds::Bounds, features::Array{Feature,1})
+function crop!(nodes::Dict{Int64,LLA}, bounds::Bounds, features::Array{Feature,1})
     crop_list = falses(length(features))
 
     for k = 1:length(features)
@@ -107,7 +107,7 @@ function crop!(nodes::Dict{Int64,LatLon}, bounds::Bounds, features::Array{Featur
 end
 
 ### Check whether a location is within bounds ###
-function inBounds(loc::LatLon, bounds::Bounds)
+function inBounds(loc::LLA, bounds::Bounds)
     lat = loc.lat
     lon = loc.lon
 
@@ -135,7 +135,7 @@ end
 
 ### Crop highway to fit within bounds, interpolating to place ###
 ### new nodes on the bounds as necessary.                     ###
-function cropHighway!(nodes::Dict{Int64,LatLon}, bounds::Bounds, highway::Highway, valid::BitArray{1})
+function cropHighway!(nodes::Dict{Int64,LLA}, bounds::Bounds, highway::Highway, valid::BitArray{1})
     inside = find(valid)
     first_inside = inside[1]
     last_inside = inside[end]
@@ -179,7 +179,7 @@ function cropHighway!(nodes::Dict{Int64,LatLon}, bounds::Bounds, highway::Highwa
             y = y0 + (y1 - y0) * (x - x0) / (x1 - x0)
 
             # Add a new node to nodes list
-            new_id = addNewNode(nodes,LatLon(x,y))
+            new_id = addNewNode(nodes,LLA(x,y))
             highway.nodes[last_inside+1] = new_id
             valid[last_inside+1] = inBounds(nodes[new_id],bounds)
         end
@@ -198,7 +198,7 @@ function cropHighway!(nodes::Dict{Int64,LatLon}, bounds::Bounds, highway::Highwa
                 x = x0 + (x1-x0) * (y - y0) / (y1 - y0)
 
                 # Add a new node to nodes list
-                new_id = addNewNode(nodes,LatLon(x,y))
+                new_id = addNewNode(nodes,LLA(x,y))
                 highway.nodes[last_inside+1] = new_id
                 valid[last_inside+1] = inBounds(nodes[new_id],bounds)
             end
@@ -223,7 +223,7 @@ function cropHighway!(nodes::Dict{Int64,LatLon}, bounds::Bounds, highway::Highwa
             y = y0 + (y1 - y0) * (x - x0) / (x1 - x0);
 
             # Add a new node to nodes list
-            new_id = addNewNode(nodes,LatLon(x,y))
+            new_id = addNewNode(nodes,LLA(x,y))
             highway.nodes[first_inside-1] = new_id
             valid[first_inside-1] = inBounds(nodes[new_id],bounds)
         end
@@ -242,7 +242,7 @@ function cropHighway!(nodes::Dict{Int64,LatLon}, bounds::Bounds, highway::Highwa
                 x = x0 + (x1-x0) * (y - y0) / (y1 - y0)
 
                 # Add a new node to nodes list
-                new_id = addNewNode(nodes,LatLon(x,y))
+                new_id = addNewNode(nodes,LLA(x,y))
                 highway.nodes[first_inside-1] = new_id
                 valid[first_inside-1] = inBounds(nodes[new_id],bounds)
             end
@@ -253,7 +253,7 @@ function cropHighway!(nodes::Dict{Int64,LatLon}, bounds::Bounds, highway::Highwa
 end
 
 ### Add a new node ###
-function addNewNode(nodes::Dict{Int64,LatLon}, loc::LatLon)
+function addNewNode(nodes::Dict{Int64,LLA}, loc::LLA)
     id = 1
     while id <= typemax(Int)
         if !haskey(nodes,id)

@@ -35,14 +35,14 @@ type Bounds
     max_lon
 end
 
-### Point in Latitude-Longitude-Altitude coordinates
+### Point in Latitude-Longitude-Altitude (LLA) coordinates
 # Used to store node data in OpenStreetMap XML files
-type LatLon
+type LLA
     lat
     lon
     alt
 end
-LatLon(lat, lon) = LatLon(lat, lon, 0)
+LLA(lat, lon) = LLA(lat, lon, 0)
 
 ### Point in Earth-Centered-Earth-Fixed (ECEF) coordinates
 # Global cartesian coordinate system rotating with the Earth

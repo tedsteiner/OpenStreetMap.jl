@@ -5,7 +5,7 @@
 ### Functions for map coordinate transformations ###
 
 ### Conversion from Lat-Lon-Alt to Earth-Centered-Earth-Fixed coordinates ###
-function lla2ecef( lla::LatLon )
+function lla2ecef( lla::LLA )
     # Latitude and Longitude
     lat = lla.lat
     lon = lla.lon
@@ -38,11 +38,11 @@ function ecef2lla( ecef::ECEF )
     N = d.a / sqrt(1 - d.e*d.e * sin(phi)^2)   # Radius of curvature (meters)
     h = p / cos(phi) - N
 
-    return LatLon(phi*180/pi, lambda*180/pi, h)
+    return LLA(phi*180/pi, lambda*180/pi, h)
 end
 
 ### Convert ECEF point to LLA ###
-function ecef2enu( ecef::ECEF, lla_ref::LatLon )
+function ecef2enu( ecef::ECEF, lla_ref::LLA )
     # Reference point to linearize about
     phi = lla_ref.lat
     lambda = lla_ref.lon
@@ -69,18 +69,18 @@ function ecef2enu( ecef::ECEF, bounds::Bounds )
     lat_ref = ( bounds.min_lat + bounds.max_lat ) / 2
     lon_ref = ( bounds.min_lon + bounds.max_lon ) / 2
 
-    return ecef2enu( ecef, LatLon(lat_ref,lon_ref) )
+    return ecef2enu( ecef, LLA(lat_ref,lon_ref) )
 end
 
 ### Convert LLA point to ENU given Bounds ###
-function lla2enu( lla::LatLon , bounds::Bounds )
+function lla2enu( lla::LLA , bounds::Bounds )
     ecef = lla2ecef( lla )
     enu = ecef2enu( ecef, bounds )
     return enu
 end
 
 ### Convert dictionary of LLA points to ENU given Bounds ###
-function lla2enu( nodes::Dict{Int,LatLon}, bounds::Bounds )
+function lla2enu( nodes::Dict{Int,LLA}, bounds::Bounds )
     nodesENU = Dict{Int,ENU}()
 
     for key in keys(nodes)
@@ -92,8 +92,8 @@ end
 
 ### Convert Bounds type from LLA to ENU ###
 function lla2enu( bounds::Bounds )
-    top_left_LLA = LatLon( bounds.max_lat, bounds.min_lon )
-    bottom_right_LLA = LatLon( bounds.min_lat, bounds.max_lon )
+    top_left_LLA = LLA( bounds.max_lat, bounds.min_lon )
+    bottom_right_LLA = LLA( bounds.min_lat, bounds.max_lon )
 
     top_left_ENU = lla2enu( top_left_LLA, bounds )
     bottom_right_ENU = lla2enu( bottom_right_LLA, bounds )

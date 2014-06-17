@@ -5,7 +5,7 @@
 ### Functions for plotting using the Winston package ###
 
 ### Generic Map Plot ###
-function plotMap( nodes::Dict{Int64,LatLon};
+function plotMap( nodes::Dict{Int64,LLA};
                   highways::Array{Highway,1}=nothing,
                   buildings::Array{Building,1}=nothing,
                   features::Array{Feature,1}=nothing,
