@@ -8,7 +8,7 @@ function cropMap!( nodes::Dict{Int64,LatLon},
                    highways::Array{Highway,1}=nothing,
                    buildings::Array{Building,1}=nothing,
                    features::Array{Feature,1}=nothing,
-                   delete_nodes::Bool=true)
+                   delete_nodes::Bool=true )
 
     if highways != nothing
         crop!(nodes, bounds, highways)

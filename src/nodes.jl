@@ -16,7 +16,7 @@ function getNodes( street_map::LightXML.XMLDocument )
         lat = float(LightXML.attribute(node, "lat"))
         lon = float(LightXML.attribute(node, "lon"))
 
-        nodes[id] = LatLon(lat,lon)
+        nodes[id] = LatLon(lat, lon)
     end
 
     return nodes

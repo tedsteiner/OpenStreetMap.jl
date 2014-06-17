@@ -12,6 +12,7 @@ import Winston
 export parseMapXML
 export getNodes, getBounds, getHighways, getBuildings, getFeatures
 export plotMap, cropMap!, findIntersections
+export lla2enu, lla2ecef, ecef2lla
 
 include("types.jl")
 include("parseMap.jl")
@@ -24,5 +25,6 @@ include("buildings.jl")
 include("crop.jl")
 include("plot.jl")
 include("intersections.jl")
+include("transforms.jl")
 
 end
