@@ -11,7 +11,7 @@ function lla2ecef( lla::LLA )
     lon = lla.lon
     alt = lla.alt
 
-    d = WSG84() # Get WSG84 datum
+    d = WGS84() # Get WGS84 datum
 
     N = d.a / sqrt(1 - d.e*d.e * sind(lat)^2)   # Radius of curvature (meters)
 
@@ -28,7 +28,7 @@ function ecef2lla( ecef::ECEF )
     y = ecef.y
     z = ecef.z
 
-    d = WSG84() # Get WSG84 datum
+    d = WGS84() # Get WGS84 datum
 
     p = sqrt( x*x + y*y )
     theta = atan2( z*d.a, p*d.b )
