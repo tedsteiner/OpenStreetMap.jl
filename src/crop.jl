@@ -217,7 +217,11 @@ function cropHighway!(nodes::Dict, bounds::Bounds, highway::Highway, valid::BitA
             y = y0 + (y1 - y0) * (x - x0) / (x1 - x0)
 
             # Add a new node to nodes list
-            new_id = addNewNode(nodes,LLA(y,x))
+            if typeof(nodes[node0]) == LLA
+                new_id = addNewNode(nodes,LLA(y,x))
+            else # ENU
+                new_id = addNewNode(nodes,ENU(x,y))
+            end
             highway.nodes[last_inside+1] = new_id
             valid[last_inside+1] = inBounds(nodes[new_id],bounds)
         end
@@ -236,7 +240,11 @@ function cropHighway!(nodes::Dict, bounds::Bounds, highway::Highway, valid::BitA
                 x = x0 + (x1-x0) * (y - y0) / (y1 - y0)
 
                 # Add a new node to nodes list
-                new_id = addNewNode(nodes,LLA(y,x))
+                if typeof(nodes[node0]) == LLA
+                    new_id = addNewNode(nodes,LLA(y,x))
+                else # ENU
+                    new_id = addNewNode(nodes,ENU(x,y))
+                end
                 highway.nodes[last_inside+1] = new_id
                 valid[last_inside+1] = inBounds(nodes[new_id],bounds)
             end
@@ -261,7 +269,11 @@ function cropHighway!(nodes::Dict, bounds::Bounds, highway::Highway, valid::BitA
             y = y0 + (y1 - y0) * (x - x0) / (x1 - x0);
 
             # Add a new node to nodes list
-            new_id = addNewNode(nodes,LLA(y,x))
+            if typeof(nodes[node0]) == LLA
+                new_id = addNewNode(nodes,LLA(y,x))
+            else # ENU
+                new_id = addNewNode(nodes,ENU(x,y))
+            end
             highway.nodes[first_inside-1] = new_id
             valid[first_inside-1] = inBounds(nodes[new_id],bounds)
         end
@@ -280,7 +292,11 @@ function cropHighway!(nodes::Dict, bounds::Bounds, highway::Highway, valid::BitA
                 x = x0 + (x1-x0) * (y - y0) / (y1 - y0)
 
                 # Add a new node to nodes list
-                new_id = addNewNode(nodes,LLA(y,x))
+                if typeof(nodes[node0]) == LLA
+                    new_id = addNewNode(nodes,LLA(y,x))
+                else # ENU
+                    new_id = addNewNode(nodes,ENU(x,y))
+                end
                 highway.nodes[first_inside-1] = new_id
                 valid[first_inside-1] = inBounds(nodes[new_id],bounds)
             end

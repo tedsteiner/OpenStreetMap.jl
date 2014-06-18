@@ -64,6 +64,7 @@ type ENU
     north
     up
 end
+ENU(x, y) = ENU(x, y, 0)
 
 ### Point translators
 function getX( lla::LLA )
