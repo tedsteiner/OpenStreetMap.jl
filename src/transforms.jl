@@ -4,7 +4,10 @@
 
 ### Functions for map coordinate transformations ###
 
-### Conversion from Lat-Lon-Alt to Earth-Centered-Earth-Fixed coordinates ###
+###############################################
+### Conversion from LLA to ECEF coordinates ###
+###############################################
+
 # For single-point calculations
 function lla2ecef( lla::LLA )
     datum = WGS84() # Get WGS84 datum
@@ -12,7 +15,6 @@ function lla2ecef( lla::LLA )
     lla2ecef( lla, datum )
 end
 
-### Conversion from LLA to ECEF ###
 # For multi-point loops
 function lla2ecef( lla::LLA, d::WGS84 )
     lat = lla.lat
@@ -28,7 +30,23 @@ function lla2ecef( lla::LLA, d::WGS84 )
     return ECEF(x,y,z)
 end
 
+# For dictionary of nodes
+function lla2ecef( nodes::Dict{Int,LLA} )
+    nodesECEF = Dict{Int,ECEF}()
+    datum = WGS84()
+
+    for key in keys(nodes)
+        nodesECEF[key] = lla2ecef( nodes[key], datum )
+    end
+
+    return nodesECEF
+end
+
+
+###############################################
 ### Conversion from ECEF to LLA coordinates ###
+###############################################
+
 # For single-point calculations
 function ecef2lla( ecef::ECEF )
     datum = WGS84() # Get WGS84 datum
@@ -36,7 +54,6 @@ function ecef2lla( ecef::ECEF )
     return ecef2lla( ecef, datum )
 end
 
-### Conversion from ECEF to LLA coordinates ###
 # For multi-point loops
 function ecef2lla( ecef::ECEF, d::WGS84 )
     x = ecef.x
@@ -54,7 +71,12 @@ function ecef2lla( ecef::ECEF, d::WGS84 )
     return LLA(phi*180/pi, lambda*180/pi, h)
 end
 
-### Convert ECEF point to ENU given reference point ###
+
+###############################################
+### Conversion from ECEF to ENU coordinates ###
+###############################################
+
+# Given a reference point for linarization
 function ecef2enu( ecef::ECEF, lla_ref::LLA )
     # Reference point to linearize about
     phi = lla_ref.lat
@@ -77,31 +99,33 @@ function ecef2enu( ecef::ECEF, lla_ref::LLA )
     return ENU(e,n,u)
 end
 
-### Convert ECEF point to ENU given Bounds ###
-# For single-point calculations
+# Given Bounds object for linearization
 function ecef2enu( ecef::ECEF, bounds::Bounds )
     lla_ref = centerBounds( bounds )
 
     return ecef2enu( ecef, lla_ref )
 end
 
-### Convert LLA point to ENU given Bounds ###
-# For single-point calculations
+
+##############################################
+### Conversion from LLA to ENU coordinates ###
+##############################################
+
+# For single-point calculations, given bounds
 function lla2enu( lla::LLA , bounds::Bounds )
     ecef = lla2ecef( lla )
     enu = ecef2enu( ecef, bounds )
     return enu
 end
 
-### Convert LLA point to ENU given reference point ###
-# For multi-point loops
+# For multi-point loops, given reference point in LLA
 function lla2enu( lla::LLA, datum::WGS84, lla_ref::LLA )
     ecef = lla2ecef( lla, datum )
     enu = ecef2enu( ecef, lla_ref )
     return enu
 end
 
-### Convert dictionary of LLA points to ENU given Bounds ###
+# For dictionary of LLA nodes, given Bounds
 function lla2enu( nodes::Dict{Int,LLA}, bounds::Bounds )
     nodesENU = Dict{Int,ENU}()
 
@@ -115,17 +139,10 @@ function lla2enu( nodes::Dict{Int,LLA}, bounds::Bounds )
     return nodesENU
 end
 
-### Convert dictionary of LLA points to ECEF ###
-function lla2ecef( nodes::Dict{Int,LLA} )
-    nodesECEF = Dict{Int,ECEF}()
-    datum = WGS84()
 
-    for key in keys(nodes)
-        nodesECEF[key] = lla2ecef( nodes[key], datum )
-    end
-
-    return nodesECEF
-end
+########################
+### Helper Functions ###
+########################
 
 ### Convert Bounds from LLA to ENU ###
 function lla2enu( bounds::Bounds )
@@ -140,7 +157,7 @@ function lla2enu( bounds::Bounds )
     return bounds_ENU
 end
 
-### Get the center point of Bounds ###
+### Get center point of Bounds region ###
 function centerBounds( bounds::Bounds )
     lat_ref = ( bounds.min_lat + bounds.max_lat ) / 2
     lon_ref = ( bounds.min_lon + bounds.max_lon ) / 2
