@@ -71,6 +71,17 @@ function ecef2lla( ecef::ECEF, d::WGS84 )
     return LLA(phi*180/pi, lambda*180/pi, h)
 end
 
+# For dictionary of nodes
+function ecef2lla( nodes::Dict{Int,ECEF} )
+    nodesLLA = Dict{Int,LLA}()
+    datum = WGS84()
+
+    for key in keys(nodes)
+        nodesLLA[key] = ecef2lla( nodes[key], datum )
+    end
+
+    return nodesLLA
+end
 
 ###############################################
 ### Conversion from ECEF to ENU coordinates ###
@@ -106,6 +117,18 @@ function ecef2enu( ecef::ECEF, bounds::Bounds )
     return ecef2enu( ecef, lla_ref )
 end
 
+# For dictionary of nodes
+function ecef2enu( nodes::Dict{Int,ECEF}, bounds::Bounds )
+    nodesENU = Dict{Int,ENU}()
+    lla_ref = centerBounds( bounds )
+
+    for key in keys(nodes)
+        nodesENU[key] = ecef2enu( nodes[key], lla_ref )
+    end
+
+    return nodesENU
+end
+
 
 ##############################################
 ### Conversion from LLA to ENU coordinates ###
@@ -139,12 +162,7 @@ function lla2enu( nodes::Dict{Int,LLA}, bounds::Bounds )
     return nodesENU
 end
 
-
-########################
-### Helper Functions ###
-########################
-
-### Convert Bounds from LLA to ENU ###
+# For Bounds objects
 function lla2enu( bounds::Bounds )
     top_left_LLA = LLA( bounds.max_lat, bounds.min_lon )
     bottom_right_LLA = LLA( bounds.min_lat, bounds.max_lon )
@@ -156,6 +174,11 @@ function lla2enu( bounds::Bounds )
 
     return bounds_ENU
 end
+
+
+########################
+### Helper Functions ###
+########################
 
 ### Get center point of Bounds region ###
 function centerBounds( bounds::Bounds )
