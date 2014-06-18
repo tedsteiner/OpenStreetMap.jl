@@ -35,6 +35,10 @@ type Bounds
     max_lon
 end
 
+###################
+### Point Types ###
+###################
+
 ### Point in Latitude-Longitude-Altitude (LLA) coordinates
 # Used to store node data in OpenStreetMap XML files
 type LLA

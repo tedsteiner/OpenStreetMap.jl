@@ -103,11 +103,11 @@ function ecef2enu( ecef::ECEF, lla_ref::LLA )
     ned = R * ecef_vec
 
     # Extract elements from vector
-    e = ned[1]
-    n = ned[2]
-    u = ned[3]
+    east = ned[1]
+    north = ned[2]
+    up = ned[3]
 
-    return ENU(e,n,u)
+    return ENU(east,north,up)
 end
 
 # Given Bounds object for linearization
@@ -170,7 +170,7 @@ function lla2enu( bounds::Bounds )
     top_left_ENU = lla2enu( top_left_LLA, bounds )
     bottom_right_ENU = lla2enu( bottom_right_LLA, bounds )
 
-    bounds_ENU = Bounds(top_left_ENU.east, bottom_right_ENU.east, bottom_right_ENU.north, top_left_ENU.north)
+    bounds_ENU = Bounds(bottom_right_ENU.north, top_left_ENU.north, top_left_ENU.east, bottom_right_ENU.east)
 
     return bounds_ENU
 end
