@@ -3,23 +3,48 @@
 ### Copyright 2014              ###
 
 ### Crop map elements without copying data ###
-function cropMap!( nodes::Dict{Int64,LLA},
+function cropMap!( nodes::Dict,
                    bounds::Bounds;
-                   highways::Array{Highway,1}=nothing,
-                   buildings::Array{Building,1}=nothing,
-                   features::Array{Feature,1}=nothing,
+                   highways=nothing,
+                   buildings=nothing,
+                   features=nothing,
                    delete_nodes::Bool=true )
 
+    if typeof(nodes) != Dict{Int,LLA} && typeof(nodes) != Dict{Int,ENU}
+        println("[OpenStreetMap.jl] ERROR: Input argument <nodes> in cropMap!() has unsupported type.")
+        println("[OpenStreetMap.jl] Required type: Dict{Int64,LLA} OR Dict{Int64,ENU}")
+        println("[OpenStreetMap.jl] Current type: $(typeof(nodes))")
+        return
+    end
+
     if highways != nothing
-        crop!(nodes, bounds, highways)
+        if typeof(highways) == Array{Highway,1}
+            crop!(nodes, bounds, highways)
+        else
+            println("[OpenStreetMap.jl] Warning: Input argument <highways> in cropMap!() could not be plotted.")
+            println("[OpenStreetMap.jl] Required type: Array{Highway,1}")
+            println("[OpenStreetMap.jl] Current type: $(typeof(highways))")
+        end
     end
 
     if buildings != nothing
-        crop!(nodes, bounds, buildings)
+        if typeof(buildings) == Array{Building,1}
+            crop!(nodes, bounds, buildings)
+        else
+            println("[OpenStreetMap.jl] Warning: Input argument <buildings> in cropMap!() could not be plotted.")
+            println("[OpenStreetMap.jl] Required type: Array{Building,1}")
+            println("[OpenStreetMap.jl] Current type: $(typeof(buildings))")
+        end
     end
 
     if features != nothing
-        crop!(nodes, bounds, features)
+        if typeof(features) == Array{Feature,1}
+            crop!(nodes, bounds, features)
+        else
+            println("[OpenStreetMap.jl] Warning: Input argument <features> in cropMap!() could not be plotted.")
+            println("[OpenStreetMap.jl] Required type: Array{Feature,1}")
+            println("[OpenStreetMap.jl] Current type: $(typeof(features))")
+        end
     end
 
     if delete_nodes
@@ -30,7 +55,7 @@ function cropMap!( nodes::Dict{Int64,LLA},
 end
 
 ### Crop nodes ###
-function crop!(nodes::Dict{Int64,LLA}, bounds::Bounds)
+function crop!(nodes::Dict, bounds::Bounds)
     for key in keys(nodes)
         if !inBounds(nodes[key],bounds)
             delete!(nodes,key)
@@ -41,7 +66,7 @@ function crop!(nodes::Dict{Int64,LLA}, bounds::Bounds)
 end
 
 ### Crop highways ###
-function crop!(nodes::Dict{Int64,LLA}, bounds::Bounds, highways::Array{Highway,1})
+function crop!(nodes::Dict, bounds::Bounds, highways::Array{Highway,1})
     crop_list = falses(length(highways))
 
     for k = 1:length(highways)
@@ -68,7 +93,7 @@ function crop!(nodes::Dict{Int64,LLA}, bounds::Bounds, highways::Array{Highway,1
 end
 
 ### Crop buildings ###
-function crop!(nodes::Dict{Int64,LLA}, bounds::Bounds, buildings::Array{Building,1})
+function crop!(nodes::Dict, bounds::Bounds, buildings::Array{Building,1})
     crop_list = falses(length(buildings))
 
     for k = 1:length(buildings)
@@ -94,7 +119,7 @@ function crop!(nodes::Dict{Int64,LLA}, bounds::Bounds, buildings::Array{Building
 end
 
 ### Crop features ###
-function crop!(nodes::Dict{Int64,LLA}, bounds::Bounds, features::Array{Feature,1})
+function crop!(nodes::Dict, bounds::Bounds, features::Array{Feature,1})
     crop_list = falses(length(features))
 
     for k = 1:length(features)
@@ -120,6 +145,19 @@ function inBounds(loc::LLA, bounds::Bounds)
     return true
 end
 
+function inBounds(loc::ENU, bounds::Bounds)
+    north = loc.north
+    east = loc.east
+
+    if north < bounds.min_lat || north > bounds.max_lat
+        return false
+    elseif east < bounds.min_lon || east > bounds.max_lon
+        return false
+    end
+
+    return true
+end
+
 ### Remove specified items from an array ###
 function cropList!(list::Array, crop_list::BitArray{1})
     kk = length(list)
@@ -134,8 +172,8 @@ function cropList!(list::Array, crop_list::BitArray{1})
 end
 
 ### Crop highway to fit within bounds, interpolating to place ###
-### new nodes on the bounds as necessary.                     ###
-function cropHighway!(nodes::Dict{Int64,LLA}, bounds::Bounds, highway::Highway, valid::BitArray{1})
+### new nodes on the boundary as necessary.                   ###
+function cropHighway!(nodes::Dict, bounds::Bounds, highway::Highway, valid::BitArray{1})
     inside = find(valid)
     first_inside = inside[1]
     last_inside = inside[end]
@@ -164,41 +202,41 @@ function cropHighway!(nodes::Dict{Int64,LLA}, bounds::Bounds, highway::Highway, 
     if interpolate_end
         last_inside = find(valid)[end]
         const node0 = highway.nodes[last_inside]
-        const x0 = nodes[node0].lat
-        const y0 = nodes[node0].lon
+        const x0 = getX( nodes[node0] )
+        const y0 = getY( nodes[node0] )
         node1 = highway.nodes[last_inside+1]
-        x1 = nodes[node1].lat
-        y1 = nodes[node1].lon
+        x1 = getX( nodes[node1] )
+        y1 = getY( nodes[node1] )
 
-        if x1 < bounds.min_lat || x1 > bounds.max_lat
-            if x1 < bounds.min_lat
-                x = bounds.min_lat
+        if x1 < bounds.min_lon || x1 > bounds.max_lon
+            if x1 < bounds.min_lon
+                x = bounds.min_lon
             else
-                x = bounds.max_lat
+                x = bounds.max_lon
             end
             y = y0 + (y1 - y0) * (x - x0) / (x1 - x0)
 
             # Add a new node to nodes list
-            new_id = addNewNode(nodes,LLA(x,y))
+            new_id = addNewNode(nodes,LLA(y,x))
             highway.nodes[last_inside+1] = new_id
             valid[last_inside+1] = inBounds(nodes[new_id],bounds)
         end
 
         if !valid[last_inside+1]
             node1 = highway.nodes[last_inside+1]
-            x1 = nodes[node1].lat
-            y1 = nodes[node1].lon
+            x1 = getX( nodes[node1] )
+            y1 = getY( nodes[node1] )
 
-            if y1 < bounds.min_lon || y1 > bounds.max_lon
-                if y1 < bounds.min_lon
-                    y = bounds.min_lon
+            if y1 < bounds.min_lat || y1 > bounds.max_lat
+                if y1 < bounds.min_lat
+                    y = bounds.min_lat
                 else
-                    y = bounds.max_lon;
+                    y = bounds.max_lat
                 end
                 x = x0 + (x1-x0) * (y - y0) / (y1 - y0)
 
                 # Add a new node to nodes list
-                new_id = addNewNode(nodes,LLA(x,y))
+                new_id = addNewNode(nodes,LLA(y,x))
                 highway.nodes[last_inside+1] = new_id
                 valid[last_inside+1] = inBounds(nodes[new_id],bounds)
             end
@@ -208,41 +246,41 @@ function cropHighway!(nodes::Dict{Int64,LLA}, bounds::Bounds, highway::Highway, 
     if interpolate_start
         first_inside = find(valid)[1]
         const node0 = highway.nodes[first_inside]
-        const x0 = nodes[node0].lat
-        const y0 = nodes[node0].lon
+        const x0 = getX( nodes[node0] )
+        const y0 = getY( nodes[node0] )
         node1 = highway.nodes[first_inside-1]
-        x1 = nodes[node1].lat
-        y1 = nodes[node1].lon
+        x1 = getX( nodes[node1] )
+        y1 = getY( nodes[node1] )
 
-        if x1 < bounds.min_lat || x1 > bounds.max_lat
-            if x1 < bounds.min_lat
-                x = bounds.min_lat
+        if x1 < bounds.min_lon || x1 > bounds.max_lon
+            if x1 < bounds.min_lon
+                x = bounds.min_lon
             else
-                x = bounds.max_lat
+                x = bounds.max_lon
             end
             y = y0 + (y1 - y0) * (x - x0) / (x1 - x0);
 
             # Add a new node to nodes list
-            new_id = addNewNode(nodes,LLA(x,y))
+            new_id = addNewNode(nodes,LLA(y,x))
             highway.nodes[first_inside-1] = new_id
             valid[first_inside-1] = inBounds(nodes[new_id],bounds)
         end
 
         if !valid[first_inside-1]
             node1 = highway.nodes[first_inside-1]
-            x1 = nodes[node1].lat
-            y1 = nodes[node1].lon
+            x1 = getX( nodes[node1] )
+            y1 = getY( nodes[node1] )
 
-            if y1 < bounds.min_lon || y1 > bounds.max_lon
-                if y1 < bounds.min_lon
-                    y = bounds.min_lon
+            if y1 < bounds.min_lat || y1 > bounds.max_lat
+                if y1 < bounds.min_lat
+                    y = bounds.min_lat
                 else
-                    y = bounds.max_lon
+                    y = bounds.max_lat
                 end
                 x = x0 + (x1-x0) * (y - y0) / (y1 - y0)
 
                 # Add a new node to nodes list
-                new_id = addNewNode(nodes,LLA(x,y))
+                new_id = addNewNode(nodes,LLA(y,x))
                 highway.nodes[first_inside-1] = new_id
                 valid[first_inside-1] = inBounds(nodes[new_id],bounds)
             end
@@ -253,7 +291,15 @@ function cropHighway!(nodes::Dict{Int64,LLA}, bounds::Bounds, highway::Highway, 
 end
 
 ### Add a new node ###
-function addNewNode(nodes::Dict{Int64,LLA}, loc::LLA)
+function addNewNode(nodes::Dict{Int,LLA}, loc::LLA)
+    return addNewNodeInternal(nodes, loc)
+end
+
+function addNewNode(nodes::Dict{Int,ENU}, loc::ENU)
+    return addNewNodeInternal(nodes, loc)
+end
+
+function addNewNodeInternal(nodes, loc)
     id = 1
     while id <= typemax(Int)
         if !haskey(nodes,id)
@@ -264,6 +310,6 @@ function addNewNode(nodes::Dict{Int64,LLA}, loc::LLA)
         end
     end
 
-    println("WARNING: Unable to add a new node to map, $(typemax(Int)) nodes is currently the maximum. (OpenStreetMap.addNewNode)")
+    println("[OpenStreetMap.jl] WARNING: Unable to add a new node to map, $(typemax(Int)) nodes is currently the maximum.")
     return 0
 end

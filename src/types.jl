@@ -65,6 +65,20 @@ type ENU
     up
 end
 
+### Point translators
+function getX( lla::LLA )
+    return lla.lon
+end
+function getY( lla::LLA )
+    return lla.lat
+end
+function getX( enu::ENU )
+    return enu.east
+end
+function getY( enu::ENU )
+    return enu.north
+end
+
 ### World Geodetic Coordinate System of 1984 (WGS 84)
 # Standardized coordinate system for Earth
 # Global ellipsoidal reference surface
