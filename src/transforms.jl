@@ -5,13 +5,19 @@
 ### Functions for map coordinate transformations ###
 
 ### Conversion from Lat-Lon-Alt to Earth-Centered-Earth-Fixed coordinates ###
+# For single-point calculations
 function lla2ecef( lla::LLA )
-    # Latitude and Longitude
+    datum = WGS84() # Get WGS84 datum
+
+    lla2ecef( lla, datum )
+end
+
+### Conversion from LLA to ECEF ###
+# For multi-point loops
+function lla2ecef( lla::LLA, d::WGS84 )
     lat = lla.lat
     lon = lla.lon
     alt = lla.alt
-
-    d = WGS84() # Get WGS84 datum
 
     N = d.a / sqrt(1 - d.e*d.e * sind(lat)^2)   # Radius of curvature (meters)
 
@@ -22,13 +28,20 @@ function lla2ecef( lla::LLA )
     return ECEF(x,y,z)
 end
 
-### Conversion from Earth-Centered-Earth-Fixed to Lat-Lon-Alt coordinates ###
+### Conversion from ECEF to LLA coordinates ###
+# For single-point calculations
 function ecef2lla( ecef::ECEF )
+    datum = WGS84() # Get WGS84 datum
+
+    return ecef2lla( ecef, datum )
+end
+
+### Conversion from ECEF to LLA coordinates ###
+# For multi-point loops
+function ecef2lla( ecef::ECEF, d::WGS84 )
     x = ecef.x
     y = ecef.y
     z = ecef.z
-
-    d = WGS84() # Get WGS84 datum
 
     p = sqrt( x*x + y*y )
     theta = atan2( z*d.a, p*d.b )
@@ -41,7 +54,7 @@ function ecef2lla( ecef::ECEF )
     return LLA(phi*180/pi, lambda*180/pi, h)
 end
 
-### Convert ECEF point to LLA ###
+### Convert ECEF point to ENU given reference point ###
 function ecef2enu( ecef::ECEF, lla_ref::LLA )
     # Reference point to linearize about
     phi = lla_ref.lat
@@ -65,17 +78,26 @@ function ecef2enu( ecef::ECEF, lla_ref::LLA )
 end
 
 ### Convert ECEF point to ENU given Bounds ###
+# For single-point calculations
 function ecef2enu( ecef::ECEF, bounds::Bounds )
-    lat_ref = ( bounds.min_lat + bounds.max_lat ) / 2
-    lon_ref = ( bounds.min_lon + bounds.max_lon ) / 2
+    lla_ref = centerBounds( bounds )
 
-    return ecef2enu( ecef, LLA(lat_ref,lon_ref) )
+    return ecef2enu( ecef, lla_ref )
 end
 
 ### Convert LLA point to ENU given Bounds ###
+# For single-point calculations
 function lla2enu( lla::LLA , bounds::Bounds )
     ecef = lla2ecef( lla )
     enu = ecef2enu( ecef, bounds )
+    return enu
+end
+
+### Convert LLA point to ENU given reference point ###
+# For multi-point loops
+function lla2enu( lla::LLA, datum::WGS84, lla_ref::LLA )
+    ecef = lla2ecef( lla, datum )
+    enu = ecef2enu( ecef, lla_ref )
     return enu
 end
 
@@ -83,14 +105,29 @@ end
 function lla2enu( nodes::Dict{Int,LLA}, bounds::Bounds )
     nodesENU = Dict{Int,ENU}()
 
+    lla_ref = centerBounds( bounds )
+    datum = WGS84()
+
     for key in keys(nodes)
-        nodesENU[key] = lla2enu( nodes[key], bounds )
+        nodesENU[key] = lla2enu( nodes[key], datum, lla_ref )
     end
 
     return nodesENU
 end
 
-### Convert Bounds type from LLA to ENU ###
+### Convert dictionary of LLA points to ECEF ###
+function lla2ecef( nodes::Dict{Int,LLA} )
+    nodesECEF = Dict{Int,ECEF}()
+    datum = WGS84()
+
+    for key in keys(nodes)
+        nodesECEF[key] = lla2ecef( nodes[key], datum )
+    end
+
+    return nodesECEF
+end
+
+### Convert Bounds from LLA to ENU ###
 function lla2enu( bounds::Bounds )
     top_left_LLA = LLA( bounds.max_lat, bounds.min_lon )
     bottom_right_LLA = LLA( bounds.min_lat, bounds.max_lon )
@@ -101,4 +138,12 @@ function lla2enu( bounds::Bounds )
     bounds_ENU = Bounds(top_left_ENU.east, bottom_right_ENU.east, bottom_right_ENU.north, top_left_ENU.north)
 
     return bounds_ENU
+end
+
+### Get the center point of Bounds ###
+function centerBounds( bounds::Bounds )
+    lat_ref = ( bounds.min_lat + bounds.max_lat ) / 2
+    lon_ref = ( bounds.min_lon + bounds.max_lon ) / 2
+
+    return LLA(lat_ref, lon_ref)
 end
