@@ -5,7 +5,7 @@ notifications:
   email: false
 before_install:
   - sudo add-apt-repository ppa:staticfloat/julia-deps -y
-  - sudo add-apt-repository ppa:staticfloat/julianightlies -y
+  - sudo add-apt-repository ppa:staticfloat/juliareleases -y
   - sudo apt-get update -qq -y
   - apt-cache search tk8
   - sudo apt-get install tk8.5
