@@ -40,7 +40,7 @@ end
 
 ### Gather highway data from OSM element ###
 function getBuildingData( building::LightXML.XMLElement, class::String="" )
-    nodes = Int64[]
+    nodes = Int[]
     class = ""
     building_name = ""
 
