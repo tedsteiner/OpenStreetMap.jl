@@ -12,7 +12,7 @@ function cropMap!( nodes::Dict,
 
     if typeof(nodes) != Dict{Int,LLA} && typeof(nodes) != Dict{Int,ENU}
         println("[OpenStreetMap.jl] ERROR: Input argument <nodes> in cropMap!() has unsupported type.")
-        println("[OpenStreetMap.jl] Required type: Dict{Int64,LLA} OR Dict{Int64,ENU}")
+        println("[OpenStreetMap.jl] Required type: Dict{Int,LLA} OR Dict{Int,ENU}")
         println("[OpenStreetMap.jl] Current type: $(typeof(nodes))")
         return
     end

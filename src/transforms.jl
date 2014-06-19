@@ -141,6 +141,13 @@ function lla2enu( lla::LLA , bounds::Bounds )
     return enu
 end
 
+# For single-point calculations, given reference point
+function lla2enu( lla::LLA, lla_ref::LLA )
+    ecef = lla2ecef( lla )
+    enu = ecef2enu( ecef, lla_ref )
+    return enu
+end
+
 # For multi-point loops, given reference point in LLA
 function lla2enu( lla::LLA, datum::WGS84, lla_ref::LLA )
     ecef = lla2ecef( lla, datum )
@@ -150,9 +157,14 @@ end
 
 # For dictionary of LLA nodes, given Bounds
 function lla2enu( nodes::Dict{Int,LLA}, bounds::Bounds )
-    nodesENU = Dict{Int,ENU}()
-
     lla_ref = centerBounds( bounds )
+
+    return lla2enu(nodes, lla_ref)
+end
+
+# For dictionary of LLA nodes, given reference point
+function lla2enu( nodes::Dict{Int,LLA}, lla_ref::LLA )
+    nodesENU = Dict{Int,ENU}()
     datum = WGS84()
 
     for key in keys(nodes)
@@ -162,13 +174,26 @@ function lla2enu( nodes::Dict{Int,LLA}, bounds::Bounds )
     return nodesENU
 end
 
-# For Bounds objects
+# For Bounds objects without a reference point
 function lla2enu( bounds::Bounds )
     top_left_LLA = LLA( bounds.max_lat, bounds.min_lon )
     bottom_right_LLA = LLA( bounds.min_lat, bounds.max_lon )
 
     top_left_ENU = lla2enu( top_left_LLA, bounds )
     bottom_right_ENU = lla2enu( bottom_right_LLA, bounds )
+
+    bounds_ENU = Bounds(bottom_right_ENU.north, top_left_ENU.north, top_left_ENU.east, bottom_right_ENU.east)
+
+    return bounds_ENU
+end
+
+# For Bounds objects given a reference point
+function lla2enu( bounds::Bounds, lla_ref::LLA )
+    top_left_LLA = LLA( bounds.max_lat, bounds.min_lon )
+    bottom_right_LLA = LLA( bounds.min_lat, bounds.max_lon )
+
+    top_left_ENU = lla2enu( top_left_LLA, lla_ref )
+    bottom_right_ENU = lla2enu( bottom_right_LLA, lla_ref )
 
     bounds_ENU = Bounds(bottom_right_ENU.north, top_left_ENU.north, top_left_ENU.east, bottom_right_ENU.east)
 

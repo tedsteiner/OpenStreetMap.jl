@@ -41,7 +41,7 @@ end
 ### Gather highway data from OSM element ###
 function getHighwayData( highway::LightXML.XMLElement, class::String="" )
     oneway = false
-    nodes = Int64[]
+    nodes = Int[]
     road_name = ""
 
     # Get way ID

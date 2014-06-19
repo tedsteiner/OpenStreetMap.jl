@@ -55,7 +55,7 @@ function plotMap( nodes;
         end
     else
         println("[OpenStreetMap.jl] ERROR: Input argument <nodes> in plotMap() has unsupported type.")
-        println("[OpenStreetMap.jl] Required type: Dict{Int64,LLA} OR Dict{Int64,ENU}")
+        println("[OpenStreetMap.jl] Required type: Dict{Int,LLA} OR Dict{Int,ENU}")
         println("[OpenStreetMap.jl] Current type: $(typeof(nodes))")
         return
     end
@@ -123,7 +123,7 @@ function plotMap( nodes;
 
     # Iterate over all intersections and draw
     if intersections != nothing
-        if typeof(intersections) == Array{Intersection,1}
+        if typeof(intersections) == Dict{Int,Intersection}
             intersection_nodes = zeros(length(intersections))
             coords = zeros(length(intersections),2)
             k = 1
@@ -136,7 +136,7 @@ function plotMap( nodes;
             drawNodes(coords, intersection_style, intersection_lw, realtime)
         else
             println("[OpenStreetMap.jl] Warning: Input argument <intersections> in plotMap() could not be plotted.")
-            println("[OpenStreetMap.jl] Required type: Array{Intersection,1}")
+            println("[OpenStreetMap.jl] Required type: Dict{Int,Intersection}")
             println("[OpenStreetMap.jl] Current type: $(typeof(intersections))")
         end
     end
