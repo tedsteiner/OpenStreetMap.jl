@@ -18,11 +18,11 @@ function cropMap!( nodes::Dict,
     end
 
     if highways != nothing
-        if typeof(highways) == Array{Highway,1}
+        if typeof(highways) == Dict{Int,Highway}
             crop!(nodes, bounds, highways)
         else
             println("[OpenStreetMap.jl] Warning: Input argument <highways> in cropMap!() could not be plotted.")
-            println("[OpenStreetMap.jl] Required type: Array{Highway,1}")
+            println("[OpenStreetMap.jl] Required type: Dict{Int,Highway}")
             println("[OpenStreetMap.jl] Current type: $(typeof(highways))")
         end
     end
@@ -66,11 +66,9 @@ function crop!(nodes::Dict, bounds::Bounds)
 end
 
 ### Crop highways ###
-function crop!(nodes::Dict, bounds::Bounds, highways::Array{Highway,1})
-    crop_list = falses(length(highways))
-
-    for k = 1:length(highways)
-        highway = highways[k]
+function crop!(nodes::Dict, bounds::Bounds, highways::Dict{Int,Highway})
+    for key in keys(highways)
+        highway = highways[key]
 
         valid = falses(length(highway.nodes))
         for n = 1:length(highway.nodes)
@@ -79,15 +77,11 @@ function crop!(nodes::Dict, bounds::Bounds, highways::Array{Highway,1})
 
         nodes_in_bounds = sum(valid)
         if nodes_in_bounds == 0
-            # Remove highway from list
-            crop_list[k] = true
+            delete!(highways,key)   # Remove highway from list
         elseif nodes_in_bounds < length(valid)
-            # Reduce highway by interpolating to bounds
-            cropHighway!(nodes,bounds,highway,valid)
+            cropHighway!(nodes,bounds,highway,valid) # Crop highway length
         end
     end
-
-    cropList!(highways, crop_list)
 
     return nothing
 end

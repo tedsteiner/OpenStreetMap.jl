@@ -8,7 +8,7 @@ function getHighways( street_map::LightXML.XMLDocument )
     xroot = LightXML.root(street_map)
     ways = LightXML.get_elements_by_tagname(xroot, "way")
 
-    highways = Highway[]
+    highways = Dict{Int,Highway}()
 
     for n = 1:length(ways)
         way = ways[n]
@@ -25,8 +25,8 @@ function getHighways( street_map::LightXML.XMLDocument )
                             class = LightXML.attribute(tag, "v")
                         end
 
-                        highway = getHighwayData(way,class)
-                        push!(highways,highway)
+                        id = int(LightXML.attribute(way, "id"))
+                        highways[id] = getHighwayData(way,class)
                         break
                     end
                 end
@@ -45,7 +45,7 @@ function getHighwayData( highway::LightXML.XMLElement, class::String="" )
     road_name = ""
 
     # Get way ID
-    id = int64(LightXML.attribute(highway, "id"))
+    # id = int(LightXML.attribute(highway, "id"))
 
     # Iterate over all "label" fields
     for label in LightXML.child_elements(highway)
@@ -88,5 +88,5 @@ function getHighwayData( highway::LightXML.XMLElement, class::String="" )
         end
     end
 
-    return Highway(id, class, oneway, road_name, nodes)
+    return Highway(class, oneway, road_name, nodes)
 end

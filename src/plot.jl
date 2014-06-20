@@ -72,17 +72,17 @@ function plotMap( nodes;
 
     # Iterate over all highways and draw
     if highways != nothing
-        if typeof(highways) == Array{Highway,1}
-            for k = 1:length(highways)
+        if typeof(highways) == Dict{Int,Highway}
+            for key in keys(highways)
                 # Get coordinates of all nodes for object
-                coords = getNodeCoords(nodes, highways[k].nodes)
+                coords = getNodeCoords(nodes, highways[key].nodes)
 
                 # Add line(s) to plot
                 drawNodes(coords, highway_style, highway_lw, realtime)
             end
         else
             println("[OpenStreetMap.jl] Warning: Input argument <highways> in plotMap() could not be plotted.")
-            println("[OpenStreetMap.jl] Required type: Array{Highway,1}")
+            println("[OpenStreetMap.jl] Required type: Dict{Int,Highway}")
             println("[OpenStreetMap.jl] Current type: $(typeof(highways))")
         end
     end

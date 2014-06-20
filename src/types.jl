@@ -3,7 +3,7 @@
 ### Copyright 2014              ###
 
 type Highway
-    id::Int             # Identification number for OSM
+    #id::Int             # Identification number for OSM
     class::String       # Type of highway
     oneway::Bool        # True if road is one-way
     name::String        # Name, if available
