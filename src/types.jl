@@ -11,14 +11,14 @@ type Highway
 end
 
 type Feature
-    id::Int             # ID number for OSM
+    #id::Int             # ID number for OSM
     class::String       # Shop, amenity, crossing, etc.
     detail::String      # Class qualifier
     name::String        # Name
 end
 
 type Building
-    id::Int             # ID number for OSM
+    #id::Int             # ID number for OSM
     class::String       # Building type (usually "yes")
     name::String        # Building name (usually unavailable)
     nodes::Array{Int,1} # List of nodes

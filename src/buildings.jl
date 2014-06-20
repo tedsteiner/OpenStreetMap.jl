@@ -8,7 +8,7 @@ function getBuildings( street_map::LightXML.XMLDocument )
     xroot = LightXML.root(street_map)
     ways = LightXML.get_elements_by_tagname(xroot, "way")
 
-    buildings = Building[]
+    buildings = Dict{Int,Building}()
 
     for n = 1:length(ways)
         way = ways[n]
@@ -25,8 +25,8 @@ function getBuildings( street_map::LightXML.XMLDocument )
                             class = LightXML.attribute(tag, "v")
                         end
 
-                        building = getBuildingData(way,class)
-                        push!(buildings,building)
+                        id = int(LightXML.attribute(way, "id"))
+                        buildings[id] = getBuildingData(way,class)
                         break
                     end
                 end
@@ -45,7 +45,7 @@ function getBuildingData( building::LightXML.XMLElement, class::String="" )
     building_name = ""
 
     # Get way ID
-    id = int64(LightXML.attribute(building, "id"))
+    # id = int64(LightXML.attribute(building, "id"))
 
     # Iterate over all "label" fields
     for label in LightXML.child_elements(building)
@@ -77,6 +77,6 @@ function getBuildingData( building::LightXML.XMLElement, class::String="" )
         end
     end
 
-    return Building(id, class, building_name, nodes)
+    return Building(class, building_name, nodes)
 end
 

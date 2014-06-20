@@ -28,21 +28,21 @@ function cropMap!( nodes::Dict,
     end
 
     if buildings != nothing
-        if typeof(buildings) == Array{Building,1}
+        if typeof(buildings) == Dict{Int,Building}
             crop!(nodes, bounds, buildings)
         else
             println("[OpenStreetMap.jl] Warning: Input argument <buildings> in cropMap!() could not be plotted.")
-            println("[OpenStreetMap.jl] Required type: Array{Building,1}")
+            println("[OpenStreetMap.jl] Required type: Dict{Int,Building}")
             println("[OpenStreetMap.jl] Current type: $(typeof(buildings))")
         end
     end
 
     if features != nothing
-        if typeof(features) == Array{Feature,1}
+        if typeof(features) == Dict{Int,Feature}
             crop!(nodes, bounds, features)
         else
             println("[OpenStreetMap.jl] Warning: Input argument <features> in cropMap!() could not be plotted.")
-            println("[OpenStreetMap.jl] Required type: Array{Feature,1}")
+            println("[OpenStreetMap.jl] Required type: Dict{Int,Feature}")
             println("[OpenStreetMap.jl] Current type: $(typeof(features))")
         end
     end
@@ -87,40 +87,32 @@ function crop!(nodes::Dict, bounds::Bounds, highways::Dict{Int,Highway})
 end
 
 ### Crop buildings ###
-function crop!(nodes::Dict, bounds::Bounds, buildings::Array{Building,1})
-    crop_list = falses(length(buildings))
-
-    for k = 1:length(buildings)
-        building = buildings[k]
-
-        valid = falses(length(building.nodes))
-        for n = 1:length(building.nodes)
-            valid[n] = inBounds(nodes[building.nodes[n]],bounds)
+function crop!(nodes::Dict, bounds::Bounds, buildings::Dict{Int,Building})
+    for key in keys(buildings)
+        valid = falses(length(buildings[key].nodes))
+        for n = 1:length(buildings[key].nodes)
+            valid[n] = inBounds(nodes[buildings[key].nodes[n]],bounds)
         end
 
         nodes_in_bounds = sum(valid)
         if nodes_in_bounds == 0
-            crop_list[k] = true
+            delete!(buildings,key)   # Remove building from list
         elseif nodes_in_bounds < length(valid)
             # TODO: Interpolate buildings to bounds?
-            crop_list[k] = true
+            delete!(buildings,key)   # Remove building from list
         end
     end
-
-    cropList!(buildings, crop_list)
 
     return nothing
 end
 
 ### Crop features ###
-function crop!(nodes::Dict, bounds::Bounds, features::Array{Feature,1})
-    crop_list = falses(length(features))
-
-    for k = 1:length(features)
-        crop_list[k] = !inBounds(nodes[features[k].id], bounds)
+function crop!(nodes::Dict, bounds::Bounds, features::Dict{Int,Feature})
+    for key in keys(features)
+        if !inBounds(nodes[key], bounds)
+            delete!(features,key)
+        end
     end
-
-    cropList!(features, crop_list)
 
     return nothing
 end

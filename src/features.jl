@@ -7,20 +7,20 @@ function getFeatures( street_map::LightXML.XMLDocument )
 
     xroot = LightXML.root(street_map)
     nodes = LightXML.get_elements_by_tagname(xroot, "node")
-    features = Feature[]
+    features = Dict{Int,Feature}()
 
     for n = 1:length(nodes)
         node = nodes[n]
         # TODO: Check if visible?
 
-        # Search for tag with k="highway"
+        # Search for tag giving feature information
         for tag in LightXML.child_elements(node)
             if LightXML.name(tag) == "tag"
                 if LightXML.has_attribute(tag, "k")
                     k = LightXML.attribute(tag, "k")
                     if k == "amenity" || k == "shop" || k == "building" || k == "craft" || k == "historic" || k == "sport" || k == "tourism"
-                        feature = getFeatureData(node)
-                        push!(features,feature)
+                        id = int(LightXML.attribute(node, "id"))
+                        features[id] = getFeatureData(node)
                         break
                     end
                 end
@@ -39,7 +39,7 @@ function getFeatureData( node::LightXML.XMLElement )
     feature_name = ""
 
     # Get node ID
-    id = int64(LightXML.attribute(node, "id"))
+    # id = int64(LightXML.attribute(node, "id"))
 
     # Iterate over all "label" fields
     for label in LightXML.child_elements(node)
@@ -91,5 +91,5 @@ function getFeatureData( node::LightXML.XMLElement )
         end
     end
 
-    return Feature(id, class, detail, feature_name)
+    return Feature(class, detail, feature_name)
 end

@@ -89,34 +89,31 @@ function plotMap( nodes;
 
     # Iterate over all buildings and draw
     if buildings != nothing
-        if typeof(buildings) == Array{Building,1}
-            for k = 1:length(buildings)
+        if typeof(buildings) == Dict{Int,Building}
+            for key in keys(buildings)
                 # Get coordinates of all nodes for object
-                coords = getNodeCoords(nodes, buildings[k].nodes)
+                coords = getNodeCoords(nodes, buildings[key].nodes)
 
                 # Add line(s) to plot
                 drawNodes(coords, building_style, building_lw, realtime)
             end
         else
             println("[OpenStreetMap.jl] Warning: Input argument <buildings> in plotMap() could not be plotted.")
-            println("[OpenStreetMap.jl] Required type: Array{Building,1}")
+            println("[OpenStreetMap.jl] Required type: Dict{Int,Building}")
             println("[OpenStreetMap.jl] Current type: $(typeof(buildings))")
         end
     end
 
     # Iterate over all features and draw
     if features != nothing
-        if typeof(features) == Array{Feature,1}
-            coords = zeros(length(features),2)
-            for k = 1:length(features)
-                # Get coordinates of all nodes for object
-                coords[k,:] = getNodeCoords(nodes, features[k].id)
-            end
+        if typeof(features) == Dict{Int,Feature}
+            coords = getNodeCoords(nodes, collect(keys(features)))
+
             # Add feature point(s) to plot
             drawNodes(coords, feature_style, feature_lw, realtime)
         else
             println("[OpenStreetMap.jl] Warning: Input argument <features> in plotMap() could not be plotted.")
-            println("[OpenStreetMap.jl] Required type: Array{Feature,1}")
+            println("[OpenStreetMap.jl] Required type: Dict{Int,Feature}")
             println("[OpenStreetMap.jl] Current type: $(typeof(features))")
         end
     end
