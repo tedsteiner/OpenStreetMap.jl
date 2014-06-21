@@ -5,7 +5,11 @@
 type Highway
     #id::Int             # Identification number for OSM
     class::String       # Type of highway
+    lanes::Int          # Number of lanes (1 if unspecified)
     oneway::Bool        # True if road is one-way
+    sidewalk::String    # Sidewalk classifier, if available
+    cycleway::String    # Cycleway classifier, if available
+    bicycle::String     # Bicycle classifier, if available
     name::String        # Name, if available
     nodes::Array{Int,1} # List of nodes
 end
@@ -98,3 +102,4 @@ type WGS84
         new(a,b,e,e_prime)
     end
 end
+

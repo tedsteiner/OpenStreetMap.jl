@@ -43,6 +43,10 @@ function getHighwayData( highway::LightXML.XMLElement, class::String="" )
     oneway = false
     nodes = Int[]
     road_name = ""
+    cycleway = ""
+    sidewalk = ""
+    bicycle = ""
+    lanes = 1
 
     # Get way ID
     # id = int(LightXML.attribute(highway, "id"))
@@ -79,6 +83,30 @@ function getHighwayData( highway::LightXML.XMLElement, class::String="" )
                     continue
                 end
             end
+
+            # Check for cycleway
+            if cycleway == "" && k == "cycleway"
+                if LightXML.has_attribute(label, "v")
+                    cycleway = LightXML.attribute(label, "v")
+                    continue
+                end
+            end
+
+            # Check for sidewalk
+            if sidewalk == "" && k == "sidewalk"
+                if LightXML.has_attribute(label, "v")
+                    sidewalk = LightXML.attribute(label, "v")
+                    continue
+                end
+            end
+
+            # Check for number of lanes
+            if lanes == 1 && k == "lanes"
+                if LightXML.has_attribute(label, "v")
+                    lanes = int(LightXML.attribute(label, "v"))
+                    continue
+                end
+            end
         end
 
         # Collect associated nodes
@@ -88,5 +116,56 @@ function getHighwayData( highway::LightXML.XMLElement, class::String="" )
         end
     end
 
-    return Highway(class, oneway, road_name, nodes)
+    return Highway(class, lanes, oneway, sidewalk, cycleway, bicycle, road_name, nodes)
+end
+
+### Classify highways for cars ###
+function roadways( highways::Dict{Int,Highway} )
+    roads = Dict{Int,Int}()
+
+    for key in keys(highways)
+        if haskey(ROAD_CLASSES,highways[key].class)
+            roads[key] = ROAD_CLASSES[highways[key].class]
+        end
+    end
+
+    return roads
+end
+
+### Classify highways for pedestrians ###
+function walkways( highways::Dict{Int,Highway} )
+    peds = Dict{Int,Int}()
+
+    for key in keys(highways)
+        if highways[key].sidewalk != "no"
+            # Field priority: sidewalk, highway
+            if haskey(PED_CLASSES,"sidewalk:$(highways[key].sidewalk)")
+                peds[key] = PED_CLASSES["sidewalk:$(highways[key].sidewalk)"]
+            elseif haskey(PED_CLASSES,highways[key].class)
+                peds[key] = PED_CLASSES[highways[key].class]
+            end
+        end
+    end
+
+    return peds
+end
+
+### Classify highways for cycles ###
+function cycleways( highways::Dict{Int,Highway} )
+    cycles = Dict{Int,Int}()
+
+    for key in keys(highways)
+        if highways[key].bicycle != "no"
+            # Field priority: cycleway, bicycle, highway
+            if haskey(CYCLE_CLASSES,"cycleway:$(highways[key].cycleway)")
+                cycles[key] = CYCLE_CLASSES["cycleway:$(highways[key].cycleway)"]
+            elseif haskey(CYCLE_CLASSES,"bicycle:$(highways[key].bicycle)")
+                cycles[key] = CYCLE_CLASSES["bicycle:$(highways[key].bicycle)"]
+            elseif haskey(CYCLE_CLASSES,highways[key].class)
+                cycles[key] = CYCLE_CLASSES[highways[key].class]
+            end
+        end
+    end
+
+    return cycles
 end
