@@ -103,3 +103,8 @@ type WGS84
     end
 end
 
+### Rendering style data
+type style
+    color
+    width::Real
+end

@@ -11,6 +11,9 @@ function plotMap( nodes;
                   features=nothing,
                   bounds=nothing,
                   intersections=nothing,
+                  roadways=nothing,
+                  cycleways=nothing,
+                  walkways=nothing,
                   highway_style::String="b-",
                   building_style::String="k-",
                   feature_style::String="r.",
@@ -73,12 +76,24 @@ function plotMap( nodes;
     # Iterate over all highways and draw
     if highways != nothing
         if typeof(highways) == Dict{Int,Highway}
-            for key in keys(highways)
-                # Get coordinates of all nodes for object
-                coords = getNodeCoords(nodes, highways[key].nodes)
+            if roadways != nothing || cycleways != nothing || walkways != nothing
+                if roadways != nothing
+                    drawHighwayLayer( nodes, highways, roadways, LAYER_STANDARD, realtime )
+                end
+                if cycleways != nothing
+                    drawHighwayLayer( nodes, highways, cycleways, LAYER_CYCLE, realtime )
+                end
+                if walkways != nothing
+                    drawHighwayLayer( nodes, highways, walkways, LAYER_PED, realtime )
+                end
+            else
+                for key in keys(highways)
+                    # Get coordinates of all nodes for object
+                    coords = getNodeCoords(nodes, highways[key].nodes)
 
-                # Add line(s) to plot
-                drawNodes(coords, highway_style, highway_lw, realtime)
+                    # Add line(s) to plot
+                    drawNodes(coords, highway_style, highway_lw, realtime)
+                end
             end
         else
             println("[OpenStreetMap.jl] Warning: Input argument <highways> in plotMap() could not be plotted.")
@@ -147,6 +162,18 @@ function plotMap( nodes;
     return fignum
 end
 
+
+### Draw layered Map ###
+function drawHighwayLayer( nodes::Dict, highways, classes, layer, realtime=false )
+    for key in keys(classes)
+        # Get coordinates of all nodes for object
+        coords = getNodeCoords(nodes, highways[key].nodes)
+
+        # Add line(s) to plot
+        drawNodes(coords, layer[classes[key]], realtime)
+    end
+end
+
 ### Get coordinates of lists of nodes ###
 # Nodes in LLA coordinates
 function getNodeCoords( nodes::Dict{Int,LLA}, id_list )
@@ -183,6 +210,20 @@ function drawNodes( coords, style="k-", width=1, realtime=false )
             display(Winston.plot(x,y,style,linewidth=width))
         else
             Winston.plot(x,y,style,linewidth=width)
+        end
+    end
+    nothing
+end
+
+### Draw a line between all points in a coordinate list given style object ###
+function drawNodes( coords, line_style::style, realtime=false )
+    x = coords[:,1]
+    y = coords[:,2]
+    if length(x) > 1
+        if realtime
+            display(Winston.plot(x,y,"-",color=line_style.color,linewidth=line_style.width))
+        else
+            Winston.plot(x,y,"-",color=line_style.color,linewidth=line_style.width)
         end
     end
     nothing
