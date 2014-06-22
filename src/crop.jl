@@ -67,24 +67,27 @@ end
 
 ### Crop highways ###
 function crop!(nodes::Dict, bounds::Bounds, highways::Dict{Int,Highway})
+    missing_nodes = Int[]
+
     for key in keys(highways)
         highway = highways[key]
 
         valid = falses(length(highway.nodes))
-        missing_node = false # indicates that a node is missing from nodes (data corruption)
-        errors = Int[]
-        for n = 1:length(highway.nodes)
+        #println(highway.nodes)
+        #for n = 1:length(highway.nodes)
+        n = 1
+        while n <= length(highway.nodes)
+            #println("Length: $(length(highway.nodes)), n = $(n)")
             if haskey(nodes, highway.nodes[n])
-                if missing_node
-                    valid[n] = false # Prevent this value from being used for interpolation
-                    missing_node = false # Reset
-                else
-                    valid[n] = inBounds(nodes[highway.nodes[n]],bounds)
-                end
-            elseif n > 1
-                valid[n-1] = false # Prevent this value from being used for interpolation
-                missing_node = true
-                println("[OpenStreetMap.jl] WARNING: Missing node $(highway.nodes[n]).")
+                valid[n] = inBounds(nodes[highway.nodes[n]],bounds)
+                n += 1
+            else
+                #println(highway.nodes)
+                push!(missing_nodes,highway.nodes[n])
+                splice!(highway.nodes,n)
+                splice!(valid,n)
+                #println(highway.nodes)
+                #println("n = $(n)")
             end
         end
 
@@ -96,7 +99,11 @@ function crop!(nodes::Dict, bounds::Bounds, highways::Dict{Int,Highway})
         end
     end
 
-    return nothing
+    if length(missing_nodes) > 0
+        println("[OpenStreetMap.jl] WARNING: $(length(missing_nodes)) missing nodes were removed from highways.")
+    end
+
+    return missing_nodes
 end
 
 ### Crop buildings ###

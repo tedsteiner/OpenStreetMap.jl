@@ -3,7 +3,7 @@
 ### Copyright 2014              ###
 
 ### Standard map display "layers." ###
-const LAYER_STANDARD = [ 1 => style( 0x47D147, 4 ), # Blue
+const LAYER_STANDARD = [ 1 => style( 0x7BB6EF, 4 ), # Blue
                          2 => style( 0x66C266, 3 ), # Green
                          3 => style( 0xE68080, 3 ), # Red
                          4 => style( 0xFF9900, 3 ), # Orange
