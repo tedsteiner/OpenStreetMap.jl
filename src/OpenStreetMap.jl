@@ -9,7 +9,7 @@ module OpenStreetMap
 import LightXML
 import Winston
 
-export parseMapXML
+export parseMapXML, getOSMData
 export getNodes, getBounds, getHighways, getBuildings, getFeatures
 export plotMap
 export cropMap!

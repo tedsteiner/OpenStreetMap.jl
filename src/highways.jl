@@ -103,7 +103,10 @@ function getHighwayData( highway::LightXML.XMLElement, class::String="" )
             # Check for number of lanes
             if lanes == 1 && k == "lanes"
                 if LightXML.has_attribute(label, "v")
-                    lanes = int(LightXML.attribute(label, "v"))
+                    lane_str = LightXML.attribute(label, "v")
+                    if lane_str=="1" || lane_str=="2" || lane_str=="3" || lane_str=="4" || lane_str=="5" || lane_str=="6" || lane_str=="7" || lane_str=="8" || lane_str=="9"
+                        lanes = int(lane_str)
+                    end
                     continue
                 end
             end

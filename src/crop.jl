@@ -71,8 +71,21 @@ function crop!(nodes::Dict, bounds::Bounds, highways::Dict{Int,Highway})
         highway = highways[key]
 
         valid = falses(length(highway.nodes))
+        missing_node = false # indicates that a node is missing from nodes (data corruption)
+        errors = Int[]
         for n = 1:length(highway.nodes)
-            valid[n] = inBounds(nodes[highway.nodes[n]],bounds)
+            if haskey(nodes, highway.nodes[n])
+                if missing_node
+                    valid[n] = false # Prevent this value from being used for interpolation
+                    missing_node = false # Reset
+                else
+                    valid[n] = inBounds(nodes[highway.nodes[n]],bounds)
+                end
+            elseif n > 1
+                valid[n-1] = false # Prevent this value from being used for interpolation
+                missing_node = true
+                println("[OpenStreetMap.jl] WARNING: Missing node $(highway.nodes[n]).")
+            end
         end
 
         nodes_in_bounds = sum(valid)
@@ -91,7 +104,9 @@ function crop!(nodes::Dict, bounds::Bounds, buildings::Dict{Int,Building})
     for key in keys(buildings)
         valid = falses(length(buildings[key].nodes))
         for n = 1:length(buildings[key].nodes)
-            valid[n] = inBounds(nodes[buildings[key].nodes[n]],bounds)
+            if haskey(nodes, uildings[key].nodes[n])
+                valid[n] = inBounds(nodes[buildings[key].nodes[n]],bounds)
+            end
         end
 
         nodes_in_bounds = sum(valid)
@@ -109,7 +124,7 @@ end
 ### Crop features ###
 function crop!(nodes::Dict, bounds::Bounds, features::Dict{Int,Feature})
     for key in keys(features)
-        if !inBounds(nodes[key], bounds)
+        if !haskey(nodes, key) || !inBounds(nodes[key], bounds)
             delete!(features,key)
         end
     end
