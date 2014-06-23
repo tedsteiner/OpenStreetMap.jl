@@ -22,10 +22,10 @@ const LAYER_PED = [ 1 => style( 0x999999, 3 ), # Dark gray
                     3 => style( 0x999999, 2 ), # Dark gray
                     4 => style( 0xE0E0E0, 2 ) ]# Light gray
 
-const LAYER_FEATURES = [ 1 => style( 0x9966FF, 1.5 ), # Lavender
-                         2 => style( 0xFF0000, 1.5 ), # Red
-                         3 => style( 0x000000, 1.5 ), # Black
-                         4 => style( 0xFF66FF, 1.5 ), # Pink
-                         5 => style( 0x996633, 1.5 ), # Brown
-                         6 => style( 0xFF9900, 2.0 ), # Orange
-                         7 => style( 0xCC00CC, 1.5 ) ]# Brown
+const LAYER_FEATURES = [ 1 => style( 0x9966FF, 1.5, "." ), # Lavender
+                         2 => style( 0xFF0000, 1.5, "." ), # Red
+                         3 => style( 0x000000, 1.5, "." ), # Black
+                         4 => style( 0xFF66FF, 1.5, "." ), # Pink
+                         5 => style( 0x996633, 1.5, "." ), # Brown
+                         6 => style( 0xFF9900, 2.0, "." ), # Orange
+                         7 => style( 0xCC00CC, 1.5, "." ) ]# Brown

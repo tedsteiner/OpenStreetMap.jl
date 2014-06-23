@@ -107,4 +107,6 @@ end
 type style
     color
     width::Real
+    spec::String
 end
+style(x, y) = style(x, y, "-")

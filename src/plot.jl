@@ -181,12 +181,22 @@ end
 
 ### Draw layered features ###
 function drawFeatureLayer( nodes::Dict, features, classes, layer, realtime=false )
-    for key in keys(classes)
+    class_ids = Set(collect(values(classes))...)
+
+    for id in class_ids
+        ids = Int[]
+
+        for key in keys(classes)
+            if classes[key] == id
+                push!(ids,key)
+            end
+        end
+
         # Get coordinates of node for object
-        coords = getNodeCoords(nodes, key)
+        coords = getNodeCoords(nodes, ids)
 
         # Add point to plot
-        drawNode(coords, layer[classes[key]], realtime)
+        drawNodes(coords, layer[id], realtime)
     end
 end
 
@@ -237,23 +247,9 @@ function drawNodes( coords, line_style::style, realtime=false )
     y = coords[:,2]
     if length(x) > 1
         if realtime
-            display(Winston.plot(x,y,"-",color=line_style.color,linewidth=line_style.width))
+            display(Winston.plot(x,y,line_style.spec,color=line_style.color,linewidth=line_style.width))
         else
-            Winston.plot(x,y,"-",color=line_style.color,linewidth=line_style.width)
-        end
-    end
-    nothing
-end
-
-### Draw a point given style object ###
-function drawNode( coords, line_style::style, realtime=false )
-    x = coords[:,1]
-    y = coords[:,2]
-    if length(x) > 0
-        if realtime
-            display(Winston.plot(x,y,".",color=line_style.color,linewidth=line_style.width))
-        else
-            Winston.plot(x,y,".",color=line_style.color,linewidth=line_style.width)
+            Winston.plot(x,y,line_style.spec,color=line_style.color,linewidth=line_style.width)
         end
     end
     nothing
