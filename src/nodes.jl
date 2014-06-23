@@ -21,3 +21,40 @@ function getNodes( street_map::LightXML.XMLDocument )
 
     return nodes
 end
+
+
+### Find the nearest node to a given location ###
+function nearestNode( nodes::Dict{Int,ENU}, loc::ENU, node_list=0 )
+    return nearestNodeInternal( nodes, loc, node_list )
+end
+
+function nearestNode( nodes::Dict{Int,ECEF}, loc::ECEF, node_list=0 )
+    return nearestNodeInternal( nodes, loc, node_list )
+end
+
+function nearestNodeInternal( nodes, loc, node_list=0 )
+    min_dist = 1e8
+    best_ind = 0
+
+    if node_list != 0
+        # Search only nodes in node_list
+        for k = 1:length(node_list)
+            dist = distance( nodes[node_list[k]], loc )
+            if dist < min_dist
+                min_dist = dist
+                best_ind = node_list[k]
+            end
+        end
+    else
+        # Search all nodes
+        for key in keys(nodes)
+            dist = distance( nodes[key], loc )
+            if dist < min_dist
+                min_dist = dist
+                best_ind = key
+            end
+        end
+    end
+
+    return best_ind
+end

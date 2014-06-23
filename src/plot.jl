@@ -16,6 +16,8 @@ function plotMap( nodes;
                   walkways=nothing,
                   feature_classes=nothing,
                   building_classes=nothing,
+                  route=nothing,
+                  route_style=nothing,
                   highway_style::String="b-",
                   building_style::String="k-",
                   feature_style::String="r.",
@@ -140,6 +142,33 @@ function plotMap( nodes;
             println("[OpenStreetMap.jl] Warning: Input argument <features> in plotMap() could not be plotted.")
             println("[OpenStreetMap.jl] Required type: Dict{Int,Feature}")
             println("[OpenStreetMap.jl] Current type: $(typeof(features))")
+        end
+    end
+
+    # Draw route
+    if route != nothing
+        if typeof(route) == Array{Int64,1}
+            # Get coordinates of all nodes for route
+            coords = getNodeCoords(nodes, route)
+
+            if route_style == nothing
+                route_style = style(0xFF0000, 3, "-")
+            else
+                if typeof(route_style) == style
+
+                else
+                    println("[OpenStreetMap.jl] Warning: Input argument <route_style> in plotMap() unused.")
+                    println("[OpenStreetMap.jl] Required type: style")
+                    println("[OpenStreetMap.jl] Current type: $(typeof(route_style))")
+                end
+            end
+
+            # Add line(s) to plot
+            drawNodes(coords, route_style, realtime)
+        else
+            println("[OpenStreetMap.jl] Warning: Input argument <route> in plotMap() could not be plotted.")
+            println("[OpenStreetMap.jl] Required type: Array{Int64,1}")
+            println("[OpenStreetMap.jl] Current type: $(typeof(route))")
         end
     end
 

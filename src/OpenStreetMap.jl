@@ -8,18 +8,21 @@ module OpenStreetMap
 
 import LightXML
 import Winston
+import Graphs
 
 export parseMapXML, getOSMData
 export getNodes, getBounds, getHighways, getBuildings, getFeatures
 export plotMap
 export cropMap!
-export findIntersections
+export findIntersections, nearestNode
 export lla2enu, lla2ecef, ecef2lla, ecef2enu
 export roadways, walkways, cycleways, classify
+export createGraph, shortestRoute, fastestRoute
 
 include("types.jl")
 include("classes.jl")
 include("layers.jl")
+include("speeds.jl")
 
 include("parseMap.jl")
 include("nodes.jl")
@@ -32,5 +35,6 @@ include("crop.jl")
 include("plot.jl")
 include("intersections.jl")
 include("transforms.jl")
+include("routing.jl")
 
 end
