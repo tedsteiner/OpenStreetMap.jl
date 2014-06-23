@@ -6,6 +6,8 @@ This package provides basic functionality for working with [OpenStreetMap](http:
 * Crop maps to specified boundaries (includes highway interpolation)
 * Easily plot a map using Winston
 
+![Boston](http://i.imgur.com/1pofvuP.png)
+
 [![Build Status](https://travis-ci.org/tedsteiner/OpenStreetMap.jl.png)](https://travis-ci.org/tedsteiner/OpenStreetMap.jl)
 
 ### Setup
