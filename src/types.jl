@@ -36,6 +36,14 @@ type Bounds
     max_lon
 end
 
+# Transporation network graph data
+type Network
+    g
+    v
+    v_inv
+    w
+end
+
 ###################
 ### Point Types ###
 ###################

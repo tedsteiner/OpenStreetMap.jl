@@ -44,16 +44,17 @@ end
 ### Get list of highway edges ###
 function createGraph( nodes, highways, classes, levels )
     v = Dict{Int,Graphs.KeyVertex{Int}}()                      # Vertices
-    v_inv = Int[]
     e = Set()                                                  # Edges
     w = Float64[]                                              # Weights
     g = Graphs.inclist(Graphs.KeyVertex{Int},is_directed=true) # Graph
 
     verts = [highwayVertices( highways, classes, levels )...]
+    v_inv = zeros(Int,length(verts))                               # Inverse vertex mapping
     for k = 1:length(verts)
         v[verts[k]] = Graphs.add_vertex!(g,verts[k])
-        push!(v_inv,verts[k])
+        v_inv[k] = verts[k]
     end
+    @assert length(v_inv) == length(v)
 
     for key in keys(classes)
         if in(classes[key],levels)
@@ -73,7 +74,7 @@ function createGraph( nodes, highways, classes, levels )
         end
     end
 
-    return g, v, w, v_inv
+    return Network(g, v, v_inv, w)
 end
 
 
@@ -138,4 +139,22 @@ function extractRoute( dijkstra::Graphs.DijkstraStates, start_index, finish_inde
     end
 
     return route, distance
+end
+
+### Shortest Route ###
+function shortestRoute( network, node0, node1 )
+    start_vertex = network.v[node0]
+
+    dijkstra_result = dijkstra( network.g, network.w, start_vertex )
+
+    start_index = network.v[node0].index
+    finish_index = network.v[node1].index
+    route_indices, distance = extractRoute( dijkstra_result, start_index, finish_index )
+
+    route_nodes = zeros(Int,length(route_indices))
+    for n = 1:length(route_indices)
+        route_nodes[n] = network.v_inv[route_indices[n]]
+    end
+
+    return route_nodes, distance
 end
