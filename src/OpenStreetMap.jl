@@ -16,6 +16,7 @@ export cropMap!
 export findIntersections
 export lla2enu, lla2ecef, ecef2lla, ecef2enu
 export roadways, walkways, cycleways, classify
+export highwayVertices
 
 include("types.jl")
 include("classes.jl")
@@ -32,5 +33,6 @@ include("crop.jl")
 include("plot.jl")
 include("intersections.jl")
 include("transforms.jl")
+include("routing.jl")
 
 end
