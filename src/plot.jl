@@ -14,6 +14,7 @@ function plotMap( nodes;
                   roadways=nothing,
                   cycleways=nothing,
                   walkways=nothing,
+                  feature_classes=nothing,
                   highway_style::String="b-",
                   building_style::String="k-",
                   feature_style::String="r.",
@@ -122,10 +123,14 @@ function plotMap( nodes;
     # Iterate over all features and draw
     if features != nothing
         if typeof(features) == Dict{Int,Feature}
-            coords = getNodeCoords(nodes, collect(keys(features)))
+            if feature_classes != nothing && typeof(feature_classes) == Dict{Int,Int}
+                drawFeatureLayer(nodes, features, feature_classes, LAYER_FEATURES, realtime)
+            else
+                coords = getNodeCoords(nodes, collect(keys(features)))
 
-            # Add feature point(s) to plot
-            drawNodes(coords, feature_style, feature_lw, realtime)
+                # Add feature point(s) to plot
+                drawNodes(coords, feature_style, feature_lw, realtime)
+            end
         else
             println("[OpenStreetMap.jl] Warning: Input argument <features> in plotMap() could not be plotted.")
             println("[OpenStreetMap.jl] Required type: Dict{Int,Feature}")
@@ -171,6 +176,17 @@ function drawHighwayLayer( nodes::Dict, highways, classes, layer, realtime=false
 
         # Add line(s) to plot
         drawNodes(coords, layer[classes[key]], realtime)
+    end
+end
+
+### Draw layered features ###
+function drawFeatureLayer( nodes::Dict, features, classes, layer, realtime=false )
+    for key in keys(classes)
+        # Get coordinates of node for object
+        coords = getNodeCoords(nodes, key)
+
+        # Add point to plot
+        drawNode(coords, layer[classes[key]], realtime)
     end
 end
 
@@ -224,6 +240,20 @@ function drawNodes( coords, line_style::style, realtime=false )
             display(Winston.plot(x,y,"-",color=line_style.color,linewidth=line_style.width))
         else
             Winston.plot(x,y,"-",color=line_style.color,linewidth=line_style.width)
+        end
+    end
+    nothing
+end
+
+### Draw a point given style object ###
+function drawNode( coords, line_style::style, realtime=false )
+    x = coords[:,1]
+    y = coords[:,2]
+    if length(x) > 0
+        if realtime
+            display(Winston.plot(x,y,".",color=line_style.color,linewidth=line_style.width))
+        else
+            Winston.plot(x,y,".",color=line_style.color,linewidth=line_style.width)
         end
     end
     nothing
