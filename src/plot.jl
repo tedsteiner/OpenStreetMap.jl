@@ -15,6 +15,7 @@ function plotMap( nodes;
                   cycleways=nothing,
                   walkways=nothing,
                   feature_classes=nothing,
+                  building_classes=nothing,
                   highway_style::String="b-",
                   building_style::String="k-",
                   feature_style::String="r.",
@@ -74,18 +75,39 @@ function plotMap( nodes;
         Winston.ylim(bounds.min_lat,bounds.max_lat)
     end
 
+    # Iterate over all buildings and draw
+    if buildings != nothing
+        if typeof(buildings) == Dict{Int,Building}
+            if building_classes != nothing && typeof(building_classes) == Dict{Int,Int}
+                drawWayLayer( nodes, buildings, building_classes, LAYER_BUILDINGS, realtime )
+            else
+                for key in keys(buildings)
+                    # Get coordinates of all nodes for object
+                    coords = getNodeCoords(nodes, buildings[key].nodes)
+
+                    # Add line(s) to plot
+                    drawNodes(coords, building_style, building_lw, realtime)
+                end
+            end
+        else
+            println("[OpenStreetMap.jl] Warning: Input argument <buildings> in plotMap() could not be plotted.")
+            println("[OpenStreetMap.jl] Required type: Dict{Int,Building}")
+            println("[OpenStreetMap.jl] Current type: $(typeof(buildings))")
+        end
+    end
+
     # Iterate over all highways and draw
     if highways != nothing
         if typeof(highways) == Dict{Int,Highway}
             if roadways != nothing || cycleways != nothing || walkways != nothing
                 if roadways != nothing
-                    drawHighwayLayer( nodes, highways, roadways, LAYER_STANDARD, realtime )
+                    drawWayLayer( nodes, highways, roadways, LAYER_STANDARD, realtime )
                 end
                 if cycleways != nothing
-                    drawHighwayLayer( nodes, highways, cycleways, LAYER_CYCLE, realtime )
+                    drawWayLayer( nodes, highways, cycleways, LAYER_CYCLE, realtime )
                 end
                 if walkways != nothing
-                    drawHighwayLayer( nodes, highways, walkways, LAYER_PED, realtime )
+                    drawWayLayer( nodes, highways, walkways, LAYER_PED, realtime )
                 end
             else
                 for key in keys(highways)
@@ -100,23 +122,6 @@ function plotMap( nodes;
             println("[OpenStreetMap.jl] Warning: Input argument <highways> in plotMap() could not be plotted.")
             println("[OpenStreetMap.jl] Required type: Dict{Int,Highway}")
             println("[OpenStreetMap.jl] Current type: $(typeof(highways))")
-        end
-    end
-
-    # Iterate over all buildings and draw
-    if buildings != nothing
-        if typeof(buildings) == Dict{Int,Building}
-            for key in keys(buildings)
-                # Get coordinates of all nodes for object
-                coords = getNodeCoords(nodes, buildings[key].nodes)
-
-                # Add line(s) to plot
-                drawNodes(coords, building_style, building_lw, realtime)
-            end
-        else
-            println("[OpenStreetMap.jl] Warning: Input argument <buildings> in plotMap() could not be plotted.")
-            println("[OpenStreetMap.jl] Required type: Dict{Int,Building}")
-            println("[OpenStreetMap.jl] Current type: $(typeof(buildings))")
         end
     end
 
@@ -169,15 +174,16 @@ end
 
 
 ### Draw layered Map ###
-function drawHighwayLayer( nodes::Dict, highways, classes, layer, realtime=false )
+function drawWayLayer( nodes::Dict, ways, classes, layer, realtime=false )
     for key in keys(classes)
         # Get coordinates of all nodes for object
-        coords = getNodeCoords(nodes, highways[key].nodes)
+        coords = getNodeCoords(nodes, ways[key].nodes)
 
         # Add line(s) to plot
         drawNodes(coords, layer[classes[key]], realtime)
     end
 end
+
 
 ### Draw layered features ###
 function drawFeatureLayer( nodes::Dict, features, classes, layer, realtime=false )
@@ -200,6 +206,7 @@ function drawFeatureLayer( nodes::Dict, features, classes, layer, realtime=false
     end
 end
 
+
 ### Get coordinates of lists of nodes ###
 # Nodes in LLA coordinates
 function getNodeCoords( nodes::Dict{Int,LLA}, id_list )
@@ -214,6 +221,7 @@ function getNodeCoords( nodes::Dict{Int,LLA}, id_list )
     return coords
 end
 
+
 # Nodes in ENU coordinates
 function getNodeCoords( nodes::Dict{Int,ENU}, id_list )
     coords = zeros(length(id_list),2)
@@ -226,6 +234,7 @@ function getNodeCoords( nodes::Dict{Int,ENU}, id_list )
 
     return coords
 end
+
 
 ### Draw a line between all points in a coordinate list ###
 function drawNodes( coords, style="k-", width=1, realtime=false )
@@ -241,6 +250,7 @@ function drawNodes( coords, style="k-", width=1, realtime=false )
     nothing
 end
 
+
 ### Draw a line between all points in a coordinate list given style object ###
 function drawNodes( coords, line_style::style, realtime=false )
     x = coords[:,1]
@@ -254,6 +264,7 @@ function drawNodes( coords, line_style::style, realtime=false )
     end
     nothing
 end
+
 
 ### Compute approximate "aspect ratio" at mean latitude ###
 function getAspectRatio( bounds::Bounds )
