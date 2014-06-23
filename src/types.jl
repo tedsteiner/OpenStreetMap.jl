@@ -42,6 +42,7 @@ type Network
     v
     v_inv
     w
+    class
 end
 
 ###################

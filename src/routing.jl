@@ -41,11 +41,12 @@ function highwayVertices( highways::Dict{Int,Highway}, classes::Dict{Int,Int}, l
 end
 
 
-### Get list of highway edges ###
+### Form transportation network graph of map ###
 function createGraph( nodes, highways, classes, levels )
     v = Dict{Int,Graphs.KeyVertex{Int}}()                      # Vertices
     e = Set()                                                  # Edges
     w = Float64[]                                              # Weights
+    class = Int[]                                              # Road class
     g = Graphs.inclist(Graphs.KeyVertex{Int},is_directed=true) # Graph
 
     verts = [highwayVertices( highways, classes, levels )...]
@@ -64,17 +65,19 @@ function createGraph( nodes, highways, classes, levels )
                     Graphs.add_edge!(g, v[highways[key].nodes[n-1]], v[highways[key].nodes[n]])
                     weight = distance(nodes, highways[key].nodes[n-1], highways[key].nodes[n])
                     push!(w, weight)
+                    push!(class, classes[key])
 
                     if !highways[key].oneway
                         Graphs.add_edge!(g, v[highways[key].nodes[n]], v[highways[key].nodes[n-1]])
                         push!(w, weight)
+                        push!(class, classes[key])
                     end
                 end
             end
         end
     end
 
-    return Network(g, v, v_inv, w)
+    return Network(g, v, v_inv, w, class)
 end
 
 
@@ -157,4 +160,39 @@ function shortestRoute( network, node0, node1 )
     end
 
     return route_nodes, distance
+end
+
+### Fastest Route ###
+function fastestRoute( network, node0, node1, class_speeds=SPEED_ROADS_URBAN )
+    start_vertex = network.v[node0]
+
+    # Modify weights to be times rather than distances
+    w = zeros(length(network.w))
+    for k = 1:length(w)
+        w[k] = network.w[k] / class_speeds[network.class[k]]
+        w[k] *= 3600/1000
+    end
+
+    dijkstra_result = dijkstra( network.g, w, start_vertex )
+
+    start_index = network.v[node0].index
+    finish_index = network.v[node1].index
+    route_indices, route_time = extractRoute( dijkstra_result, start_index, finish_index )
+
+    route_nodes = zeros(Int,length(route_indices))
+    for n = 1:length(route_indices)
+        route_nodes[n] = network.v_inv[route_indices[n]]
+    end
+
+    return route_nodes, route_time
+end
+
+### Compute the distance of a route ###
+function distance( nodes, route )
+    dist = 0
+    for n = 2:length(route)
+        dist += distance( nodes, route[n-1], route[n] )
+    end
+
+    return dist
 end
