@@ -93,3 +93,16 @@ function getFeatureData( node::LightXML.XMLElement )
 
     return Feature(class, detail, feature_name)
 end
+
+### Classify features ###
+function classify( features::Dict{Int,Feature} )
+    feats = Dict{Int,Int}()
+
+    for key in keys(features)
+        if haskey(FEATURE_CLASSES,features[key].class)
+            feats[key] = FEATURE_CLASSES[features[key].class]
+        end
+    end
+
+    return feats
+end

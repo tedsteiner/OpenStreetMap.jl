@@ -15,7 +15,7 @@ export plotMap
 export cropMap!
 export findIntersections
 export lla2enu, lla2ecef, ecef2lla, ecef2enu
-export roadways, walkways, cycleways
+export roadways, walkways, cycleways, classify
 
 include("types.jl")
 include("classes.jl")

@@ -111,7 +111,7 @@ function crop!(nodes::Dict, bounds::Bounds, buildings::Dict{Int,Building})
     for key in keys(buildings)
         valid = falses(length(buildings[key].nodes))
         for n = 1:length(buildings[key].nodes)
-            if haskey(nodes, uildings[key].nodes[n])
+            if haskey(nodes, buildings[key].nodes[n])
                 valid[n] = inBounds(nodes[buildings[key].nodes[n]],bounds)
             end
         end

@@ -80,3 +80,15 @@ function getBuildingData( building::LightXML.XMLElement, class::String="" )
     return Building(class, building_name, nodes)
 end
 
+### Classify buildings ###
+function classify( buildings::Dict{Int,Building} )
+    bdgs = Dict{Int,Int}()
+
+    for key in keys(buildings)
+        if haskey(BUILDING_CLASSES,buildings[key].class)
+            bdgs[key] = BUILDING_CLASSES[buildings[key].class]
+        end
+    end
+
+    return bdgs
+end
