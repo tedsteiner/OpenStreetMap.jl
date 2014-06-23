@@ -8,6 +8,7 @@ module OpenStreetMap
 
 import LightXML
 import Winston
+import Graphs
 
 export parseMapXML, getOSMData
 export getNodes, getBounds, getHighways, getBuildings, getFeatures
@@ -16,7 +17,7 @@ export cropMap!
 export findIntersections
 export lla2enu, lla2ecef, ecef2lla, ecef2enu
 export roadways, walkways, cycleways, classify
-export highwayVertices
+export highwayVertices, createGraph, dijkstra
 
 include("types.jl")
 include("classes.jl")

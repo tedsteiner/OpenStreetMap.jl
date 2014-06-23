@@ -41,3 +41,81 @@ function highwayVertices( highways::Dict{Int,Highway}, classes::Dict{Int,Int}, l
 end
 
 
+### Get list of highway edges ###
+function createGraph( nodes, highways, classes, levels )
+    v = Dict{Int,Graphs.KeyVertex{Int}}()                      # Vertices
+    e = Set()                                                  # Edges
+    w = Float64[]                                              # Weights
+    g = Graphs.inclist(Graphs.KeyVertex{Int},is_directed=true) # Graph
+
+    verts = [highwayVertices( highways, classes, levels )...]
+    for k = 1:length(verts)
+        v[verts[k]] = Graphs.add_vertex!(g,verts[k])
+    end
+
+    for key in keys(classes)
+        if in(classes[key],levels)
+            if length(highways[key].nodes) > 1
+                # Add edges to graph and compute weights
+                for n = 2:length(highways[key].nodes)
+                    Graphs.add_edge!(g, v[highways[key].nodes[n-1]], v[highways[key].nodes[n]])
+                    weight = distance(nodes, highways[key].nodes[n-1], highways[key].nodes[n])
+                    push!(w, weight)
+
+                    if !highways[key].oneway
+                        Graphs.add_edge!(g, v[highways[key].nodes[n]], v[highways[key].nodes[n-1]])
+                        push!(w, weight)
+                    end
+                end
+            end
+        end
+    end
+
+    return g, v, w
+end
+
+
+### Get distance between two nodes ###
+# ENU Coordinates
+function distance( nodes::Dict{Int,ENU}, node0, node1 )
+    loc0 = nodes[node0]
+    loc1 = nodes[node1]
+
+    x0 = loc0.east
+    y0 = loc0.north
+    z0 = loc0.up
+
+    x1 = loc1.east
+    y1 = loc1.north
+    z1 = loc1.up
+
+    return distance(x0,y0,z0,x1,y1,z1)
+end
+
+# ECEF Coordinates
+function distance( nodes::Dict{Int,ECEF}, node0, node1 )
+    loc0 = nodes[node0]
+    loc1 = nodes[node1]
+
+    x0 = loc0.x
+    y0 = loc0.y
+    z0 = loc0.z
+
+    x1 = loc1.x
+    y1 = loc1.y
+    z1 = loc1.z
+
+    return distance(x0,y0,z0,x1,y1,z1)
+end
+
+# Cartesian coordinates
+function distance( x0, y0, z0, x1, y1, z1 )
+    return sqrt( (x1-x0)^2 + (y1-y0)^2 + (z1-z0)^2 )
+end
+
+
+### Shortest Paths ###
+# Dijkstra's Algorithm
+function dijkstra( g, w, start_vertex )
+    return Graphs.dijkstra_shortest_paths(g, w, start_vertex)
+end
