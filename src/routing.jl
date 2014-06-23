@@ -87,6 +87,10 @@ function distance( nodes::Dict{Int,ENU}, node0, node1 )
     loc0 = nodes[node0]
     loc1 = nodes[node1]
 
+    return distance( loc0, loc1 )
+end
+
+function distance( loc0::ENU, loc1::ENU )
     x0 = loc0.east
     y0 = loc0.north
     z0 = loc0.up
@@ -103,6 +107,10 @@ function distance( nodes::Dict{Int,ECEF}, node0, node1 )
     loc0 = nodes[node0]
     loc1 = nodes[node1]
 
+    return distance( loc0, loc1 )
+end
+
+function distance( loc0::ECEF, loc1::ECEF )
     x0 = loc0.x
     y0 = loc0.y
     z0 = loc0.z
@@ -170,7 +178,7 @@ function fastestRoute( network, node0, node1, class_speeds=SPEED_ROADS_URBAN )
     w = zeros(length(network.w))
     for k = 1:length(w)
         w[k] = network.w[k] / class_speeds[network.class[k]]
-        w[k] *= 3600/1000
+        w[k] *= 3.6 # (3600/1000) unit conversion to seconds
     end
 
     dijkstra_result = dijkstra( network.g, w, start_vertex )

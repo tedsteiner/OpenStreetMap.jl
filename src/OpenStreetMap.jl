@@ -14,7 +14,7 @@ export parseMapXML, getOSMData
 export getNodes, getBounds, getHighways, getBuildings, getFeatures
 export plotMap
 export cropMap!
-export findIntersections
+export findIntersections, nearestNode
 export lla2enu, lla2ecef, ecef2lla, ecef2enu
 export roadways, walkways, cycleways, classify
 export createGraph, shortestRoute, fastestRoute
