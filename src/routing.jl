@@ -44,6 +44,7 @@ end
 ### Get list of highway edges ###
 function createGraph( nodes, highways, classes, levels )
     v = Dict{Int,Graphs.KeyVertex{Int}}()                      # Vertices
+    v_inv = Int[]
     e = Set()                                                  # Edges
     w = Float64[]                                              # Weights
     g = Graphs.inclist(Graphs.KeyVertex{Int},is_directed=true) # Graph
@@ -51,6 +52,7 @@ function createGraph( nodes, highways, classes, levels )
     verts = [highwayVertices( highways, classes, levels )...]
     for k = 1:length(verts)
         v[verts[k]] = Graphs.add_vertex!(g,verts[k])
+        push!(v_inv,verts[k])
     end
 
     for key in keys(classes)
@@ -71,7 +73,7 @@ function createGraph( nodes, highways, classes, levels )
         end
     end
 
-    return g, v, w
+    return g, v, w, v_inv
 end
 
 
@@ -118,4 +120,22 @@ end
 # Dijkstra's Algorithm
 function dijkstra( g, w, start_vertex )
     return Graphs.dijkstra_shortest_paths(g, w, start_vertex)
+end
+
+# Extract route from Dijkstra results object
+function extractRoute( dijkstra::Graphs.DijkstraStates, start_index, finish_index )
+    route = Int[]
+
+    distance = dijkstra.dists[finish_index]
+
+    if distance != Inf
+        index = finish_index
+        push!(route,index)
+        while index != start_index
+            index = dijkstra.parents[index].index
+            push!(route,index)
+        end
+    end
+
+    return route, distance
 end

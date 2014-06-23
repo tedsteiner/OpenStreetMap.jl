@@ -17,7 +17,7 @@ export cropMap!
 export findIntersections
 export lla2enu, lla2ecef, ecef2lla, ecef2enu
 export roadways, walkways, cycleways, classify
-export highwayVertices, createGraph, dijkstra
+export highwayVertices, createGraph, dijkstra, extractRoute
 
 include("types.jl")
 include("classes.jl")
