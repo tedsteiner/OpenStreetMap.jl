@@ -2,7 +2,7 @@
 
 This package provides basic functionality for parsing, viewing, and working with [OpenStreetMap](http://www.openstreetmap.org) map data. The package is intended mainly for researchers who want to incorporate this rich, global data into their work, and has been designed with both speed and simplicity in mind, especially for those who might be new to Julia.
 
-Basic capabilities include:
+### Capabilities
 * Parse an OpenStreetMap XML datafile (OSM files)
 * Crop maps to specified boundaries
 * Convert maps between LLA, ECEF, and ENU coordinates
