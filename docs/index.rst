@@ -6,15 +6,21 @@
 Welcome to OpenStreetMap.jl's documentation!
 ============================================
 
-Contents:
+*OpenStreetMap.jl* is a Julia package that provides basic functionality for parsing, viewing, and working with OpenStreetMap map data. The package is intended mainly for researchers who want to incorporate this rich, global data into their work, and has been designed with both speed and simplicity in mind, especially for those who might be new to Julia.
 
+Contents
+---------
 .. toctree::
    :maxdepth: 2
+
+   overview.rst
+   types.rst
+   data.rst
 
 
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`
