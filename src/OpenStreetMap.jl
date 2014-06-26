@@ -15,7 +15,7 @@ export plotMap, cropMap!
 export findIntersections, nearestNode
 export lla2enu, lla2ecef, ecef2lla, ecef2enu
 export roadways, walkways, cycleways, classify
-export createGraph, shortestRoute, fastestRoute, distance
+export createGraph, shortestRoute, fastestRoute, distance, routeEdges
 
 include("types.jl")
 include("classes.jl")

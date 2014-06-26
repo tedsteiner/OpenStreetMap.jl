@@ -40,8 +40,9 @@ end
 type Network
     g
     v
-    v_inv
+    e
     w
+    v_inv
     class
 end
 

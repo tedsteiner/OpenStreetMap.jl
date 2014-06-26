@@ -44,7 +44,7 @@ end
 ### Form transportation network graph of map ###
 function createGraph( nodes, highways, classes, levels )
     v = Dict{Int,Graphs.KeyVertex{Int}}()                      # Vertices
-    e = Set()                                                  # Edges
+    e = Graphs.Edge[]                                          # Edges
     w = Float64[]                                              # Weights
     class = Int[]                                              # Road class
     g = Graphs.inclist(Graphs.KeyVertex{Int},is_directed=true) # Graph
@@ -62,22 +62,26 @@ function createGraph( nodes, highways, classes, levels )
             if length(highways[key].nodes) > 1
                 # Add edges to graph and compute weights
                 for n = 2:length(highways[key].nodes)
-                    Graphs.add_edge!(g, v[highways[key].nodes[n-1]], v[highways[key].nodes[n]])
+                    edge = Graphs.make_edge(g, v[highways[key].nodes[n-1]], v[highways[key].nodes[n]])
+                    Graphs.add_edge!(g, edge)
                     weight = distance(nodes, highways[key].nodes[n-1], highways[key].nodes[n])
                     push!(w, weight)
                     push!(class, classes[key])
+                    push!(e, edge)
 
                     if !highways[key].oneway
-                        Graphs.add_edge!(g, v[highways[key].nodes[n]], v[highways[key].nodes[n-1]])
+                        edge = Graphs.make_edge(g, v[highways[key].nodes[n]], v[highways[key].nodes[n-1]])
+                        Graphs.add_edge!(g, edge)
                         push!(w, weight)
                         push!(class, classes[key])
+                        push!(e, edge)
                     end
                 end
             end
         end
     end
 
-    return Network(g, v, v_inv, w, class)
+    return Network(g, v, e, w, v_inv, class)
 end
 
 
@@ -152,6 +156,26 @@ function extractRoute( dijkstra::Graphs.DijkstraStates, start_index, finish_inde
     return route, distance
 end
 
+### Generate an ordered list of edges traversed in route
+function routeEdges( network::Network, route )
+    e = zeros(Int,length(route)-1)
+
+    # For each node pair, find matching edge
+    for n = 1:length(route)-1
+
+        s = network.v[route[n]]
+        t = network.v[route[n+1]]
+
+        for k = 1:length(network.e)
+            if s == network.e[k].source && t == network.e[k].target
+                e[n] = k
+            end
+        end
+    end
+
+    return e
+end
+
 ### Shortest Route ###
 function shortestRoute( network, node0, node1 )
     start_vertex = network.v[node0]
@@ -167,7 +191,7 @@ function shortestRoute( network, node0, node1 )
         route_nodes[n] = network.v_inv[route_indices[n]]
     end
 
-    return route_nodes, distance
+    return route_nodes, distance, dijkstra_result
 end
 
 ### Fastest Route ###
