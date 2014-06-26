@@ -19,6 +19,7 @@ Contents
    workers.rst
    routing.rst
    plots.rst
+   examples.rst
 
 
 
