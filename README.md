@@ -37,3 +37,7 @@ The following packages should automatically be added as "additional packages", i
 
 **Note:** LightXML.jl relies on *libxml2*, which is shipped with Mac OS X and many Linux systems. So this package may work out of the box. If not, check whether you have *libxml2* installed and whether *libxml2.so* (for Linux) or *libxml2.dylib* (for Mac) is on your library search path. I have tested it to work out of the box in Mac OS X 10.9 (Mavericks), Ubuntu 14.04, and Windows 7. Winston.jl has a few additional dependencies, which it should resolve automatically. All other code is written in native Julia.
 
+### Package Status and Contributions
+All the functionality that I personally need for my work is now implemented in this package, and I am running out of ideas for additional functionality. Therefore, future updates will mostly depend on GitHub issues (bug reports or feature requests) created by users. Pull requests for additional functionality are very welcome, as well.
+
+If you use this package, please feel free to send me feedback on how I might improve it's usability and documentation.
