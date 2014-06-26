@@ -110,9 +110,9 @@ type WGS84
 end
 
 ### Rendering style data
-type style
-    color
+type Style
+    color::Uint32
     width::Real
     spec::String
 end
-style(x, y) = style(x, y, "-")
+Style(x, y) = Style(x, y, "-")

@@ -10,14 +10,12 @@ import LightXML
 import Winston
 import Graphs
 
-export parseMapXML, getOSMData
-export getNodes, getBounds, getHighways, getBuildings, getFeatures
-export plotMap
-export cropMap!
+export parseMapXML, getOSMData, getBounds
+export plotMap, cropMap!
 export findIntersections, nearestNode
 export lla2enu, lla2ecef, ecef2lla, ecef2enu
 export roadways, walkways, cycleways, classify
-export createGraph, shortestRoute, fastestRoute
+export createGraph, shortestRoute, fastestRoute, distance
 
 include("types.jl")
 include("classes.jl")
