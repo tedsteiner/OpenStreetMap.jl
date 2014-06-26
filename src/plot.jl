@@ -18,14 +18,10 @@ function plotMap( nodes;
                   building_classes=nothing,
                   route=nothing,
                   route_style=nothing,
-                  highway_style::String="b-",
-                  building_style::String="k-",
-                  feature_style::String="r.",
-                  intersection_style::String="k.",
-                  highway_lw::Real=1.5,
-                  building_lw::Real=1,
-                  feature_lw::Real=2.5,
-                  intersection_lw::Real=3,
+                  highway_style::style=style(0x007CFF,1.5,"-"),
+                  building_style::style=style(0x000000,1,"-"),
+                  feature_style::style=style(0xCC0000,2.5,"."),
+                  intersection_style::style=style(0x000000,3,"."),
                   width::Integer=500,
                   realtime::Bool=false )
 
@@ -88,7 +84,7 @@ function plotMap( nodes;
                     coords = getNodeCoords(nodes, buildings[key].nodes)
 
                     # Add line(s) to plot
-                    drawNodes(coords, building_style, building_lw, realtime)
+                    drawNodes(coords, building_style, realtime)
                 end
             end
         else
@@ -117,7 +113,7 @@ function plotMap( nodes;
                     coords = getNodeCoords(nodes, highways[key].nodes)
 
                     # Add line(s) to plot
-                    drawNodes(coords, highway_style, highway_lw, realtime)
+                    drawNodes(coords, highway_style, realtime)
                 end
             end
         else
@@ -136,7 +132,7 @@ function plotMap( nodes;
                 coords = getNodeCoords(nodes, collect(keys(features)))
 
                 # Add feature point(s) to plot
-                drawNodes(coords, feature_style, feature_lw, realtime)
+                drawNodes(coords, feature_style, realtime)
             end
         else
             println("[OpenStreetMap.jl] Warning: Input argument <features> in plotMap() could not be plotted.")
@@ -184,7 +180,7 @@ function plotMap( nodes;
             end
 
             # Add intersection(s) to plot
-            drawNodes(coords, intersection_style, intersection_lw, realtime)
+            drawNodes(coords, intersection_style, realtime)
         else
             println("[OpenStreetMap.jl] Warning: Input argument <intersections> in plotMap() could not be plotted.")
             println("[OpenStreetMap.jl] Required type: Dict{Int,Intersection}")

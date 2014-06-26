@@ -91,7 +91,7 @@ For example:
     highway_style = OpenStreetMap.Style( "b", 1.5, "-")
     feature_style = OpenStreetMap.Style( 0xf57900, 2, ".")
     
-**Note 1:** ``color`` can either be a supported default color used by Winston.jl or a hex color code.
+**Note 1:** ``color`` must be a hex color code.
 
 **Note 2:** ``spec`` is a line specification code used by Winston.jl. Common examples are the following:
 
