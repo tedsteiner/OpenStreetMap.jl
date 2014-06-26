@@ -15,9 +15,9 @@ The following features are provided:
 * Convert maps between LLA, ECEF, and ENU coordinates
 * Extract highways, buildings, and tagged features from OSM data
 * Filter data by various classes
-  * Ways suitable for driving, walking, or cycling
-  * Freeways, major city streets, residential streets, etc.
-  * Accomodations, shops, industry, etc.
+   - Ways suitable for driving, walking, or cycling
+   - Freeways, major city streets, residential streets, etc.
+   - Accomodations, shops, industry, etc.
 * Draw detailed maps using Julia's Winston graphics package with a variety of options
 * Compute shortest or fastest driving, cycling, and walking routes using Julia's Graphs package
 
