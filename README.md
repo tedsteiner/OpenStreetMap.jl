@@ -20,7 +20,7 @@ A [gallery](http://imgur.com/a/28l5K) of map examples shows plotting and routing
 [![Boston](http://i.imgur.com/1pofvuP.png)](http://imgur.com/a/28l5K#0)
 
 ### Documentation
-Coming soon!
+[OpenStreetMap.jl Documentation](http://openstreetmapjl.readthedocs.org/en/latest/) is hosted by readTheDocs.
 
 ### Setup
 
