@@ -220,7 +220,7 @@ function shortestRoute( network, node0, node1 )
         route_nodes[n] = network.v_inv[route_indices[n]]
     end
 
-    return route_nodes, distance, dijkstra_result
+    return route_nodes, distance
 end
 
 ### Fastest Route ###
