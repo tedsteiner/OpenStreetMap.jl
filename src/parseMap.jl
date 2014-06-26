@@ -21,25 +21,22 @@ function parseMapXML( filename::String )
 end
 
 function getOSMData( filename::String; nodes=false, highways=false, buildings=false, features=false)
-    @time street_map = parseMapXML(filename)
-    println("Finished parseMapXML.")
+    street_map = parseMapXML(filename)
 
     if nodes
-        @time nodes = getNodes(street_map)
-        println("Finished getNodes")
+        nodes = getNodes(street_map)
     end
 
     if highways
-        @time highways = getHighways(street_map)
-        println("Finished getHighways")
+        highways = getHighways(street_map)
     end
 
     if buildings
-        @time buildings = getBuildings(street_map)
+        buildings = getBuildings(street_map)
     end
 
     if features
-        @time features = getFeatures(street_map)
+        features = getFeatures(street_map)
     end
 
     return nodes, highways, buildings, features

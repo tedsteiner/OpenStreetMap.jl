@@ -20,7 +20,7 @@ function plotMap( nodes;
                   highway_style::Style=Style(0x007CFF,1.5,"-"),
                   building_style::Style=Style(0x000000,1,"-"),
                   feature_style::Style=Style(0xCC0000,2.5,"."),
-                  route_style::Style=Style(0xFF0000, 3, "-"),
+                  route_style=Style(0xFF0000, 3, "-"),
                   intersection_style::Style=Style(0x000000,3,"."),
                   width::Integer=500,
                   realtime::Bool=false )
@@ -149,6 +149,19 @@ function plotMap( nodes;
 
             # Add line(s) to plot
             drawNodes(coords, route_style, realtime)
+        elseif typeof(route) == Array{Array{Int64,1},1}
+            for k = 1:length(route)
+                coords = getNodeCoords(nodes, route[k])
+                if typeof(route_style) == Array{Style,1}
+                    drawNodes(coords, route_style[k], realtime)
+                elseif typeof(route_style) == Style
+                    drawNodes(coords, route_style, realtime)
+                else
+                    println("[OpenStreetMap.jl] Warning: Route in plotMap() could not be plotted.")
+                    println("[OpenStreetMap.jl] Required <route_style> type: Style or Array{Style,1}")
+                    println("[OpenStreetMap.jl] Current type: $(typeof(route_style))")
+                end
+            end
         else
             println("[OpenStreetMap.jl] Warning: Input argument <route> in plotMap() could not be plotted.")
             println("[OpenStreetMap.jl] Required type: Array{Int64,1}")

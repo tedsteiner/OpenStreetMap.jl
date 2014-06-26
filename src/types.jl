@@ -43,6 +43,7 @@ type Network
     e
     w
     v_inv
+    e_lookup
     class
 end
 

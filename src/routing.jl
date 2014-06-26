@@ -47,6 +47,7 @@ function createGraph( nodes, highways, classes, levels )
     e = Graphs.Edge[]                                          # Edges
     w = Float64[]                                              # Weights
     class = Int[]                                              # Road class
+    e_lookup = Dict{Int,Set{Int}}()                            # Dictionary of edges
     g = Graphs.inclist(Graphs.KeyVertex{Int},is_directed=true) # Graph
 
     verts = [highwayVertices( highways, classes, levels )...]
@@ -62,26 +63,40 @@ function createGraph( nodes, highways, classes, levels )
             if length(highways[key].nodes) > 1
                 # Add edges to graph and compute weights
                 for n = 2:length(highways[key].nodes)
-                    edge = Graphs.make_edge(g, v[highways[key].nodes[n-1]], v[highways[key].nodes[n]])
+                    node0 = highways[key].nodes[n-1]
+                    node1 = highways[key].nodes[n]
+                    edge = Graphs.make_edge(g, v[node0], v[node1])
                     Graphs.add_edge!(g, edge)
-                    weight = distance(nodes, highways[key].nodes[n-1], highways[key].nodes[n])
+                    weight = distance(nodes, node0, node1)
                     push!(w, weight)
                     push!(class, classes[key])
                     push!(e, edge)
 
+                    if haskey(e_lookup, node0)
+                        e_lookup[node0] = union( e_lookup[node0], Set(length(e)) )
+                    else
+                        e_lookup[node0] = Set( length(e) )
+                    end
+
                     if !highways[key].oneway
-                        edge = Graphs.make_edge(g, v[highways[key].nodes[n]], v[highways[key].nodes[n-1]])
+                        edge = Graphs.make_edge(g, v[node1], v[node0])
                         Graphs.add_edge!(g, edge)
                         push!(w, weight)
                         push!(class, classes[key])
                         push!(e, edge)
+
+                        if haskey(e_lookup, node1)
+                            e_lookup[node1] = union( e_lookup[node1], Set(length(e)) )
+                        else
+                            e_lookup[node1] = Set( length(e) )
+                        end
                     end
                 end
             end
         end
     end
 
-    return Network(g, v, e, w, v_inv, class)
+    return Network(g, v, e, w, v_inv, e_lookup, class)
 end
 
 
@@ -153,7 +168,20 @@ function extractRoute( dijkstra::Graphs.DijkstraStates, start_index, finish_inde
         end
     end
 
+    route = reverse( route )
+
     return route, distance
+end
+
+# Flip the route order (Dijkstra gives reverse order)
+function reverse( route )
+    m = length(route)
+    reversed = zeros(Int,m)
+    for k = 1:m
+        reversed[m-(k-1)] = route[k]
+    end
+
+    return reversed
 end
 
 ### Generate an ordered list of edges traversed in route
@@ -163,12 +191,13 @@ function routeEdges( network::Network, route )
     # For each node pair, find matching edge
     for n = 1:length(route)-1
 
-        s = network.v[route[n]]
-        t = network.v[route[n+1]]
+        s = route[n]
+        t = route[n+1]
 
-        for k = 1:length(network.e)
-            if s == network.e[k].source && t == network.e[k].target
-                e[n] = k
+        e_candidates = [network.e_lookup[s]...]
+        for k = 1:length(e_candidates)
+            if t == network.e[e_candidates[k]]
+                e[n] = e_candidates[k]
             end
         end
     end
