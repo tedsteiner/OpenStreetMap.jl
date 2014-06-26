@@ -72,10 +72,10 @@ Plot Customization
 
 The following optional inputs allow the user to customize the map display.
 
-* ``route_style`` [``Style``]
 * ``highway_style`` [``Style``]
 * ``building_style`` [``Style``]
 * ``feature_style`` [``Style``]
+* ``route_style`` [``Style``]
 * ``intersection_style`` [``Style``]
 
 These inputs all take a ``Style`` type, which is constructed as follows:

@@ -17,11 +17,11 @@ function plotMap( nodes;
                   feature_classes=nothing,
                   building_classes=nothing,
                   route=nothing,
-                  route_style=nothing,
-                  highway_style::style=style(0x007CFF,1.5,"-"),
-                  building_style::style=style(0x000000,1,"-"),
-                  feature_style::style=style(0xCC0000,2.5,"."),
-                  intersection_style::style=style(0x000000,3,"."),
+                  highway_style::Style=Style(0x007CFF,1.5,"-"),
+                  building_style::Style=Style(0x000000,1,"-"),
+                  feature_style::Style=Style(0xCC0000,2.5,"."),
+                  route_style::Style=Style(0xFF0000, 3, "-"),
+                  intersection_style::Style=Style(0x000000,3,"."),
                   width::Integer=500,
                   realtime::Bool=false )
 
@@ -147,18 +147,6 @@ function plotMap( nodes;
             # Get coordinates of all nodes for route
             coords = getNodeCoords(nodes, route)
 
-            if route_style == nothing
-                route_style = style(0xFF0000, 3, "-")
-            else
-                if typeof(route_style) == style
-
-                else
-                    println("[OpenStreetMap.jl] Warning: Input argument <route_style> in plotMap() unused.")
-                    println("[OpenStreetMap.jl] Required type: style")
-                    println("[OpenStreetMap.jl] Current type: $(typeof(route_style))")
-                end
-            end
-
             # Add line(s) to plot
             drawNodes(coords, route_style, realtime)
         else
@@ -276,8 +264,8 @@ function drawNodes( coords, style="k-", width=1, realtime=false )
 end
 
 
-### Draw a line between all points in a coordinate list given style object ###
-function drawNodes( coords, line_style::style, realtime=false )
+### Draw a line between all points in a coordinate list given Style object ###
+function drawNodes( coords, line_style::Style, realtime=false )
     x = coords[:,1]
     y = coords[:,2]
     if length(x) > 1

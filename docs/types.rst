@@ -152,8 +152,8 @@ The ``Style`` type is used to define custom plot elements. More information on i
 
 .. code-block:: python
     
-    type style
-        color           # Line color
+    type Style
+        color::Uint32   # Line color
         width::Real     # Line width
         spec::String    # Line type
     end
