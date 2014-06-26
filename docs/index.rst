@@ -16,6 +16,9 @@ Contents
    overview.rst
    types.rst
    data.rst
+   workers.rst
+   routing.rst
+   plots.rst
 
 
 

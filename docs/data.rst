@@ -1,5 +1,5 @@
 
-Parsing OSM Data
+Reading OSM Data
 ================
 
 OpenStreetMap data is available in a variety of formats. However, the easiest and most common to work with is the OSM XML format. OpenStreetMap.jl makes reading data from these files easy and straightforward:

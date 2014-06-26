@@ -69,7 +69,7 @@ OpenStreetMap.jl includes an intersection detector. An intersection is a node wh
     end
 
 Region Boundaries
-^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
 Region boundaries include the minimum and maximum latitude and longitude of a region. While the names of the types are clearly focused on the LLA coordinate system, Bounds can also be used with ENU coordinates. They will not work well with ECEF coordinates.
 
 .. code-block:: python
@@ -82,11 +82,11 @@ Region boundaries include the minimum and maximum latitude and longitude of a re
     end
 
 Point Types
-===========
+--------------
 These types give alternative representations for point locations in OpenStreetMap.jl.
 
 Latitude-Longitude-Altitude (LLA) Coordinates
----------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Used to store node data in OpenStreetMap XML files.
 
@@ -102,7 +102,7 @@ Because OpenStreetMap typically does not store altitude data, the following alia
 ``LLA(lat, lon) = LLA(lat, lon, 0)``
 
 Earth-Centered-Earth-Fixed (ECEF) Coordinates
----------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Global cartesian coordinate system rotating with the Earth.
 
@@ -115,7 +115,7 @@ Global cartesian coordinate system rotating with the Earth.
     end
 
 East-North-Up (ENU) Coordinates
----------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Local cartesian coordinate system, centered on a reference point.
 
@@ -129,7 +129,7 @@ Local cartesian coordinate system, centered on a reference point.
 
 
 Transportation Network
-======================
+----------------------
 The Network type is used to represent a street transportation network as a graph. This type nicely encapsulates the graph data from the user, simplifying the use of Graphs.jl for route planning. Most users will not need to interact with the internals of these objects.
 
 .. code-block:: python
