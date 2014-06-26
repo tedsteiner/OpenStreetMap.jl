@@ -84,5 +84,7 @@ Display classified roadways, buildings, and features:
 					  feature_classes=feat_classes,
 					  building_classes=bldg_classes, 
 					  roadways=roads)
-					  
+	Winston.savefig("osm_map.png")
+	
+**Note:** Winston currently distorts figures slightly when it saves them. Therefore, whenever equal axes scaling is required, export figures as EPS and rescale them as necessary.
 
