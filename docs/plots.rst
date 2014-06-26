@@ -67,15 +67,35 @@ Plot Display Options
 * ``width`` [``Int``]: Width of the plot, in pixels
 * ``realtime`` [``Bool``]: When true, elements are added to the map individually (this drastically slows down plotting, but is fun to watch)
 
-.. Currently undocumented
-..  route_style=nothing,
-..  highway_style::String="b-",
-..  building_style::String="k-",
-..  feature_style::String="r.",
-..  intersection_style::String="k.",
-..  highway_lw::Real=1.5,
-..  building_lw::Real=1,
-..  feature_lw::Real=2.5,
-..  intersection_lw::Real=3,
+Plot Customization
+------------------
 
+The following optional inputs allow the user to customize the map display.
+
+* ``route_style`` [``Style``]
+* ``highway_style`` [``Style``]
+* ``building_style`` [``Style``]
+* ``feature_style`` [``Style``]
+* ``intersection_style`` [``Style``]
+
+These inputs all take a ``Style`` type, which is constructed as follows:
+
+.. code-block:: python
+    
+    style = OpenStreetMap.Style( color, width, spec )
+
+For example:
+
+.. code-block:: python
+
+    highway_style = OpenStreetMap.Style( "b", 1.5, "-")
+    feature_style = OpenStreetMap.Style( 0xf57900, 2, ".")
+    
+**Note 1:** ``color`` can either be a supported default color used by Winston.jl or a hex color code.
+
+**Note 2:** ``spec`` is a line specification code used by Winston.jl. Common examples are the following:
+
+* ``"-"``: Solid line
+* ``"."``: Filled, square points
+* ``"o"``: Open, round points
 

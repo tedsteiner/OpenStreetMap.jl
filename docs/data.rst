@@ -27,7 +27,9 @@ These four outputs store all data from the file. ``highways``, ``buildings``, an
 
 **Example Usage:**
 
-``nodes, hwys, builds, feats = getOSMData( MAP_FILENAME, nodes=true, highways=true, buildings=true, features=true)``
+.. code-block:: python
+
+    nodes, hwys, builds, feats = getOSMData( MAP_FILENAME, nodes=true, highways=true, buildings=true, features=true)``
 
 **Usage Notes:**
 Reading data is generally very fast unless your system runs out of memory. This is because LightXML.jl loads the entire xml file into memory as a tree rather than streaming it. A 150 MB OSM file seems to take up about 2-3 GB of RAM on my machine, so load large files with caution.

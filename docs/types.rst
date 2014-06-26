@@ -127,9 +127,12 @@ Local cartesian coordinate system, centered on a reference point.
         up
     end
 
+Additional Types
+----------------
 
 Transportation Network
-----------------------
+^^^^^^^^^^^^^^^^^^^^^^
+
 The Network type is used to represent a street transportation network as a graph. This type nicely encapsulates the graph data from the user, simplifying the use of Graphs.jl for route planning. Most users will not need to interact with the internals of these objects.
 
 .. code-block:: python
@@ -141,3 +144,21 @@ The Network type is used to represent a street transportation network as a graph
         w        # Edge weights
         class    # Edge classification
     end
+
+Plot Styles
+^^^^^^^^^^^
+
+The ``Style`` type is used to define custom plot elements. More information on its usage can be found on the Plots page.
+
+.. code-block:: python
+    
+    type style
+        color           # Line color
+        width::Real     # Line width
+        spec::String    # Line type
+    end
+    
+    style(x, y) = style(x, y, "-")
+    
+
+
