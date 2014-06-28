@@ -193,11 +193,12 @@ function routeEdges( network::Network, route )
 
         s = route[n]
         t = route[n+1]
-
         e_candidates = [network.e_lookup[s]...]
+
         for k = 1:length(e_candidates)
-            if t == network.e[e_candidates[k]]
+            if t == network.e[e_candidates[k]].target.key
                 e[n] = e_candidates[k]
+                break
             end
         end
     end
