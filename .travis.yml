@@ -11,8 +11,10 @@ before_install:
   - sudo apt-get install tk
   - sudo apt-get install libpcre3-dev julia -y
   - sudo apt-get install libXxf86vm-dev # GLFW dependencies
+  - wget https://dl.dropboxusercontent.com/u/8297575/tech_square.osm
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
 script:
   - julia -e 'Pkg.init(); run(`ln -s $(pwd()) $(Pkg.dir("OpenStreetMap"))`); Pkg.pin("OpenStreetMap"); Pkg.resolve()'
   - julia -e 'using OpenStreetMap; @assert isdefined(:OpenStreetMap); @assert typeof(OpenStreetMap) === Module'
+  - julia ./runtests.jl
