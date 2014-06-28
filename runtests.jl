@@ -11,6 +11,6 @@ tests = [
 for t in tests
     tp = joinpath("tests", "$(t).jl")
     println("running $(tp) ...")
-    include(tp)
+    @time include(tp)
 end
 
