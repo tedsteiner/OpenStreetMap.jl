@@ -1,6 +1,11 @@
 
 tests = [
-    "read_data" ]
+    "read_data",
+    "crop_map",
+    "classes",
+    "coordinates",
+    "routes",
+    "plots" ]
 
 
 for t in tests
