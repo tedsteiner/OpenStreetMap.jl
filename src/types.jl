@@ -39,12 +39,12 @@ end
 # Transporation network graph data
 type Network
     g
-    v
-    e
-    w
-    v_inv
-    e_lookup
-    class
+    v::Dict{Int,Graphs.KeyVertex{Int}}
+    e::Array{Graphs.Edge,1}
+    w::Array{Float64,1}
+    v_inv::Array{Int,1}
+    e_lookup::Dict{Int,Set{Int}}
+    class::Array{Int,1}
 end
 
 ###################
