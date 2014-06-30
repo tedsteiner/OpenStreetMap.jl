@@ -20,13 +20,15 @@ function getHighways( street_map::LightXML.XMLDocument )
                 if LightXML.has_attribute(tag, "k")
                     k = LightXML.attribute(tag, "k")
                     if k == "highway"
-                        class = ""
                         if LightXML.has_attribute(tag, "v")
                             class = LightXML.attribute(tag, "v")
+                            
+                            # Note: Highways marked "services" are not traversable
+                            if class != "services"
+                                id = int(LightXML.attribute(way, "id"))
+                                highways[id] = getHighwayData(way,class)
+                            end
                         end
-
-                        id = int(LightXML.attribute(way, "id"))
-                        highways[id] = getHighwayData(way,class)
                         break
                     end
                 end
