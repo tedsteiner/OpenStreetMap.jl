@@ -12,11 +12,13 @@ function getNodes( street_map::LightXML.XMLDocument )
     for n = 1:length(all_nodes)
         node = all_nodes[n]
 
-        id = int(LightXML.attribute(node, "id"))
-        lat = float(LightXML.attribute(node, "lat"))
-        lon = float(LightXML.attribute(node, "lon"))
+        if LightXML.attribute(node, "visible") == "true" # Visible=false indicates historic data
+            id = int(LightXML.attribute(node, "id"))
+            lat = float(LightXML.attribute(node, "lat"))
+            lon = float(LightXML.attribute(node, "lon"))
 
-        nodes[id] = LLA(lat, lon)
+            nodes[id] = LLA(lat, lon)
+        end
     end
 
     return nodes

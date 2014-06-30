@@ -12,24 +12,25 @@ function getHighways( street_map::LightXML.XMLDocument )
 
     for n = 1:length(ways)
         way = ways[n]
-        # TODO: Check if visible?
-
-        # Search for tag with k="highway"
-        for tag in LightXML.child_elements(way)
-            if LightXML.name(tag) == "tag"
-                if LightXML.has_attribute(tag, "k")
-                    k = LightXML.attribute(tag, "k")
-                    if k == "highway"
-                        if LightXML.has_attribute(tag, "v")
-                            class = LightXML.attribute(tag, "v")
-                            
-                            # Note: Highways marked "services" are not traversable
-                            if class != "services"
-                                id = int(LightXML.attribute(way, "id"))
-                                highways[id] = getHighwayData(way,class)
+        
+        if LightXML.attribute(way, "visible") == "true" # Visible=false indicates historic data
+            # Search for tag with k="highway"
+            for tag in LightXML.child_elements(way)
+                if LightXML.name(tag) == "tag"
+                    if LightXML.has_attribute(tag, "k")
+                        k = LightXML.attribute(tag, "k")
+                        if k == "highway"
+                            if LightXML.has_attribute(tag, "v")
+                                class = LightXML.attribute(tag, "v")
+                                
+                                # Note: Highways marked "services" are not traversable
+                                if class != "services"
+                                    id = int(LightXML.attribute(way, "id"))
+                                    highways[id] = getHighwayData(way,class)
+                                end
                             end
+                            break
                         end
-                        break
                     end
                 end
             end

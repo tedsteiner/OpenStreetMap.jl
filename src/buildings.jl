@@ -12,27 +12,27 @@ function getBuildings( street_map::LightXML.XMLDocument )
 
     for n = 1:length(ways)
         way = ways[n]
-        # TODO: Check if visible?
 
-        # Search for tag with k="building"
-        for tag in LightXML.child_elements(way)
-            if LightXML.name(tag) == "tag"
-                if LightXML.has_attribute(tag, "k")
-                    k = LightXML.attribute(tag, "k")
-                    if k == "building"
-                        class = ""
-                        if LightXML.has_attribute(tag, "v")
-                            class = LightXML.attribute(tag, "v")
+        if LightXML.attribute(way, "visible") == "true" # Visible=false indicates historic data
+            # Search for tag with k="building"
+            for tag in LightXML.child_elements(way)
+                if LightXML.name(tag) == "tag"
+                    if LightXML.has_attribute(tag, "k")
+                        k = LightXML.attribute(tag, "k")
+                        if k == "building"
+                            class = ""
+                            if LightXML.has_attribute(tag, "v")
+                                class = LightXML.attribute(tag, "v")
+                            end
+
+                            id = int(LightXML.attribute(way, "id"))
+                            buildings[id] = getBuildingData(way,class)
+                            break
                         end
-
-                        id = int(LightXML.attribute(way, "id"))
-                        buildings[id] = getBuildingData(way,class)
-                        break
                     end
                 end
             end
         end
-
     end
 
     return buildings
