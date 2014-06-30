@@ -12,17 +12,22 @@ function getFeatures( street_map::LightXML.XMLDocument )
     for n = 1:length(nodes)
         node = nodes[n]
         
-        if LightXML.attribute(node, "visible") == "true" # Visible=false indicates historic data
-            # Search for tag giving feature information
-            for tag in LightXML.child_elements(node)
-                if LightXML.name(tag) == "tag"
-                    if LightXML.has_attribute(tag, "k")
-                        k = LightXML.attribute(tag, "k")
-                        if k == "amenity" || k == "shop" || k == "building" || k == "craft" || k == "historic" || k == "sport" || k == "tourism"
-                            id = int(LightXML.attribute(node, "id"))
-                            features[id] = getFeatureData(node)
-                            break
-                        end
+        if LightXML.has_attribute(node, "visible")
+            if LightXML.attribute(node, "visible") == "false"
+                # Visible=false indicates historic data, which we will ignore
+                continue
+            end
+        end
+        
+        # Search for tag giving feature information
+        for tag in LightXML.child_elements(node)
+            if LightXML.name(tag) == "tag"
+                if LightXML.has_attribute(tag, "k")
+                    k = LightXML.attribute(tag, "k")
+                    if k == "amenity" || k == "shop" || k == "building" || k == "craft" || k == "historic" || k == "sport" || k == "tourism"
+                        id = int(LightXML.attribute(node, "id"))
+                        features[id] = getFeatureData(node)
+                        break
                     end
                 end
             end

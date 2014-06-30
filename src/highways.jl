@@ -13,24 +13,29 @@ function getHighways( street_map::LightXML.XMLDocument )
     for n = 1:length(ways)
         way = ways[n]
         
-        if LightXML.attribute(way, "visible") == "true" # Visible=false indicates historic data
-            # Search for tag with k="highway"
-            for tag in LightXML.child_elements(way)
-                if LightXML.name(tag) == "tag"
-                    if LightXML.has_attribute(tag, "k")
-                        k = LightXML.attribute(tag, "k")
-                        if k == "highway"
-                            if LightXML.has_attribute(tag, "v")
-                                class = LightXML.attribute(tag, "v")
-                                
-                                # Note: Highways marked "services" are not traversable
-                                if class != "services"
-                                    id = int(LightXML.attribute(way, "id"))
-                                    highways[id] = getHighwayData(way,class)
-                                end
+        if LightXML.has_attribute(way, "visible")
+            if LightXML.attribute(way, "visible") == "false"
+                # Visible=false indicates historic data, which we will ignore
+                continue
+            end
+        end
+        
+        # Search for tag with k="highway"
+        for tag in LightXML.child_elements(way)
+            if LightXML.name(tag) == "tag"
+                if LightXML.has_attribute(tag, "k")
+                    k = LightXML.attribute(tag, "k")
+                    if k == "highway"
+                        if LightXML.has_attribute(tag, "v")
+                            class = LightXML.attribute(tag, "v")
+                            
+                            # Note: Highways marked "services" are not traversable
+                            if class != "services"
+                                id = int(LightXML.attribute(way, "id"))
+                                highways[id] = getHighwayData(way,class)
                             end
-                            break
                         end
+                        break
                     end
                 end
             end
@@ -45,6 +50,7 @@ end
 function getHighwayData( highway::LightXML.XMLElement, class::String="" )
     oneway = false
     oneway_override = false # Flag to indicate if oneway is forced to false
+    oneway_reverse = false # Flag to indicate nodes need to be reversed
     nodes = Int[]
     road_name = ""
     cycleway = ""
@@ -86,6 +92,20 @@ function getHighwayData( highway::LightXML.XMLElement, class::String="" )
                     elseif v == "no" || v == "false" || v == "0"
                         oneway = false
                         oneway_override = true
+                    elseif v == "-1"
+                        oneway = true
+                        oneway_reverse = true
+                    end
+                    continue
+                end
+            end
+            
+            # Roundabouts are oneway
+            if k == "junction"
+                if LightXML.has_attribute(label, "v")
+                    v = LightXML.attribute(label, "v")
+                    if v == "roundabout" && !oneway_override
+                        oneway = true
                     end
                     continue
                 end
@@ -133,6 +153,18 @@ function getHighwayData( highway::LightXML.XMLElement, class::String="" )
             continue
         end
     end
+    
+    # If road is marked as backwards (should be rare), reverse the node order
+    if oneway_reverse
+        println("Found a reversed node.")
+        println(nodes)
+        nodes_temp = deepcopy(nodes)
+        for k = 1:length(nodes)
+            nodes[k] = nodes_temp[length(nodes)-k+1]
+        end
+        println(nodes)
+    end
+    
 
     return Highway(class, lanes, oneway, sidewalk, cycleway, bicycle, road_name, nodes)
 end
