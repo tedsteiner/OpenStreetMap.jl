@@ -41,6 +41,7 @@ end
 ### Gather highway data from OSM element ###
 function getHighwayData( highway::LightXML.XMLElement, class::String="" )
     oneway = false
+    oneway_override = false # Flag to indicate if oneway is forced to false
     nodes = Int[]
     road_name = ""
     cycleway = ""
@@ -61,18 +62,29 @@ function getHighwayData( highway::LightXML.XMLElement, class::String="" )
             if class == "" && k == "highway"
                 if LightXML.has_attribute(label, "v")
                     class = LightXML.attribute(label, "v")
+                    if !oneway_override
+                        if class == "motorway" || class == "motorway_link"
+                            # Motorways default to oneway
+                            oneway = true
+                        end
+                    end
                     continue
                 end
             end
 
             # Check if street is oneway
-            if !oneway && k == "oneway"
+            if k == "oneway"
                 if LightXML.has_attribute(label, "v")
                     v = LightXML.attribute(label, "v")
-                    if v == "yes"
-                        oneway = true
-                        continue
+                    if v == "yes" || v == "true" || v == "1"
+                        if !oneway_override
+                            oneway = true
+                        end
+                    elseif v == "no" || v == "false" || v == "0"
+                        oneway = false
+                        oneway_override = true
                     end
+                    continue
                 end
             end
 
