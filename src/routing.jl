@@ -155,6 +155,17 @@ function distance( x0, y0, z0, x1, y1, z1 )
 end
 
 
+### Compute the distance of a route ###
+function distance( nodes, route )
+    dist = 0
+    for n = 2:length(route)
+        dist += distance( nodes, route[n-1], route[n] )
+    end
+
+    return dist
+end
+
+
 
 ### Shortest Paths ###
 # Dijkstra's Algorithm
@@ -271,12 +282,3 @@ function fastestRoute( network, node0, node1, class_speeds=SPEED_ROADS_URBAN )
 end
 
 
-### Compute the distance of a route ###
-function distance( nodes, route )
-    dist = 0
-    for n = 2:length(route)
-        dist += distance( nodes, route[n-1], route[n] )
-    end
-
-    return dist
-end
