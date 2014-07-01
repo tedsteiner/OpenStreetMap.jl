@@ -15,12 +15,3 @@ cropMap!(nodes, bounds, highways=hwys, buildings=builds, features=feats, delete_
 @test length(builds) == 1
 @test length(feats) == 0
 
-@test nodes[5].lat == 42.3637
-@test nodes[5].lon == -71.08987031726762
-
-@test nodes[10].lat == 42.3655
-@test nodes[10].lon == -71.09133788508164
-
-@test nodes[15].lat == 42.363946909012135
-@test nodes[15].lon == -71.0893
-
