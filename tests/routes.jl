@@ -34,6 +34,50 @@ println("node1 = $(node1)")
 println("node3 = $(nodesENU[3])")
 println("node13 = $(nodesENU[13])")
 
+println("Nodes 1-5:")
+println(nodes[1])
+println(nodes[2])
+println(nodes[3])
+println(nodes[4])
+println(nodes[5])
+println("Nodes 6-10:")
+println(nodes[6])
+println(nodes[7])
+println(nodes[8])
+println(nodes[9])
+println(nodes[10])
+println("Nodes 11-15:")
+println(nodes[11])
+println(nodes[12])
+println(nodes[13])
+println(nodes[14])
+println(nodes[15])
+println("Nodes 16-20:")
+println(nodes[16])
+println(nodes[17])
+println(nodes[18])
+println(nodes[19])
+println(nodes[20])
+println("Nodes 21-23:")
+println(nodes[21])
+println(nodes[22])
+println(nodes[23])
+
+@test nodes[1].lat == 42.36406295693916
+@test nodes[1].lon == -71.0891
+@test nodes[2].lat == 42.3659
+@test nodes[2].lon == -71.09192951343779
+@test nodes[3].lat == 42.36263254815073
+@test nodes[3].lon == -71.0891
+@test nodes[4].lat == 42.3659
+@test nodes[4].lon == -71.09236911508953
+@test nodes[5].lat == 42.36334113794772
+@test nodes[5].lon == -71.0891
+@test nodes[10].lat == 42.3659
+@test nodes[10].lon == -71.08925363926788
+@test nodes[15].lat == 42.3659
+@test nodes[15].lon == -71.0920064595775
+
 @test node0 == 21
 @test node1 == 3
 
