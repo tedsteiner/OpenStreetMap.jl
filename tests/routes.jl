@@ -24,6 +24,16 @@ loc_end = OpenStreetMap.ENU(5500,-4000,0)
 node0 = nearestNode( nodesENU, loc_start, network.v_inv )
 node1 = nearestNode( nodesENU, loc_end, network.v_inv )
 
+
+println("node23 = $(nodesENU[23])")
+println("node23 = $(nodes[23])")
+println("node21 = $(nodesENU[21])")
+println("node21 = $(nodes[21])")
+println("node0 = $(node0)")
+println("node1 = $(node1)")
+println("node3 = $(nodesENU[3])")
+println("node13 = $(nodesENU[13])")
+
 @test node0 == 21
 @test node1 == 3
 
