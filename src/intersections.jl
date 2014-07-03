@@ -7,6 +7,7 @@
 ### Generate a list of intersections ###
 function findIntersections(highways::Dict{Int,Highway})
     intersections = Dict{Int,Intersection}()
+    crossings = Int[]
     
     # Highway ends
     for k in keys(highways)
@@ -35,12 +36,15 @@ function findIntersections(highways::Dict{Int,Highway})
                     else
                         intersections[node_id] = Intersection( Set(i, j) )
                     end
+                    push!(crossings,node_id)
                 end
             end
         end
     end
+    
+    
 
-    return intersections
+    return intersections, unique(crossings)
 end
 
 
@@ -57,8 +61,13 @@ function segmentHighways( highways, intersections, classes, levels=Set(1:10...) 
                     node0 = highways[i].nodes[first]
                     node1 = highways[i].nodes[j]
                     class = classes[i]
-                    s = Segment(node0, node1, highways[i].nodes[first:j], class, i, highways[i].oneway)
+                    nodes = highways[i].nodes[first:j]
+                    s = Segment(node0, node1, nodes, class, i, true)
                     push!(segments,s)
+                    
+                    if !highways[i].oneway
+                        s = Segment(node1, node0, reverse(nodes), class, i, true)
+                    end
                     first = j
                 end
             end
@@ -66,4 +75,16 @@ function segmentHighways( highways, intersections, classes, levels=Set(1:10...) 
     end
     
     return segments
+end
+
+
+### Generate a list of highways from segments, for plotting purposes
+function highwaySegments( segments )
+    highways = Dict{Int,Highway}()
+    
+    for k = 1:length(segments)
+        highways[k] = Highway("",1,true,"","","","$(segments[k].parent)",segments[k].nodes)   
+    end
+    
+    return highways
 end
