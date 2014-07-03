@@ -51,6 +51,7 @@ function createGraph( nodes, highways, classes, levels )
     w = Float64[]                                              # Weights
     class = Int[]                                              # Road class
     e_lookup = Dict{Int,Set{Int}}()                            # Dictionary of edges
+    v_pair = Dict{Set{Int},Array{Int,1}}()
     g = Graphs.inclist(Graphs.KeyVertex{Int},is_directed=true) # Graph
 
     verts = [highwayVertices( highways, classes, levels )...]
@@ -74,11 +75,18 @@ function createGraph( nodes, highways, classes, levels )
                     push!(w, weight)
                     push!(class, classes[key])
                     push!(e, edge)
-
+                    node_set = Set(node0,node1)
+  
                     if haskey(e_lookup, node0)
                         e_lookup[node0] = union( e_lookup[node0], Set(length(e)) )
                     else
                         e_lookup[node0] = Set( length(e) )
+                    end
+                    
+                    if haskey(v_pair,node_set)
+                        v_pair[node_set] = [v_pair[node_set],length(e)]
+                    else
+                        v_pair[node_set] = [length(e)]
                     end
 
                     if !highways[key].oneway
@@ -93,13 +101,19 @@ function createGraph( nodes, highways, classes, levels )
                         else
                             e_lookup[node1] = Set( length(e) )
                         end
+                        
+                        if haskey(v_pair,node_set)
+                            v_pair[node_set] = [v_pair[node_set],length(e)]
+                        else
+                            v_pair[node_set] = [length(e)]
+                        end
                     end
                 end
             end
         end
     end
 
-    return Network(g, v, e, w, v_inv, e_lookup, class)
+    return Network(g, v, e, w, v_inv, e_lookup, v_pair, class)
 end
 
 
@@ -273,10 +287,11 @@ function fastestRoute( network, node0, node1, class_speeds=SPEED_ROADS_URBAN )
     finish_index = network.v[node1].index
     route_indices, route_time = extractRoute( dijkstra_result, start_index, finish_index )
 
-    route_nodes = zeros(Int,length(route_indices))
-    for n = 1:length(route_indices)
-        route_nodes[n] = network.v_inv[route_indices[n]]
-    end
+    route_nodes = getRouteNodes( network, route_indices )
+    #zeros(Int,length(route_indices))
+    #for n = 1:length(route_indices)
+    #    route_nodes[n] = network.v_inv[route_indices[n]]
+    #end
 
     return route_nodes, route_time
 end

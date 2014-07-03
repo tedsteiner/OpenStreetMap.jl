@@ -3,14 +3,14 @@
 ### Copyright 2014              ###
 
 ### Default Speed Limits in Kilometers Per Hour ###
-const SPEED_ROADS_URBAN = [ 1 => 95,
-                            2 => 65,
-                            3 => 50,
-                            4 => 40,
-                            5 => 32,
-                            6 => 25,
-                            7 => 15,
-                            8 => 15 ]
+const SPEED_ROADS_URBAN = [ 1 => 95,    # Motorway
+                            2 => 72,    # Trunk
+                            3 => 48,    # Primary
+                            4 => 32,    # Secondary
+                            5 => 22,    # Tertiary
+                            6 => 12,    # Residential/Unclassified
+                            7 => 8,     # Service
+                            8 => 5  ]   # Living street
 
 const SPEED_ROADS_RURAL = [ 1 => 110,
                             2 => 90,

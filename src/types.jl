@@ -36,15 +36,16 @@ type Bounds
     max_lon
 end
 
-# Transporation network graph data
+# Transporation network graph data and helpers to increase routing speed
 type Network
-    g
-    v::Dict{Int,Graphs.KeyVertex{Int}}
-    e::Array{Graphs.Edge,1}
-    w::Array{Float64,1}
-    v_inv::Array{Int,1}
-    e_lookup::Dict{Int,Set{Int}}
-    class::Array{Int,1}
+    g                                   # Graph object
+    v::Dict{Int,Graphs.KeyVertex{Int}}  # (node id) => (graph vertex)
+    e::Array{Graphs.Edge,1}             # Graph edges, indexed by edge id
+    w::Array{Float64,1}                 # Edge weights, indexed by edge id
+    v_inv::Array{Int,1}                 # Node ids indexed by graph vertex index
+    e_lookup::Dict{Int,Set{Int}}        # (node id) => Set(attached edge ids)
+    v_pair::Dict{Set{Int},Array{Int,1}} # Set(vertex id pair) => Array(edge indices)
+    class::Array{Int,1}                 # Road class of each edge
 end
 
 ###################
