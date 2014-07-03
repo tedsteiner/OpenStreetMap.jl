@@ -12,7 +12,7 @@ import Graphs
 
 export parseMapXML, getOSMData, getBounds
 export plotMap, cropMap!
-export findIntersections, nearestNode
+export findIntersections, nearestNode, segmentHighways
 export lla2enu, lla2ecef, ecef2lla, ecef2enu
 export roadways, walkways, cycleways, classify
 export createGraph, shortestRoute, fastestRoute, distance, routeEdges

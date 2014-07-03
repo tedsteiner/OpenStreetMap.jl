@@ -45,7 +45,7 @@ end
 
 
 ### Form transportation network graph of map ###
-function createGraph( nodes, highways, classes, levels )
+function createGraph( nodes, highways::Dict{Int,Highway}, classes, levels )
     v = Dict{Int,Graphs.KeyVertex{Int}}()                      # Vertices
     e = Graphs.Edge[]                                          # Edges
     w = Float64[]                                              # Weights
@@ -109,6 +109,73 @@ function createGraph( nodes, highways, classes, levels )
                         end
                     end
                 end
+            end
+        end
+    end
+
+    return Network(g, v, e, w, v_inv, e_lookup, v_pair, class)
+end
+
+
+### Form transportation network graph of map ###
+function createGraph( nodes, segments::Array{Segment,1}, intersections )
+    v = Dict{Int,Graphs.KeyVertex{Int}}()                      # Vertices
+    e = Graphs.Edge[]                                          # Edges
+    w = Float64[]                                              # Weights
+    class = Int[]                                              # Road class
+    e_lookup = Dict{Int,Set{Int}}()                            # Dictionary of edges
+    v_pair = Dict{Set{Int},Array{Int,1}}()
+    g = Graphs.inclist(Graphs.KeyVertex{Int},is_directed=true) # Graph
+
+    verts = collect(keys(intersections))
+    v_inv = zeros(Int,length(verts))                           # Inverse vertex mapping
+    for k = 1:length(verts)
+        v[verts[k]] = Graphs.add_vertex!(g,verts[k])
+        v_inv[k] = verts[k]
+    end
+    @assert length(v_inv) == length(v)
+
+    for k = 1:length(segments)
+        # Add edges to graph and compute weights
+        node0 = segments[k].node0
+        node1 = segments[k].node1
+        edge = Graphs.make_edge(g, v[node0], v[node1])
+        Graphs.add_edge!(g, edge)
+        weight = distance(nodes, node0, node1)
+        push!(w, weight)
+        push!(class, segments[k].class)
+        push!(e, edge)
+        node_set = Set(node0,node1)
+
+        if haskey(e_lookup, node0)
+            e_lookup[node0] = union( e_lookup[node0], Set(length(e)) )
+        else
+            e_lookup[node0] = Set( length(e) )
+        end
+        
+        if haskey(v_pair,node_set)
+            v_pair[node_set] = [v_pair[node_set],length(e)]
+        else
+            v_pair[node_set] = [length(e)]
+        end
+
+        if !segments[k].oneway
+            edge = Graphs.make_edge(g, v[node1], v[node0])
+            Graphs.add_edge!(g, edge)
+            push!(w, weight)
+            push!(class, segments[k].class)
+            push!(e, edge)
+
+            if haskey(e_lookup, node1)
+                e_lookup[node1] = union( e_lookup[node1], Set(length(e)) )
+            else
+                e_lookup[node1] = Set( length(e) )
+            end
+            
+            if haskey(v_pair,node_set)
+                v_pair[node_set] = [v_pair[node_set],length(e)]
+            else
+                v_pair[node_set] = [length(e)]
             end
         end
     end

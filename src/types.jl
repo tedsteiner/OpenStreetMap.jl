@@ -13,6 +13,15 @@ type Highway
     nodes::Array{Int,1} # List of nodes
 end
 
+type Segment
+    node0::Int
+    node1::Int
+    nodes::Array{Int,1}
+    class::Int
+    parent::Int
+    oneway::Bool
+end
+
 type Feature
     class::String       # Shop, amenity, crossing, etc.
     detail::String      # Class qualifier
