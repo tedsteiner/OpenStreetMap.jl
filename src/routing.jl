@@ -83,6 +83,12 @@ function createGraph( nodes, highways::Dict{Int,Highway}, classes, levels )
                         e_lookup[node0] = Set( length(e) )
                     end
                     
+                    if haskey(e_lookup, node1)
+                        e_lookup[node1] = union( e_lookup[node1], Set(length(e)) )
+                    else
+                        e_lookup[node1] = Set( length(e) )
+                    end
+                    
                     if haskey(v_pair,node_set)
                         v_pair[node_set] = [v_pair[node_set],length(e)]
                     else
@@ -100,6 +106,12 @@ function createGraph( nodes, highways::Dict{Int,Highway}, classes, levels )
                             e_lookup[node1] = union( e_lookup[node1], Set(length(e)) )
                         else
                             e_lookup[node1] = Set( length(e) )
+                        end
+                        
+                        if haskey(e_lookup, node0)
+                            e_lookup[node0] = union( e_lookup[node0], Set(length(e)) )
+                        else
+                            e_lookup[node0] = Set( length(e) )
                         end
                         
                         if haskey(v_pair,node_set)
@@ -153,6 +165,12 @@ function createGraph( nodes, segments::Array{Segment,1}, intersections )
             e_lookup[node0] = Set( length(e) )
         end
         
+        if haskey(e_lookup, node1)
+            e_lookup[node1] = union( e_lookup[node1], Set(length(e)) )
+        else
+            e_lookup[node1] = Set( length(e) )
+        end
+        
         if haskey(v_pair,node_set)
             v_pair[node_set] = [v_pair[node_set],length(e)]
         else
@@ -170,6 +188,12 @@ function createGraph( nodes, segments::Array{Segment,1}, intersections )
                 e_lookup[node1] = union( e_lookup[node1], Set(length(e)) )
             else
                 e_lookup[node1] = Set( length(e) )
+            end
+            
+            if haskey(e_lookup, node0)
+                e_lookup[node0] = union( e_lookup[node0], Set(length(e)) )
+            else
+                e_lookup[node0] = Set( length(e) )
             end
             
             if haskey(v_pair,node_set)

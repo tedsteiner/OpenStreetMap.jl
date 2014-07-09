@@ -67,6 +67,7 @@ function segmentHighways( highways, intersections, classes, levels=Set(1:10...) 
                     
                     if !highways[i].oneway
                         s = Segment(node1, node0, reverse(nodes), class, i, true)
+                        push!(segments,s)
                     end
                     first = j
                 end
