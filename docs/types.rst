@@ -25,6 +25,23 @@ When a highway is labeled as “oneway,” the road or path is only legally trav
         nodes::Array{Int,1} # List of nodes
     end
 
+"Segments" represent a subset of a highway, and can be used for faster route 
+planning. They begin and end at highway intersections (see below). Segments can 
+be extracted from a list of roads and intersections using "extractSegments()."
+
+.. code-block:: python
+    
+    
+    type Segment
+        node0::Int          # Source node ID
+        node1::Int          # Target node ID
+        nodes::Array{Int,1} # List of nodes falling within node0 and node1
+        class::Int          # Class of the segment
+        parent::Int         # ID of parent highway
+        oneway::Bool        # True if road is one-way
+    end
+
+
 Feature
 ^^^^^^^^^^^^^^
 “Features” are nodes tagged with additional data. OpenStreetMap.jl currently ignores some of these tags (e.g., crosswalks), but the following feature classes are currently extracted from OSM files:

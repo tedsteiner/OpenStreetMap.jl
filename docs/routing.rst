@@ -21,6 +21,21 @@ Output:
 
 * ``Network`` type, containing all data necessary for route planning with Graphs.jl
 
+A transportation network graph can alternatively be created using highway 
+"segments" rather than highways. These segments begin and end at intersections, 
+eliminating all intermediate nodes, and can greatly speed up route planning.
+
+.. py:function:: createGraph( nodes, segments, intersections )
+
+Inputs:
+
+* ``nodes`` [``Dict{Int,ENU}`` or ``Dict{Int,ECEF}``]: Dictionary of node locations
+* ``segments`` [``Array{Segment,1}``]: Array of segments
+* ``intersections`` [``Dict{Int,Intersection}``]: Dictionary of intersections, indexed by node ID
+
+Output:
+
+* ``Network`` type, containing all data necessary for route planning with Graphs.jl
 
 Shortest Routes
 ---------------

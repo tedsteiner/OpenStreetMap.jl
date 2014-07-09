@@ -14,12 +14,12 @@ type Highway
 end
 
 type Segment
-    node0::Int
-    node1::Int
-    nodes::Array{Int,1}
-    class::Int
-    parent::Int
-    oneway::Bool
+    node0::Int          # Source node ID
+    node1::Int          # Target node ID
+    nodes::Array{Int,1} # List of nodes falling within node0 and node1
+    class::Int          # Class of the segment
+    parent::Int         # ID of parent highway
+    oneway::Bool        # True if road is one-way
 end
 
 type Feature
