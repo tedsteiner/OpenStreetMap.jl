@@ -17,11 +17,11 @@ OpenStreetMap.jl includes a single plotting function. This function has numerous
                       feature_classes=nothing,
                       building_classes=nothing,
                       route=nothing,
-                      highway_style::Style=Style(0x007CFF,1.5,"-"),
-                      building_style::Style=Style(0x000000,1,"-"),
-                      feature_style::Style=Style(0xCC0000,2.5,"."),
-                      route_style::Style=Style(0xFF0000, 3, "-"),
-                      intersection_style::Style=Style(0x000000,3,"."),
+                      highway_style::Style = Style(0x007CFF,1.5,"-"),
+                      building_style::Style = Style(0x000000,1,"-"),
+                      feature_style = Style(0xCC0000,2.5,"."),
+                      route_style = Style(0xFF0000, 3, "-"),
+                      intersection_style::Style = Style(0x000000,3,"."),
                       width::Integer=500,
                       realtime::Bool=false )
 
@@ -39,7 +39,7 @@ These parameters provided the actual data to be plotted.
 * ``buildings`` [``Dict{Int,Building}``]: List of buildings to display
 * ``highways`` [``Dict{Int,Highway}``]: List of highways to display
 * ``intersections`` [``Dict{Int,Intersection}``]: List of highway intersections
-* ``route``: List of nodes comprising a highway route
+* ``route`` [``Array{Int,1}`` or ``Array{Array{Int,1},1}``]: List of nodes comprising a highway route OR a list of lists of routes (if multiple routes are to be displayed).
 
 Data Classifiers
 ----------------
@@ -68,10 +68,10 @@ Plot Customization
 
 The following optional inputs allow the user to customize the map display.
 
-* ``highway_style`` [``Style``]
-* ``building_style`` [``Style``]
-* ``feature_style`` [``Style``]
-* ``route_style`` [``Style``]
+* ``highway_style`` [``Style`` or ``Dict{Int,Style}``]: See note 3 below.
+* ``building_style`` [``Style``]: See note 3 below.
+* ``feature_style`` [``Style`` or ``Dict{Int,Style}``]: See note 3 below.
+* ``route_style`` [``Style`` or ``Array{Style,1}``]: Use an array of ``Style`` types to plot multiple routes with different appearances.
 * ``intersection_style`` [``Style``]
 
 These inputs all take a ``Style`` type, which is constructed as follows:
@@ -95,3 +95,4 @@ For example:
 * ``"."``: Filled, square points
 * ``"o"``: Open, round points
 
+**Note 3:** For highways, buildings, and features, if an additional classifier is input (e.g., ``roadways``), the respective style input must be a dictionary of styles, with type ``Dict{Int,Style}``, with a style given for each classification. This dictionary is called a "layer" in OpenStreetMap terminology, and defines how a specific map layer is displayed. The default layers are defined as constants in ``layers.jl``.

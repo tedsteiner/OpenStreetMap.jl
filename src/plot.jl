@@ -19,7 +19,7 @@ function plotMap( nodes;
                   route=nothing,
                   highway_style::Style=Style(0x007CFF,1.5,"-"),
                   building_style::Style=Style(0x000000,1,"-"),
-                  feature_style::Style=Style(0xCC0000,2.5,"."),
+                  feature_style=Style(0xCC0000,2.5,"."),
                   route_style=Style(0xFF0000, 3, "-"),
                   intersection_style::Style=Style(0x000000,3,"."),
                   width::Integer=500,
@@ -77,7 +77,11 @@ function plotMap( nodes;
     if buildings != nothing
         if typeof(buildings) == Dict{Int,Building}
             if building_classes != nothing && typeof(building_classes) == Dict{Int,Int}
-                drawWayLayer( nodes, buildings, building_classes, LAYER_BUILDINGS, realtime )
+                if typeof(building_style) == Dict{Int,Style}
+                    drawWayLayer(nodes,buildings,building_classes,building_style,realtime)
+                else
+                    drawWayLayer(nodes,buildings,building_classes,LAYER_BUILDINGS,realtime)
+                end
             else
                 for key in keys(buildings)
                     # Get coordinates of all nodes for object
@@ -99,13 +103,25 @@ function plotMap( nodes;
         if typeof(highways) == Dict{Int,Highway}
             if roadways != nothing || cycleways != nothing || walkways != nothing
                 if roadways != nothing
-                    drawWayLayer( nodes, highways, roadways, LAYER_STANDARD, realtime )
+                    if typeof(highway_style) == Dict{Int,Style}
+                        drawWayLayer(nodes,highways,roadways,highway_style,realtime)
+                    else
+                        drawWayLayer(nodes,highways,roadways,LAYER_STANDARD,realtime)
+                    end
                 end
                 if cycleways != nothing
-                    drawWayLayer( nodes, highways, cycleways, LAYER_CYCLE, realtime )
+                    if typeof(highway_style) == Dict{Int,Style}
+                        drawWayLayer(nodes,highways,cycleways,highway_style,realtime)
+                    else
+                        drawWayLayer(nodes,highways,cycleways,LAYER_CYCLE,realtime)
+                    end
                 end
                 if walkways != nothing
-                    drawWayLayer( nodes, highways, walkways, LAYER_PED, realtime )
+                    if typeof(highway_style) == Dict{Int,Style}
+                        drawWayLayer(nodes,highways,walkways,highway_style,realtime)
+                    else
+                        drawWayLayer(nodes,highways,walkways,LAYER_PED,realtime)
+                    end
                 end
             else
                 for key in keys(highways)
@@ -127,7 +143,11 @@ function plotMap( nodes;
     if features != nothing
         if typeof(features) == Dict{Int,Feature}
             if feature_classes != nothing && typeof(feature_classes) == Dict{Int,Int}
-                drawFeatureLayer(nodes, features, feature_classes, LAYER_FEATURES, realtime)
+                if typeof(feature_style) == Style
+                    drawFeatureLayer(nodes, features, feature_classes, LAYER_FEATURES, realtime)
+                elseif typeof(feature_style) == Dict{Int,Style}
+                    drawFeatureLayer(nodes, features, feature_classes, feature_style, realtime)
+                end
             else
                 coords = getNodeCoords(nodes, collect(keys(features)))
 
@@ -143,13 +163,13 @@ function plotMap( nodes;
 
     # Draw route
     if route != nothing
-        if typeof(route) == Array{Int64,1}
+        if typeof(route) == Array{Int,1}
             # Get coordinates of all nodes for route
             coords = getNodeCoords(nodes, route)
 
             # Add line(s) to plot
             drawNodes(coords, route_style, realtime)
-        elseif typeof(route) == Array{Array{Int64,1},1}
+        elseif typeof(route) == Array{Array{Int,1},1}
             for k = 1:length(route)
                 coords = getNodeCoords(nodes, route[k])
                 if typeof(route_style) == Array{Style,1}
