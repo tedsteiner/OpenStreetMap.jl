@@ -313,7 +313,7 @@ end
 
 
 ### Generate an ordered list of edges traversed in route
-function routeEdges( network::Network, route )
+function routeEdges( network::Network, route::Array{Int,1} )
     e = zeros(Int,length(route)-1)
 
     # For each node pair, find matching edge

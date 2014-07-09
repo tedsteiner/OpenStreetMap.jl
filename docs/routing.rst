@@ -101,3 +101,15 @@ For added convenience, ``distance()`` is additionally overloaded for the followi
 .. py:function:: distance( nodes::Dict{Int,ENU}, node0::Int, node1::Int )
 .. py:function:: distance( loc0::ENU, loc1::ENU )
 .. py:function:: distance( x0, y0, z0, x1, y1, z1 )
+
+Edge Extraction
+---------------
+
+``shortestRoute()`` and ``fastestRoute()`` both return a list of nodes, which 
+comprises the route. ``routeEdges()`` can then convert this list of nodes into 
+the list of edges, if desired:
+
+.. py:function:: routeEdges( network::Network, route::Array{Int,1} )
+
+The output is a list of edge indices with type Array{Int,1}.
+
