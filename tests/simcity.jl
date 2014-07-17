@@ -12,12 +12,12 @@ nodes, highways, roads = simCityGrid(roads_north,roads_east)
 @test length(roads) == length(highways)
 
 # Test node simulation
-@test nodes[1].east == 1
-@test nodes[1].north == 1
-@test nodes[7].east == 2
-@test nodes[7].north == 3
-@test nodes[10].east == 3
-@test nodes[10].north == 2
+@test nodes[1].east == 100
+@test nodes[1].north == 100
+@test nodes[7].east == 200
+@test nodes[7].north == 300
+@test nodes[10].east == 300
+@test nodes[10].north == 200
 
 # Test highway simulation
 @test highways[1].name == "North_1"

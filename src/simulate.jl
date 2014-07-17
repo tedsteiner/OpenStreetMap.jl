@@ -24,7 +24,7 @@ function simCityGrid( classes_north, classes_east )
     for n = 1:N
         for m = 1:M
             kk += 1
-            nodes[kk] = ENU(n,m,0)
+            nodes[kk] = ENU(n*100,m*100,0)
         end
     end
 
