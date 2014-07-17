@@ -15,8 +15,8 @@ nodes, hwys, builds, feats = getOSMData( MAP_FILENAME, nodes=true, highways=true
 map = parseMapXML( MAP_FILENAME )
 bounds = getBounds( map )
 
-@test bounds.min_lat == 42.3626000
-@test bounds.max_lat == 42.3659000
-@test bounds.min_lon == -71.0939000
-@test bounds.max_lon == -71.0891000
+@test_approx_eq bounds.min_lat 42.3626000
+@test_approx_eq bounds.max_lat 42.3659000
+@test_approx_eq bounds.min_lon -71.0939000
+@test_approx_eq bounds.max_lon -71.0891000
 
