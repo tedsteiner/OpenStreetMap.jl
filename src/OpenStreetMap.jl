@@ -16,6 +16,7 @@ export findIntersections, nearestNode, segmentHighways, highwaySegments
 export lla2enu, lla2ecef, ecef2lla, ecef2enu
 export roadways, walkways, cycleways, classify
 export createGraph, shortestRoute, fastestRoute, distance, routeEdges
+export simCityGrid
 
 include("types.jl")
 include("classes.jl")
@@ -34,5 +35,7 @@ include("plot.jl")
 include("intersections.jl")
 include("transforms.jl")
 include("routing.jl")
+
+include("simulate.jl")
 
 end
