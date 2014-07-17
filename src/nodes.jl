@@ -65,3 +65,27 @@ function nearestNodeInternal( nodes, loc, node_list=0 )
 
     return best_ind
 end
+
+### Add a new node ###
+function addNewNode(nodes::Dict{Int,LLA}, loc::LLA)
+    return addNewNodeInternal(nodes, loc)
+end
+
+function addNewNode(nodes::Dict{Int,ENU}, loc::ENU)
+    return addNewNodeInternal(nodes, loc)
+end
+
+function addNewNodeInternal(nodes, loc)
+    id = 1
+    while id <= typemax(Int)
+        if !haskey(nodes,id)
+            nodes[id] = loc
+            return id
+        else
+            id += 1
+        end
+    end
+
+    println("[OpenStreetMap.jl] WARNING: Unable to add a new node to map, $(typemax(Int)) nodes is currently the maximum.")
+    return 0
+end
