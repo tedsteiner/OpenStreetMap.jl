@@ -1,6 +1,7 @@
 
 tests = [
     "read_data",
+    "simcity",
     "crop_map",
     "classes",
     "coordinates",
