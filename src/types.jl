@@ -17,6 +17,7 @@ type Segment
     node0::Int          # Source node ID
     node1::Int          # Target node ID
     nodes::Array{Int,1} # List of nodes falling within node0 and node1
+    dist::Real          # Length of the segment 
     class::Int          # Class of the segment
     parent::Int         # ID of parent highway
     oneway::Bool        # True if road is one-way

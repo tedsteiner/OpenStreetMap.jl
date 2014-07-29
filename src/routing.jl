@@ -135,7 +135,7 @@ end
 
 
 ### Form transportation network graph of map ###
-function createGraph( nodes, segments::Array{Segment,1}, intersections, reverse::Bool=false )
+function createGraph( segments::Array{Segment,1}, intersections, reverse::Bool=false )
     v = Dict{Int,Graphs.KeyVertex{Int}}()                      # Vertices
     e = Graphs.Edge[]                                          # Edges
     w = Float64[]                                              # Weights
@@ -163,7 +163,7 @@ function createGraph( nodes, segments::Array{Segment,1}, intersections, reverse:
         end
         edge = Graphs.make_edge(g, v[node0], v[node1])
         Graphs.add_edge!(g, edge)
-        weight = distance(nodes, node0, node1)
+        weight = segments[k].dist
         push!(w, weight)
         push!(class, segments[k].class)
         push!(e, edge)
