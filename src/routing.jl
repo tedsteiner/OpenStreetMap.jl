@@ -45,7 +45,7 @@ end
 
 
 ### Form transportation network graph of map ###
-function createGraph( nodes, highways::Dict{Int,Highway}, classes, levels )
+function createGraph( nodes, highways::Dict{Int,Highway}, classes, levels, reverse::Bool=false )
     v = Dict{Int,Graphs.KeyVertex{Int}}()                      # Vertices
     e = Graphs.Edge[]                                          # Edges
     w = Float64[]                                              # Weights
@@ -67,8 +67,13 @@ function createGraph( nodes, highways::Dict{Int,Highway}, classes, levels )
             if length(highways[key].nodes) > 1
                 # Add edges to graph and compute weights
                 for n = 2:length(highways[key].nodes)
-                    node0 = highways[key].nodes[n-1]
-                    node1 = highways[key].nodes[n]
+                    if reverse
+                        node0 = highways[key].nodes[n]
+                        node1 = highways[key].nodes[n-1]
+                    else
+                        node0 = highways[key].nodes[n-1]
+                        node1 = highways[key].nodes[n]
+                    end
                     edge = Graphs.make_edge(g, v[node0], v[node1])
                     Graphs.add_edge!(g, edge)
                     weight = distance(nodes, node0, node1)
@@ -130,7 +135,7 @@ end
 
 
 ### Form transportation network graph of map ###
-function createGraph( nodes, segments::Array{Segment,1}, intersections )
+function createGraph( nodes, segments::Array{Segment,1}, intersections, reverse::Bool=false )
     v = Dict{Int,Graphs.KeyVertex{Int}}()                      # Vertices
     e = Graphs.Edge[]                                          # Edges
     w = Float64[]                                              # Weights
@@ -149,8 +154,13 @@ function createGraph( nodes, segments::Array{Segment,1}, intersections )
 
     for k = 1:length(segments)
         # Add edges to graph and compute weights
-        node0 = segments[k].node0
-        node1 = segments[k].node1
+        if reverse
+            node0 = segments[k].node1
+            node1 = segments[k].node0
+        else
+            node0 = segments[k].node0
+            node1 = segments[k].node1
+        end
         edge = Graphs.make_edge(g, v[node0], v[node1])
         Graphs.add_edge!(g, edge)
         weight = distance(nodes, node0, node1)
@@ -318,7 +328,6 @@ function routeEdges( network::Network, route::Array{Int,1} )
 
     # For each node pair, find matching edge
     for n = 1:length(route)-1
-
         s = route[n]
         t = route[n+1]
         e_candidates = [network.e_lookup[s]...]
