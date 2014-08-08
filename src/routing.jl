@@ -290,7 +290,7 @@ end
 
 
 # Extract route from Dijkstra results object
-function extractRoute( dijkstra::Graphs.DijkstraStates, start_index, finish_index )
+function extractRoute( dijkstra, start_index, finish_index )
     route = Int[]
 
     distance = dijkstra.dists[finish_index]
