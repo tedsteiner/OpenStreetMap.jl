@@ -1,4 +1,3 @@
-
 tests = [
     "read_data",
     "simcity",
@@ -8,10 +7,7 @@ tests = [
     "routes",
     "plots" ]
 
-
 for t in tests
-    tp = joinpath("tests", "$(t).jl")
-    println("running $(tp) ...")
-    @time include(tp)
+    println("testing $t ...")
+    @time include("$t.jl")
 end
-

@@ -42,4 +42,3 @@ bounds_enu = lla2enu(bounds)
 @test_approx_eq bounds_enu.max_lat 249.9353534127322
 @test_approx_eq bounds_enu.min_lon -247.1091823451915
 @test_approx_eq bounds_enu.max_lon 247.1268196141778
-
