@@ -3,24 +3,26 @@
 This package provides basic functionality for parsing, viewing, and working with [OpenStreetMap](http://www.openstreetmap.org) map data. The package is intended mainly for researchers who want to incorporate this rich, global data into their work, and has been designed with both speed and simplicity in mind, especially for those who might be new to Julia.
 
 ### Capabilities
-* Parse an OpenStreetMap XML datafile (OSM files)
+* Parse an [OpenStreetMap XML datafile](http://wiki.openstreetmap.org/wiki/OSM_XML) (OSM files)
 * Crop maps to specified boundaries
-* Convert maps between LLA, ECEF, and ENU coordinates
+* [Convert maps](https://en.wikipedia.org/wiki/Geographic_coordinate_conversion)
+  between LLA, ECEF, and ENU coordinates
 * Extract highways, buildings, and tagged features from OSM data
-* Filter data by various classes
+* Filter data by various classes:
   * Ways suitable for driving, walking, or cycling
   * Freeways, major city streets, residential streets, etc.
   * Accomodations, shops, industry, etc.
-* Draw detailed maps using Julia's Winston graphics package with a variety of options
+* Draw detailed maps using Julia's [Winston](https://github.com/nolta/Winston.jl) graphics package
+  with a variety of options
 * Compute shortest or fastest driving, cycling, and walking routes using Julia's Graphs package
 
 ### Examples
-A [gallery](http://imgur.com/a/28l5K) of map examples shows plotting and routing capabilities of the OpenStreetMap package. All displayed images were created using only OpenStreetMap.jl.
+[This gallery](http://imgur.com/a/28l5K) of map examples shows plotting and routing capabilities of the OpenStreetMap package. All displayed images were created using only OpenStreetMap.jl. For example:
 ##### Street map of Boston, Massachusetts:
 [![Boston](http://i.imgur.com/1pofvuP.png)](http://imgur.com/a/28l5K#0)
 
 ### Documentation
-[OpenStreetMap.jl Documentation](http://openstreetmapjl.readthedocs.org/en/latest/) is hosted by readTheDocs.
+[OpenStreetMap.jl documentation](http://openstreetmapjl.readthedocs.org/en/latest/) is hosted by ReadTheDocs.
 
 ### Setup
 
