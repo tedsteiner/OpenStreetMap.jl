@@ -1,5 +1,8 @@
+*.jl.cov
+*.jl.mem
 _build
 _static
 _templates
 *.swp
 *~
+test/tech_square.osm

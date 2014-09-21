@@ -14,4 +14,3 @@ cropMap!(nodes, bounds, highways=hwys, buildings=builds, features=feats, delete_
 @test length(hwys) == 16
 @test length(builds) == 1
 @test length(feats) == 0
-

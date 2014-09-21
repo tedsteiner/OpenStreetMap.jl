@@ -58,5 +58,3 @@ shortest_edges = routeEdges( network, shortest_route )
 
 fastest_edges = routeEdges( network, fastest_route )
 @test length(fastest_edges) == 21
-
-
