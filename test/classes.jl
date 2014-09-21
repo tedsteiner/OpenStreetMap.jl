@@ -1,4 +1,5 @@
 # Test extracting way, building, and feature classes from OSM data
+module TestClasses
 
 using OpenStreetMap
 using Base.Test
@@ -25,3 +26,5 @@ feat_classes = classify( feats )
 for key in keys(feat_classes)
     @test feat_classes[key] == 1
 end
+
+end # module TestClasses

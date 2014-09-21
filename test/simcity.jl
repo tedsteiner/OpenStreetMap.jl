@@ -1,4 +1,5 @@
 # Test city simulation
+module TestSimCity
 
 using OpenStreetMap
 using Base.Test
@@ -31,3 +32,5 @@ nodes, highways, roads = simCityGrid(roads_north,roads_east)
 @test roads[3] == roads_north[3]
 @test roads[5] == roads_east[2]
 @test roads[7] == roads_east[4]
+
+end # module TestSimCity

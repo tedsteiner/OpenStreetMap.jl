@@ -1,7 +1,9 @@
 # Test route planning
+module TestRoutes
 
 using OpenStreetMap
 using Base.Test
+using Graphs
 
 MAP_FILENAME = "tech_square.osm"
 
@@ -14,6 +16,7 @@ cropMap!(nodes, bounds, highways=hwys, buildings=builds, features=feats, delete_
 nodesENU = lla2enu( nodes, OpenStreetMap.centerBounds(bounds) )
 
 # Form transportation network
+roads = roadways( hwys )
 network = createGraph( nodesENU, hwys, roads, Set(1:8...) )
 
 @test Graphs.num_vertices(network.g) == 155
@@ -58,3 +61,5 @@ shortest_edges = routeEdges( network, shortest_route )
 
 fastest_edges = routeEdges( network, fastest_route )
 @test length(fastest_edges) == 21
+
+end # module TestRoutes

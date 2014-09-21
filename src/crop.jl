@@ -69,9 +69,7 @@ end
 function crop!(nodes::Dict, bounds::Bounds, highways::Dict{Int,Highway})
     missing_nodes = Int[]
 
-    for key in keys(highways)
-        highway = highways[key]
-
+    for (key, highway) in highways
         valid = falses(length(highway.nodes))
         #println(highway.nodes)
         #for n = 1:length(highway.nodes)
@@ -92,6 +90,7 @@ function crop!(nodes::Dict, bounds::Bounds, highways::Dict{Int,Highway})
         end
 
         nodes_in_bounds = sum(valid)
+
         if nodes_in_bounds == 0
             delete!(highways,key)   # Remove highway from list
         elseif nodes_in_bounds < length(valid)
@@ -144,26 +143,32 @@ function inBounds(loc::LLA, bounds::Bounds)
     lat = loc.lat
     lon = loc.lon
 
-    if lat < bounds.min_lat || lat > bounds.max_lat
-        return false
-    elseif lon < bounds.min_lon || lon > bounds.max_lon
-        return false
-    end
-
-    return true
+    bounds.min_lat <= lat <= bounds.max_lat &&
+    bounds.min_lon <= lon <= bounds.max_lon
 end
 
 function inBounds(loc::ENU, bounds::Bounds)
     north = loc.north
     east = loc.east
 
-    if north < bounds.min_lat || north > bounds.max_lat
-        return false
-    elseif east < bounds.min_lon || east > bounds.max_lon
-        return false
-    end
+    bounds.min_lat <= north <= bounds.max_lat &&
+    bounds.min_lon <= east <= bounds.max_lon
+end
 
-    return true
+function onBounds(loc::LLA, bounds::Bounds)
+    lat = loc.lat
+    lon = loc.lon
+
+    lat == bounds.min_lat || lat == bounds.max_lat ||
+    lon == bounds.min_lon || lon == bounds.max_lon
+end
+
+function onBounds(loc::ENU, bounds::Bounds)
+    north = loc.north
+    east = loc.east
+
+    north == bounds.min_lat || north == bounds.max_lat ||
+    east == bounds.min_lon || east == bounds.max_lon
 end
 
 ### Remove specified items from an array ###
@@ -179,138 +184,62 @@ function cropList!(list::Array, crop_list::BitArray{1})
     return nothing
 end
 
-### Crop highway to fit within bounds, interpolating to place ###
-### new nodes on the boundary as necessary.                   ###
-function cropHighway!(nodes::Dict, bounds::Bounds, highway::Highway, valid::BitArray{1})
-    inside = find(valid)
-    first_inside = inside[1]
-    last_inside = inside[end]
+function boundaryPoint{T}(p1::T, p2::T, bounds::Bounds)
+    x1, y1 = getX(p1), getY(p1)
+    x2, y2 = getX(p2), getY(p2)
 
-    # Remove bad nodes at end of highway node list
-    if last_inside+1 < length(highway.nodes)
-        for k = (last_inside+2):length(highway.nodes)
-            pop!(highway.nodes)
-            pop!(valid)
-        end
+    x, y = x1, y1
+
+    # checks assume inBounds(p1) != inBounds(p2)
+    if x1 < bounds.min_lon < x2 || x1 > bounds.min_lon > x2
+        x = bounds.min_lon
+        y = y1 + (y2 - y1) * (bounds.min_lon - x1) / (x2 - x1)
+    elseif x1 < bounds.max_lon < x2 || x1 > bounds.max_lon > x2
+        x = bounds.max_lon
+        y = y1 + (y2 - y1) * (bounds.max_lon - x1) / (x2 - x1)
     end
 
-    # Remove bad nodes at start of highway node list
-    if first_inside > 2
-        ind = first_inside - 2
-        for k = 1:(first_inside-2)
-            splice!(highway.nodes,ind)
-            splice!(valid,ind)
-            ind -= 1
-        end
+    p3 = T == LLA ? T(y, x) : T(x, y)
+    inBounds(p3, bounds) && return p3
+
+    if y1 < bounds.min_lat < y2 || y1 > bounds.min_lat > y2
+        x = x1 + (x2 - x1) * (bounds.min_lat - y1) / (y2 - y1)
+        y = bounds.min_lat
+    elseif y1 < bounds.max_lat < y2 || y1 > bounds.max_lat > y2
+        x = x1 + (x2 - x1) * (bounds.max_lat - y1) / (y2 - y1)
+        y = bounds.max_lat
     end
 
-    interpolate_start = !valid[1]
-    interpolate_end = !valid[end]
+    p3 = T == LLA ? T(y, x) : T(x, y)
+    inBounds(p3, bounds) && return p3
 
-    if interpolate_end
-        last_inside = find(valid)[end]
-        const node0 = highway.nodes[last_inside]
-        const x0 = getX( nodes[node0] )
-        const y0 = getY( nodes[node0] )
-        node1 = highway.nodes[last_inside+1]
-        x1 = getX( nodes[node1] )
-        y1 = getY( nodes[node1] )
+    error("Failed to find boundary point.")
+end
 
-        if x1 < bounds.min_lon || x1 > bounds.max_lon
-            if x1 < bounds.min_lon
-                x = bounds.min_lon
-            else
-                x = bounds.max_lon
+function cropHighway!(nodes::Dict, bounds::Bounds, highway::Highway, valids::BitArray{1})
+    prev_id, prev_valid = highway.nodes[1], valids[1]
+    ni = 1
+    for i in 1:length(valids)
+        id, valid = highway.nodes[ni], valids[i]
+
+        if !valid
+            deleteat!(highway.nodes, ni)
+            ni -= 1
+        end
+        if valid != prev_valid
+            prev_node, node = nodes[prev_id], nodes[id]
+            if !(onBounds(prev_node, bounds) || onBounds(node, bounds))
+                new_node = boundaryPoint(prev_node, node, bounds)
+                new_id = addNewNode(nodes, new_node)
+                insert!(highway.nodes, ni + !valid, new_id)
+                ni += 1
             end
-            y = y0 + (y1 - y0) * (x - x0) / (x1 - x0)
-
-            # Add a new node to nodes list
-            if typeof(nodes[node0]) == LLA
-                new_id = addNewNode(nodes,LLA(y,x))
-            else # ENU
-                new_id = addNewNode(nodes,ENU(x,y))
-            end
-            highway.nodes[last_inside+1] = new_id
-            valid[last_inside+1] = inBounds(nodes[new_id],bounds)
         end
 
-        if !valid[last_inside+1]
-            node1 = highway.nodes[last_inside+1]
-            x1 = getX( nodes[node1] )
-            y1 = getY( nodes[node1] )
+        ni += 1
 
-            if y1 < bounds.min_lat || y1 > bounds.max_lat
-                if y1 < bounds.min_lat
-                    y = bounds.min_lat
-                else
-                    y = bounds.max_lat
-                end
-                x = x0 + (x1-x0) * (y - y0) / (y1 - y0)
-
-                # Add a new node to nodes list
-                if typeof(nodes[node0]) == LLA
-                    new_id = addNewNode(nodes,LLA(y,x))
-                else # ENU
-                    new_id = addNewNode(nodes,ENU(x,y))
-                end
-                highway.nodes[last_inside+1] = new_id
-                valid[last_inside+1] = inBounds(nodes[new_id],bounds)
-            end
-        end
-    end
-
-    if interpolate_start
-        first_inside = find(valid)[1]
-        const node0 = highway.nodes[first_inside]
-        const x0 = getX( nodes[node0] )
-        const y0 = getY( nodes[node0] )
-        node1 = highway.nodes[first_inside-1]
-        x1 = getX( nodes[node1] )
-        y1 = getY( nodes[node1] )
-
-        if x1 < bounds.min_lon || x1 > bounds.max_lon
-            if x1 < bounds.min_lon
-                x = bounds.min_lon
-            else
-                x = bounds.max_lon
-            end
-            y = y0 + (y1 - y0) * (x - x0) / (x1 - x0);
-
-            # Add a new node to nodes list
-            if typeof(nodes[node0]) == LLA
-                new_id = addNewNode(nodes,LLA(y,x))
-            else # ENU
-                new_id = addNewNode(nodes,ENU(x,y))
-            end
-            highway.nodes[first_inside-1] = new_id
-            valid[first_inside-1] = inBounds(nodes[new_id],bounds)
-        end
-
-        if !valid[first_inside-1]
-            node1 = highway.nodes[first_inside-1]
-            x1 = getX( nodes[node1] )
-            y1 = getY( nodes[node1] )
-
-            if y1 < bounds.min_lat || y1 > bounds.max_lat
-                if y1 < bounds.min_lat
-                    y = bounds.min_lat
-                else
-                    y = bounds.max_lat
-                end
-                x = x0 + (x1-x0) * (y - y0) / (y1 - y0)
-
-                # Add a new node to nodes list
-                if typeof(nodes[node0]) == LLA
-                    new_id = addNewNode(nodes,LLA(y,x))
-                else # ENU
-                    new_id = addNewNode(nodes,ENU(x,y))
-                end
-                highway.nodes[first_inside-1] = new_id
-                valid[first_inside-1] = inBounds(nodes[new_id],bounds)
-            end
-        end
+        prev_id, prev_valid = id, valid
     end
 
     return nothing
 end
-

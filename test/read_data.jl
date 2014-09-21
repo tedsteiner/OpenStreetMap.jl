@@ -1,4 +1,5 @@
 # Test reading in OSM data
+module TestReadData
 
 using OpenStreetMap
 using Base.Test
@@ -24,3 +25,5 @@ bounds = getBounds(map)
 @test_approx_eq bounds.max_lat 42.3659000
 @test_approx_eq bounds.min_lon -71.0939000
 @test_approx_eq bounds.max_lon -71.0891000
+
+end # module TestReadData
