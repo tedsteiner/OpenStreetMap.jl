@@ -3,7 +3,7 @@
 ### Copyright 2014              ###
 
 ### Create list of all buildings in OSM file ###
-function getBuildings( street_map::LightXML.XMLDocument )
+function getBuildings(street_map::LightXML.XMLDocument)
 
     xroot = LightXML.root(street_map)
     ways = LightXML.get_elements_by_tagname(xroot, "way")
@@ -12,7 +12,7 @@ function getBuildings( street_map::LightXML.XMLDocument )
 
     for n = 1:length(ways)
         way = ways[n]
-        
+
         if LightXML.has_attribute(way, "visible")
             if LightXML.attribute(way, "visible") == "false"
                 # Visible=false indicates historic data, which we will ignore
@@ -32,7 +32,7 @@ function getBuildings( street_map::LightXML.XMLDocument )
                         end
 
                         id = int(LightXML.attribute(way, "id"))
-                        buildings[id] = getBuildingData(way,class)
+                        buildings[id] = getBuildingData(way, class)
                         break
                     end
                 end
@@ -44,7 +44,7 @@ function getBuildings( street_map::LightXML.XMLDocument )
 end
 
 ### Gather highway data from OSM element ###
-function getBuildingData( building::LightXML.XMLElement, class::String="" )
+function getBuildingData(building::LightXML.XMLElement, class::String="")
     nodes = Int[]
     class = ""
     building_name = ""
@@ -77,7 +77,7 @@ function getBuildingData( building::LightXML.XMLElement, class::String="" )
 
         # Collect associated nodes
         if LightXML.name(label) == "nd" && LightXML.has_attribute(label, "ref")
-            push!(nodes,int64(LightXML.attribute(label, "ref")))
+            push!(nodes, int64(LightXML.attribute(label, "ref")))
             continue
         end
     end
@@ -86,11 +86,11 @@ function getBuildingData( building::LightXML.XMLElement, class::String="" )
 end
 
 ### Classify buildings ###
-function classify( buildings::Dict{Int,Building} )
+function classify(buildings::Dict{Int,Building})
     bdgs = Dict{Int,Int}()
 
     for key in keys(buildings)
-        if haskey(BUILDING_CLASSES,buildings[key].class)
+        if haskey(BUILDING_CLASSES, buildings[key].class)
             bdgs[key] = BUILDING_CLASSES[buildings[key].class]
         end
     end

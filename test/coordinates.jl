@@ -8,7 +8,7 @@ using Base.Test
 lat = 42.3673;
 lon = -71.0960;
 alt = 0;
-P_lla = OpenStreetMap.LLA(lat,lon,alt)
+P_lla = OpenStreetMap.LLA(lat, lon, alt)
 
 @test P_lla.lat == lat
 @test P_lla.lon == lon
@@ -18,7 +18,7 @@ P_lla = OpenStreetMap.LLA(lat,lon,alt)
 lat0 = 42.36299;
 lon0 = -71.09183;
 alt0 = 0;
-P_ref_lla = OpenStreetMap.LLA(lat0,lon0,alt0)
+P_ref_lla = OpenStreetMap.LLA(lat0, lon0, alt0)
 
 # lla2ecef
 P_ecef = lla2ecef(P_lla)
@@ -28,7 +28,7 @@ P_ecef = lla2ecef(P_lla)
 @test_approx_eq P_ecef.z 4275835.339260309
 
 # lla2enu
-P_enu = lla2enu(P_lla,P_ref_lla)
+P_enu = lla2enu(P_lla, P_ref_lla)
 
 @test_approx_eq P_enu.east -343.49374908345493
 @test_approx_eq P_enu.north 478.7648554687071
@@ -36,7 +36,7 @@ P_enu = lla2enu(P_lla,P_ref_lla)
 
 #####
 # Bounds object
-bounds = OpenStreetMap.Bounds(42.365,42.3695,-71.1,-71.094)
+bounds = OpenStreetMap.Bounds(42.365, 42.3695, -71.1, -71.094)
 bounds_enu = lla2enu(bounds)
 
 @test_approx_eq bounds_enu.min_lat -249.92653559014204

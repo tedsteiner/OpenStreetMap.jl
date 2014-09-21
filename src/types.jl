@@ -17,7 +17,7 @@ type Segment
     node0::Int          # Source node ID
     node1::Int          # Target node ID
     nodes::Array{Int,1} # List of nodes falling within node0 and node1
-    dist::Real          # Length of the segment 
+    dist::Real          # Length of the segment
     class::Int          # Class of the segment
     parent::Int         # ID of parent highway
     oneway::Bool        # True if road is one-way
@@ -90,16 +90,16 @@ end
 ENU(x, y) = ENU(x, y, 0)
 
 ### Point translators
-function getX( lla::LLA )
+function getX(lla::LLA)
     return lla.lon
 end
-function getY( lla::LLA )
+function getY(lla::LLA)
     return lla.lat
 end
-function getX( enu::ENU )
+function getX(enu::ENU)
     return enu.east
 end
-function getY( enu::ENU )
+function getY(enu::ENU)
     return enu.north
 end
 
@@ -118,7 +118,7 @@ type WGS84
         b = 6356752.31424518                # Semi-minor axis
         e = sqrt((a*a - b*b) / (a*a))       # Eccentricity
         e_prime = sqrt((a*a - b*b) / (b*b)) # Second eccentricity
-        new(a,b,e,e_prime)
+        new(a, b, e, e_prime)
     end
 end
 

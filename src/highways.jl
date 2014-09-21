@@ -3,7 +3,7 @@
 ### Copyright 2014              ###
 
 ### Create list of all highways in OSM file ###
-function getHighways( street_map::LightXML.XMLDocument )
+function getHighways(street_map::LightXML.XMLDocument)
 
     xroot = LightXML.root(street_map)
     ways = LightXML.get_elements_by_tagname(xroot, "way")
@@ -12,14 +12,14 @@ function getHighways( street_map::LightXML.XMLDocument )
 
     for n = 1:length(ways)
         way = ways[n]
-        
+
         if LightXML.has_attribute(way, "visible")
             if LightXML.attribute(way, "visible") == "false"
                 # Visible=false indicates historic data, which we will ignore
                 continue
             end
         end
-        
+
         # Search for tag with k="highway"
         for tag in LightXML.child_elements(way)
             if LightXML.name(tag) == "tag"
@@ -28,7 +28,7 @@ function getHighways( street_map::LightXML.XMLDocument )
                     if k == "highway"
                         if LightXML.has_attribute(tag, "v")
                             class = LightXML.attribute(tag, "v")
-                            
+
                             # Note: Highways marked "services" are not traversable
                             if class != "services"
                                 id = int(LightXML.attribute(way, "id"))
@@ -47,7 +47,7 @@ function getHighways( street_map::LightXML.XMLDocument )
 end
 
 ### Gather highway data from OSM element ###
-function getHighwayData( highway::LightXML.XMLElement, class::String="" )
+function getHighwayData(highway::LightXML.XMLElement, class::String="")
     oneway = false
     oneway_override = false # Flag to indicate if oneway is forced to false
     oneway_reverse = false # Flag to indicate nodes need to be reversed
@@ -99,7 +99,7 @@ function getHighwayData( highway::LightXML.XMLElement, class::String="" )
                     continue
                 end
             end
-            
+
             # Roundabouts are oneway
             if k == "junction"
                 if LightXML.has_attribute(label, "v")
@@ -149,11 +149,11 @@ function getHighwayData( highway::LightXML.XMLElement, class::String="" )
 
         # Collect associated nodes
         if LightXML.name(label) == "nd" && LightXML.has_attribute(label, "ref")
-            push!(nodes,int64(LightXML.attribute(label, "ref")))
+            push!(nodes, int64(LightXML.attribute(label, "ref")))
             continue
         end
     end
-    
+
     # If road is marked as backwards (should be rare), reverse the node order
     if oneway_reverse
         nodes_temp = deepcopy(nodes)
@@ -161,17 +161,17 @@ function getHighwayData( highway::LightXML.XMLElement, class::String="" )
             nodes[k] = nodes_temp[length(nodes)-k+1]
         end
     end
-    
+
 
     return Highway(class, lanes, oneway, sidewalk, cycleway, bicycle, road_name, nodes)
 end
 
 ### Classify highways for cars ###
-function roadways( highways::Dict{Int,Highway} )
+function roadways(highways::Dict{Int,Highway})
     roads = Dict{Int,Int}()
 
     for key in keys(highways)
-        if haskey(ROAD_CLASSES,highways[key].class)
+        if haskey(ROAD_CLASSES, highways[key].class)
             roads[key] = ROAD_CLASSES[highways[key].class]
         end
     end
@@ -180,15 +180,15 @@ function roadways( highways::Dict{Int,Highway} )
 end
 
 ### Classify highways for pedestrians ###
-function walkways( highways::Dict{Int,Highway} )
+function walkways(highways::Dict{Int,Highway})
     peds = Dict{Int,Int}()
 
     for key in keys(highways)
         if highways[key].sidewalk != "no"
             # Field priority: sidewalk, highway
-            if haskey(PED_CLASSES,"sidewalk:$(highways[key].sidewalk)")
+            if haskey(PED_CLASSES, "sidewalk:$(highways[key].sidewalk)")
                 peds[key] = PED_CLASSES["sidewalk:$(highways[key].sidewalk)"]
-            elseif haskey(PED_CLASSES,highways[key].class)
+            elseif haskey(PED_CLASSES, highways[key].class)
                 peds[key] = PED_CLASSES[highways[key].class]
             end
         end
@@ -198,17 +198,17 @@ function walkways( highways::Dict{Int,Highway} )
 end
 
 ### Classify highways for cycles ###
-function cycleways( highways::Dict{Int,Highway} )
+function cycleways(highways::Dict{Int,Highway})
     cycles = Dict{Int,Int}()
 
     for key in keys(highways)
         if highways[key].bicycle != "no"
             # Field priority: cycleway, bicycle, highway
-            if haskey(CYCLE_CLASSES,"cycleway:$(highways[key].cycleway)")
+            if haskey(CYCLE_CLASSES, "cycleway:$(highways[key].cycleway)")
                 cycles[key] = CYCLE_CLASSES["cycleway:$(highways[key].cycleway)"]
-            elseif haskey(CYCLE_CLASSES,"bicycle:$(highways[key].bicycle)")
+            elseif haskey(CYCLE_CLASSES, "bicycle:$(highways[key].bicycle)")
                 cycles[key] = CYCLE_CLASSES["bicycle:$(highways[key].bicycle)"]
-            elseif haskey(CYCLE_CLASSES,highways[key].class)
+            elseif haskey(CYCLE_CLASSES, highways[key].class)
                 cycles[key] = CYCLE_CLASSES[highways[key].class]
             end
         end

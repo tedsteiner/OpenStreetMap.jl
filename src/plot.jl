@@ -5,25 +5,25 @@
 ### Functions for plotting using the Winston package ###
 
 ### Generic Map Plot ###
-function plotMap( nodes;
-                  highways=nothing,
-                  buildings=nothing,
-                  features=nothing,
-                  bounds=nothing,
-                  intersections=nothing,
-                  roadways=nothing,
-                  cycleways=nothing,
-                  walkways=nothing,
-                  feature_classes=nothing,
-                  building_classes=nothing,
-                  route=nothing,
-                  highway_style::Style=Style(0x007CFF,1.5,"-"),
-                  building_style::Style=Style(0x000000,1,"-"),
-                  feature_style=Style(0xCC0000,2.5,"."),
-                  route_style=Style(0xFF0000, 3, "-"),
-                  intersection_style::Style=Style(0x000000,3,"."),
-                  width::Integer=500,
-                  realtime::Bool=false )
+function plotMap(nodes;
+                 highways=nothing,
+                 buildings=nothing,
+                 features=nothing,
+                 bounds=nothing,
+                 intersections=nothing,
+                 roadways=nothing,
+                 cycleways=nothing,
+                 walkways=nothing,
+                 feature_classes=nothing,
+                 building_classes=nothing,
+                 route=nothing,
+                 highway_style::Style=Style(0x007CFF, 1.5, "-"),
+                 building_style::Style=Style(0x000000, 1, "-"),
+                 feature_style=Style(0xCC0000, 2.5, "."),
+                 route_style=Style(0xFF0000, 3, "-"),
+                 intersection_style::Style=Style(0x000000, 3, "."),
+                 width::Integer=500,
+                 realtime::Bool=false)
 
     # Check if bounds type is correct
     if bounds != nothing
@@ -42,8 +42,8 @@ function plotMap( nodes;
         ylab = "Latitude (deg)"
 
         if bounds != nothing
-            aspect_ratio = getAspectRatio( bounds )
-            height = int( height / aspect_ratio )
+            aspect_ratio = getAspectRatio(bounds)
+            height = int(height / aspect_ratio)
         end
     elseif typeof(nodes) == Dict{Int,ENU}
         xlab = "East (m)"
@@ -54,7 +54,7 @@ function plotMap( nodes;
             xrange = bounds.max_lon - bounds.min_lon
             yrange = bounds.max_lat - bounds.min_lat
             aspect_ratio = xrange / yrange
-            height = int( width / aspect_ratio )
+            height = int(width / aspect_ratio)
         end
     else
         println("[OpenStreetMap.jl] ERROR: Input argument <nodes> in plotMap() has unsupported type.")
@@ -69,8 +69,8 @@ function plotMap( nodes;
 
     # Limit plot to specified bounds
     if bounds != nothing
-        Winston.xlim(bounds.min_lon,bounds.max_lon)
-        Winston.ylim(bounds.min_lat,bounds.max_lat)
+        Winston.xlim(bounds.min_lon, bounds.max_lon)
+        Winston.ylim(bounds.min_lat, bounds.max_lat)
     end
 
     # Iterate over all buildings and draw
@@ -78,9 +78,9 @@ function plotMap( nodes;
         if typeof(buildings) == Dict{Int,Building}
             if building_classes != nothing && typeof(building_classes) == Dict{Int,Int}
                 if typeof(building_style) == Dict{Int,Style}
-                    drawWayLayer(nodes,buildings,building_classes,building_style,realtime)
+                    drawWayLayer(nodes, buildings, building_classes, building_style, realtime)
                 else
-                    drawWayLayer(nodes,buildings,building_classes,LAYER_BUILDINGS,realtime)
+                    drawWayLayer(nodes, buildings, building_classes, LAYER_BUILDINGS, realtime)
                 end
             else
                 for key in keys(buildings)
@@ -104,23 +104,23 @@ function plotMap( nodes;
             if roadways != nothing || cycleways != nothing || walkways != nothing
                 if roadways != nothing
                     if typeof(highway_style) == Dict{Int,Style}
-                        drawWayLayer(nodes,highways,roadways,highway_style,realtime)
+                        drawWayLayer(nodes, highways, roadways, highway_style, realtime)
                     else
-                        drawWayLayer(nodes,highways,roadways,LAYER_STANDARD,realtime)
+                        drawWayLayer(nodes, highways, roadways, LAYER_STANDARD, realtime)
                     end
                 end
                 if cycleways != nothing
                     if typeof(highway_style) == Dict{Int,Style}
-                        drawWayLayer(nodes,highways,cycleways,highway_style,realtime)
+                        drawWayLayer(nodes, highways, cycleways, highway_style, realtime)
                     else
-                        drawWayLayer(nodes,highways,cycleways,LAYER_CYCLE,realtime)
+                        drawWayLayer(nodes, highways, cycleways, LAYER_CYCLE, realtime)
                     end
                 end
                 if walkways != nothing
                     if typeof(highway_style) == Dict{Int,Style}
-                        drawWayLayer(nodes,highways,walkways,highway_style,realtime)
+                        drawWayLayer(nodes, highways, walkways, highway_style, realtime)
                     else
-                        drawWayLayer(nodes,highways,walkways,LAYER_PED,realtime)
+                        drawWayLayer(nodes, highways, walkways, LAYER_PED, realtime)
                     end
                 end
             else
@@ -193,10 +193,10 @@ function plotMap( nodes;
     if intersections != nothing
         if typeof(intersections) == Dict{Int,Intersection}
             intersection_nodes = zeros(length(intersections))
-            coords = zeros(length(intersections),2)
+            coords = zeros(length(intersections), 2)
             k = 1
             for key in keys(intersections)
-                coords[k,:] = getNodeCoords(nodes, key)
+                coords[k, :] = getNodeCoords(nodes, key)
                 k += 1
             end
 
@@ -220,7 +220,7 @@ end
 
 
 ### Draw layered Map ###
-function drawWayLayer( nodes::Dict, ways, classes, layer, realtime=false )
+function drawWayLayer(nodes::Dict, ways, classes, layer, realtime=false)
     for key in keys(classes)
         # Get coordinates of all nodes for object
         coords = getNodeCoords(nodes, ways[key].nodes)
@@ -232,7 +232,7 @@ end
 
 
 ### Draw layered features ###
-function drawFeatureLayer( nodes::Dict, features, classes, layer, realtime=false )
+function drawFeatureLayer(nodes::Dict, features, classes, layer, realtime=false)
     class_ids = Set(collect(values(classes))...)
 
     for id in class_ids
@@ -240,7 +240,7 @@ function drawFeatureLayer( nodes::Dict, features, classes, layer, realtime=false
 
         for key in keys(classes)
             if classes[key] == id
-                push!(ids,key)
+                push!(ids, key)
             end
         end
 
@@ -255,13 +255,13 @@ end
 
 ### Get coordinates of lists of nodes ###
 # Nodes in LLA coordinates
-function getNodeCoords( nodes::Dict{Int,LLA}, id_list )
-    coords = zeros(length(id_list),2)
+function getNodeCoords(nodes::Dict{Int,LLA}, id_list)
+    coords = zeros(length(id_list), 2)
 
     for k = 1:length(id_list)
         loc = nodes[id_list[k]]
-        coords[k,1] = loc.lon
-        coords[k,2] = loc.lat
+        coords[k, 1] = loc.lon
+        coords[k, 2] = loc.lat
     end
 
     return coords
@@ -269,13 +269,13 @@ end
 
 
 # Nodes in ENU coordinates
-function getNodeCoords( nodes::Dict{Int,ENU}, id_list )
-    coords = zeros(length(id_list),2)
+function getNodeCoords(nodes::Dict{Int,ENU}, id_list)
+    coords = zeros(length(id_list), 2)
 
     for k = 1:length(id_list)
         loc = nodes[id_list[k]]
-        coords[k,1] = loc.east
-        coords[k,2] = loc.north
+        coords[k, 1] = loc.east
+        coords[k, 2] = loc.north
     end
 
     return coords
@@ -283,14 +283,14 @@ end
 
 
 ### Draw a line between all points in a coordinate list ###
-function drawNodes( coords, style="k-", width=1, realtime=false )
-    x = coords[:,1]
-    y = coords[:,2]
+function drawNodes(coords, style="k-", width=1, realtime=false)
+    x = coords[:, 1]
+    y = coords[:, 2]
     if length(x) > 1
         if realtime
-            display(Winston.plot(x,y,style,linewidth=width))
+            display(Winston.plot(x, y, style, linewidth=width))
         else
-            Winston.plot(x,y,style,linewidth=width)
+            Winston.plot(x, y, style, linewidth=width)
         end
     end
     nothing
@@ -298,14 +298,14 @@ end
 
 
 ### Draw a line between all points in a coordinate list given Style object ###
-function drawNodes( coords, line_style::Style, realtime=false )
-    x = coords[:,1]
-    y = coords[:,2]
+function drawNodes(coords, line_style::Style, realtime=false)
+    x = coords[:, 1]
+    y = coords[:, 2]
     if length(x) > 1
         if realtime
-            display(Winston.plot(x,y,line_style.spec,color=line_style.color,linewidth=line_style.width))
+            display(Winston.plot(x, y, line_style.spec, color=line_style.color, linewidth=line_style.width))
         else
-            Winston.plot(x,y,line_style.spec,color=line_style.color,linewidth=line_style.width)
+            Winston.plot(x, y, line_style.spec, color=line_style.color, linewidth=line_style.width)
         end
     end
     nothing
@@ -313,8 +313,8 @@ end
 
 
 ### Compute approximate "aspect ratio" at mean latitude ###
-function getAspectRatio( bounds::Bounds )
-    c_adj = cosd(mean([bounds.min_lat,bounds.max_lat]))
+function getAspectRatio(bounds::Bounds)
+    c_adj = cosd(mean([bounds.min_lat, bounds.max_lat]))
     range_lat = bounds.max_lat - bounds.min_lat
     range_lon = bounds.max_lon - bounds.min_lon
 

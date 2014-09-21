@@ -3,7 +3,7 @@
 ### Copyright 2014              ###
 
 ### Parse the data from an openStreetMap XML file ###
-function parseMapXML( filename::String )
+function parseMapXML(filename::String)
 
     # Parse the file
     street_map = LightXML.parse_file(filename)
@@ -20,7 +20,7 @@ function parseMapXML( filename::String )
     return street_map
 end
 
-function getOSMData( filename::String; nodes=false, highways=false, buildings=false, features=false)
+function getOSMData(filename::String; nodes=false, highways=false, buildings=false, features=false)
     street_map = parseMapXML(filename)
 
     if nodes

@@ -3,7 +3,7 @@
 ### Copyright 2014              ###
 
 ### Get bounds of mapped region ###
-function getBounds( street_map::LightXML.XMLDocument )
+function getBounds(street_map::LightXML.XMLDocument)
 
     xroot = LightXML.root(street_map)
     bounds = LightXML.get_elements_by_tagname(xroot, "bounds")
