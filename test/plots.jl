@@ -1,4 +1,5 @@
 # Test plotting
+module TestPlots
 
 using OpenStreetMap
 using Base.Test
@@ -19,3 +20,5 @@ feat_classes = classify( feats )
 fignum = plotMap(nodes, highways=hwys, buildings=builds, features=feats, bounds=bounds, width=500, feature_classes=feat_classes, building_classes=bldg_classes, cycleways=cycles, walkways=peds, roadways=roads)
 
 @test fignum == 1
+
+end # module TestPlots
