@@ -18,7 +18,7 @@ Define map boundary and crop:
 
 	bounds = OpenStreetMap.Bounds(42.365,42.3675,-71.1,-71.094)
 	
-	cropMap!(nodes, boston, highways=hwys, buildings=builds, features=feats, delete_nodes=false)
+	cropMap!(nodes, bounds, highways=hwys, buildings=builds, features=feats, delete_nodes=false)
 
 Find highway intersections:
 
@@ -42,7 +42,7 @@ Convert map nodes to ENU coordinates:
 
 .. code-block:: python
 
-	reference = OpenStreetMap.centerBounds(boston)
+	reference = OpenStreetMap.centerBounds(bounds)
 	nodesENU = lla2enu( nodes, reference )
 	boundsENU = lla2enu( bounds, reference )
 
