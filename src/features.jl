@@ -9,8 +9,7 @@ function getFeatures(street_map::LightXML.XMLDocument)
     nodes = LightXML.get_elements_by_tagname(xroot, "node")
     features = Dict{Int,Feature}()
 
-    for n = 1:length(nodes)
-        node = nodes[n]
+    for node in nodes
 
         if LightXML.has_attribute(node, "visible")
             if LightXML.attribute(node, "visible") == "false"
@@ -104,9 +103,9 @@ end
 function classify(features::Dict{Int,Feature})
     feats = Dict{Int,Int}()
 
-    for key in keys(features)
-        if haskey(FEATURE_CLASSES,features[key].class)
-            feats[key] = FEATURE_CLASSES[features[key].class]
+    for (key, feature) in features
+        if haskey(FEATURE_CLASSES, feature.class)
+            feats[key] = FEATURE_CLASSES[feature.class]
         end
     end
 

@@ -83,9 +83,9 @@ function plotMap(nodes;
                     drawWayLayer(nodes, buildings, building_classes, LAYER_BUILDINGS, realtime)
                 end
             else
-                for key in keys(buildings)
+                for (key, building) in buildings
                     # Get coordinates of all nodes for object
-                    coords = getNodeCoords(nodes, buildings[key].nodes)
+                    coords = getNodeCoords(nodes, building.nodes)
 
                     # Add line(s) to plot
                     drawNodes(coords, building_style, realtime)
@@ -124,9 +124,9 @@ function plotMap(nodes;
                     end
                 end
             else
-                for key in keys(highways)
+                for (key, highway) in highways
                     # Get coordinates of all nodes for object
-                    coords = getNodeCoords(nodes, highways[key].nodes)
+                    coords = getNodeCoords(nodes, highway.nodes)
 
                     # Add line(s) to plot
                     drawNodes(coords, highway_style, realtime)
@@ -221,12 +221,12 @@ end
 
 ### Draw layered Map ###
 function drawWayLayer(nodes::Dict, ways, classes, layer, realtime=false)
-    for key in keys(classes)
+    for (key, class) in classes
         # Get coordinates of all nodes for object
         coords = getNodeCoords(nodes, ways[key].nodes)
 
         # Add line(s) to plot
-        drawNodes(coords, layer[classes[key]], realtime)
+        drawNodes(coords, layer[class], realtime)
     end
 end
 
@@ -238,8 +238,8 @@ function drawFeatureLayer(nodes::Dict, features, classes, layer, realtime=false)
     for id in class_ids
         ids = Int[]
 
-        for key in keys(classes)
-            if classes[key] == id
+        for (key, class) in classes
+            if class == id
                 push!(ids, key)
             end
         end

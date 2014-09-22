@@ -10,12 +10,11 @@ function findIntersections(highways::Dict{Int,Highway})
     crossings = Int[]
 
     # Highway ends
-    for k in keys(highways)
-        node0 = highways[k].nodes[1]
-        node1 = highways[k].nodes[end]
+    for (k, highway_k) in highways
+        node0 = highway_k.nodes[1]
+        node1 = highway_k.nodes[end]
         nodes = [node0, node1]
-        for kk = 1:length(nodes)
-            node = nodes[kk]
+        for node in nodes
             if haskey(intersections, node)
                 intersections[node] = Intersection(union(intersections[node].highways, Set(k)))
             else
@@ -25,12 +24,11 @@ function findIntersections(highways::Dict{Int,Highway})
     end
 
     # Highway crossings
-    for i in keys(highways)
+    for (i, highway_i) in highways
         for j in keys(highways)
             if i > j
-                node = intersect(highways[i].nodes, highways[j].nodes)
-                for k = 1:length(node)
-                    node_id = node[k]
+                node = intersect(highway_i.nodes, highways[j].nodes)
+                for node_id in node
                     if haskey(intersections, node_id)
                         intersections[node_id] = Intersection(union(intersections[node_id].highways, Set(i, j)))
                     else
@@ -55,18 +53,19 @@ function segmentHighways(nodes, highways, intersections, classes, levels=Set(1:1
 
     for i in keys(highways)
         if in(classes[i], levels)
+            highway = highways[i]
             first = 1
-            for j = 2:length(highways[i].nodes)
-                if in(highways[i].nodes[j], inters) || j == length(highways[i].nodes)
-                    node0 = highways[i].nodes[first]
-                    node1 = highways[i].nodes[j]
+            for j = 2:length(highway.nodes)
+                if in(highway.nodes[j], inters) || j == length(highway.nodes)
+                    node0 = highway.nodes[first]
+                    node1 = highway.nodes[j]
                     class = classes[i]
-                    route_nodes = highways[i].nodes[first:j]
+                    route_nodes = highway.nodes[first:j]
                     dist = distance(nodes, route_nodes)
                     s = Segment(node0, node1, route_nodes, dist, class, i, true)
                     push!(segments, s)
 
-                    if !highways[i].oneway
+                    if !highway.oneway
                         s = Segment(node1, node0, reverse(route_nodes), dist, class, i, true)
                         push!(segments, s)
                     end

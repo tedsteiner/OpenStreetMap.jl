@@ -35,8 +35,8 @@ function lla2ecef(nodes::Dict{Int,LLA})
     nodesECEF = Dict{Int,ECEF}()
     datum = WGS84()
 
-    for key in keys(nodes)
-        nodesECEF[key] = lla2ecef(nodes[key], datum)
+    for (key, node) in nodes
+        nodesECEF[key] = lla2ecef(node, datum)
     end
 
     return nodesECEF
@@ -76,8 +76,8 @@ function ecef2lla(nodes::Dict{Int,ECEF})
     nodesLLA = Dict{Int,LLA}()
     datum = WGS84()
 
-    for key in keys(nodes)
-        nodesLLA[key] = ecef2lla(nodes[key], datum)
+    for (key, node) in nodes
+        nodesLLA[key] = ecef2lla(node, datum)
     end
 
     return nodesLLA
@@ -122,8 +122,8 @@ function ecef2enu(nodes::Dict{Int,ECEF}, bounds::Bounds)
     nodesENU = Dict{Int,ENU}()
     lla_ref = centerBounds(bounds)
 
-    for key in keys(nodes)
-        nodesENU[key] = ecef2enu(nodes[key], lla_ref)
+    for (key, node) in nodes
+        nodesENU[key] = ecef2enu(node, lla_ref)
     end
 
     return nodesENU
@@ -167,8 +167,8 @@ function lla2enu(nodes::Dict{Int,LLA}, lla_ref::LLA)
     nodesENU = Dict{Int,ENU}()
     datum = WGS84()
 
-    for key in keys(nodes)
-        nodesENU[key] = lla2enu(nodes[key], datum, lla_ref)
+    for (key, node) in nodes
+        nodesENU[key] = lla2enu(node, datum, lla_ref)
     end
 
     return nodesENU

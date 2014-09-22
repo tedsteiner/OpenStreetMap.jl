@@ -10,8 +10,7 @@ function getHighways(street_map::LightXML.XMLDocument)
 
     highways = Dict{Int,Highway}()
 
-    for n = 1:length(ways)
-        way = ways[n]
+    for way in ways
 
         if LightXML.has_attribute(way, "visible")
             if LightXML.attribute(way, "visible") == "false"
@@ -170,9 +169,9 @@ end
 function roadways(highways::Dict{Int,Highway})
     roads = Dict{Int,Int}()
 
-    for key in keys(highways)
-        if haskey(ROAD_CLASSES, highways[key].class)
-            roads[key] = ROAD_CLASSES[highways[key].class]
+    for (key, highway) in highways
+        if haskey(ROAD_CLASSES, highway.class)
+            roads[key] = ROAD_CLASSES[highway.class]
         end
     end
 
@@ -183,13 +182,13 @@ end
 function walkways(highways::Dict{Int,Highway})
     peds = Dict{Int,Int}()
 
-    for key in keys(highways)
-        if highways[key].sidewalk != "no"
+    for (key, highway) in highways
+        if highway.sidewalk != "no"
             # Field priority: sidewalk, highway
-            if haskey(PED_CLASSES, "sidewalk:$(highways[key].sidewalk)")
-                peds[key] = PED_CLASSES["sidewalk:$(highways[key].sidewalk)"]
-            elseif haskey(PED_CLASSES, highways[key].class)
-                peds[key] = PED_CLASSES[highways[key].class]
+            if haskey(PED_CLASSES, "sidewalk:$(highway.sidewalk)")
+                peds[key] = PED_CLASSES["sidewalk:$(highway.sidewalk)"]
+            elseif haskey(PED_CLASSES, highway.class)
+                peds[key] = PED_CLASSES[highway.class]
             end
         end
     end
@@ -201,15 +200,15 @@ end
 function cycleways(highways::Dict{Int,Highway})
     cycles = Dict{Int,Int}()
 
-    for key in keys(highways)
-        if highways[key].bicycle != "no"
+    for (key, highway) in highways
+        if highway.bicycle != "no"
             # Field priority: cycleway, bicycle, highway
-            if haskey(CYCLE_CLASSES, "cycleway:$(highways[key].cycleway)")
-                cycles[key] = CYCLE_CLASSES["cycleway:$(highways[key].cycleway)"]
-            elseif haskey(CYCLE_CLASSES, "bicycle:$(highways[key].bicycle)")
-                cycles[key] = CYCLE_CLASSES["bicycle:$(highways[key].bicycle)"]
-            elseif haskey(CYCLE_CLASSES, highways[key].class)
-                cycles[key] = CYCLE_CLASSES[highways[key].class]
+            if haskey(CYCLE_CLASSES, "cycleway:$(highway.cycleway)")
+                cycles[key] = CYCLE_CLASSES["cycleway:$(highway.cycleway)"]
+            elseif haskey(CYCLE_CLASSES, "bicycle:$(highway.bicycle)")
+                cycles[key] = CYCLE_CLASSES["bicycle:$(highway.bicycle)"]
+            elseif haskey(CYCLE_CLASSES, highway.class)
+                cycles[key] = CYCLE_CLASSES[highway.class]
             end
         end
     end

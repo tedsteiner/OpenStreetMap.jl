@@ -10,8 +10,7 @@ function getBuildings(street_map::LightXML.XMLDocument)
 
     buildings = Dict{Int,Building}()
 
-    for n = 1:length(ways)
-        way = ways[n]
+    for way in ways
 
         if LightXML.has_attribute(way, "visible")
             if LightXML.attribute(way, "visible") == "false"
@@ -89,9 +88,9 @@ end
 function classify(buildings::Dict{Int,Building})
     bdgs = Dict{Int,Int}()
 
-    for key in keys(buildings)
-        if haskey(BUILDING_CLASSES, buildings[key].class)
-            bdgs[key] = BUILDING_CLASSES[buildings[key].class]
+    for (key, building) in buildings
+        if haskey(BUILDING_CLASSES, building.class)
+            bdgs[key] = BUILDING_CLASSES[building.class]
         end
     end
 

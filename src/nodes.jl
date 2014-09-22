@@ -9,8 +9,7 @@ function getNodes(street_map::LightXML.XMLDocument)
     all_nodes = LightXML.get_elements_by_tagname(xroot, "node")
     nodes = Dict{Int,LLA}()
 
-    for n = 1:length(all_nodes)
-        node = all_nodes[n]
+    for node in all_nodes
 
         if LightXML.has_attribute(node, "visible")
             if LightXML.attribute(node, "visible") == "false"
@@ -45,17 +44,17 @@ function nearestNodeInternal(nodes, loc, node_list=0)
 
     if node_list != 0
         # Search only nodes in node_list
-        for k = 1:length(node_list)
-            dist = distance(nodes[node_list[k]], loc)
+        for ind in node_list
+            dist = distance(nodes[ind], loc)
             if dist < min_dist
                 min_dist = dist
-                best_ind = node_list[k]
+                best_ind = ind
             end
         end
     else
         # Search all nodes
-        for key in keys(nodes)
-            dist = distance(nodes[key], loc)
+        for (key, node) in nodes
+            dist = distance(node, loc)
             if dist < min_dist
                 min_dist = dist
                 best_ind = key

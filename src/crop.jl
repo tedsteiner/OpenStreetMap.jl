@@ -56,8 +56,8 @@ end
 
 ### Crop nodes ###
 function crop!(nodes::Dict, bounds::Bounds)
-    for key in keys(nodes)
-        if !inBounds(nodes[key], bounds)
+    for (key, node) in nodes
+        if !inBounds(node, bounds)
             delete!(nodes, key)
         end
     end
@@ -107,11 +107,11 @@ end
 
 ### Crop buildings ###
 function crop!(nodes::Dict, bounds::Bounds, buildings::Dict{Int,Building})
-    for key in keys(buildings)
-        valid = falses(length(buildings[key].nodes))
-        for n = 1:length(buildings[key].nodes)
-            if haskey(nodes, buildings[key].nodes[n])
-                valid[n] = inBounds(nodes[buildings[key].nodes[n]], bounds)
+    for (key, building) in buildings
+        valid = falses(length(building.nodes))
+        for n = 1:length(building.nodes)
+            if haskey(nodes, building.nodes[n])
+                valid[n] = inBounds(nodes[building.nodes[n]], bounds)
             end
         end
 
@@ -219,8 +219,8 @@ end
 function cropHighway!(nodes::Dict, bounds::Bounds, highway::Highway, valids::BitArray{1})
     prev_id, prev_valid = highway.nodes[1], valids[1]
     ni = 1
-    for i in 1:length(valids)
-        id, valid = highway.nodes[ni], valids[i]
+    for valid in valids
+        id = highway.nodes[ni]
 
         if !valid
             deleteat!(highway.nodes, ni)
