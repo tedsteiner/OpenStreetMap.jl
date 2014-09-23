@@ -147,7 +147,7 @@ function createGraph(segments::Vector{Segment}, intersections, reverse::Bool=fal
     v_pair = Dict{Set{Int},Vector{Int}}()
     g = Graphs.inclist(Graphs.KeyVertex{Int}, is_directed=true) # Graph
 
-    v_inv = zeros(Int, length(intersections))                   # Inverse vertex mapping
+    v_inv = Array(Int, length(intersections))                   # Inverse vertex mapping
     i = 0
     for vert in keys(intersections)
         v[vert] = Graphs.add_vertex!(g, vert)
@@ -316,7 +316,7 @@ end
 # Flip the route order (Dijkstra gives reverse order)
 function reverse(route)
     m = length(route)
-    reversed = zeros(Int, m)
+    reversed = Array(Int, m)
     for k = 1:m
         reversed[m-(k-1)] = route[k]
     end
@@ -327,7 +327,7 @@ end
 
 ### Generate an ordered list of edges traversed in route
 function routeEdges(network::Network, route::Vector{Int})
-    e = zeros(Int, length(route)-1)
+    e = Array(Int, length(route)-1)
 
     # For each node pair, find matching edge
     for n = 1:length(route)-1
@@ -363,7 +363,7 @@ end
 
 
 function getRouteNodes(network, route_indices)
-    route_nodes = zeros(Int, length(route_indices))
+    route_nodes = Array(Int, length(route_indices))
     for n = 1:length(route_indices)
         route_nodes[n] = network.v_inv[route_indices[n]]
     end
@@ -377,7 +377,7 @@ function fastestRoute(network, node0, node1, class_speeds=SPEED_ROADS_URBAN)
     start_vertex = network.v[node0]
 
     # Modify weights to be times rather than distances
-    w = zeros(length(network.w))
+    w = Array(Float64, length(network.w))
     for k = 1:length(w)
         w[k] = network.w[k] / class_speeds[network.class[k]]
         w[k] *= 3.6 # (3600/1000) unit conversion to seconds
@@ -390,7 +390,7 @@ function fastestRoute(network, node0, node1, class_speeds=SPEED_ROADS_URBAN)
     route_indices, route_time = extractRoute(dijkstra_result, start_index, finish_index)
 
     route_nodes = getRouteNodes(network, route_indices)
-    #zeros(Int, length(route_indices))
+    #Array(Int, length(route_indices))
     #for n = 1:length(route_indices)
     #    route_nodes[n] = network.v_inv[route_indices[n]]
     #end

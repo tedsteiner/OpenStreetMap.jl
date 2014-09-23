@@ -192,8 +192,7 @@ function plotMap(nodes;
     # Iterate over all intersections and draw
     if intersections != nothing
         if typeof(intersections) == Dict{Int,Intersection}
-            intersection_nodes = zeros(length(intersections))
-            coords = zeros(length(intersections), 2)
+            coords = Array(Float64, length(intersections), 2)
             k = 1
             for key in keys(intersections)
                 coords[k, :] = getNodeCoords(nodes, key)
@@ -255,7 +254,7 @@ end
 ### Get coordinates of lists of nodes ###
 # Nodes in LLA coordinates
 function getNodeCoords(nodes::Dict{Int,LLA}, id_list)
-    coords = zeros(length(id_list), 2)
+    coords = Array(Float64, length(id_list), 2)
 
     for k = 1:length(id_list)
         loc = nodes[id_list[k]]
@@ -269,7 +268,7 @@ end
 
 # Nodes in ENU coordinates
 function getNodeCoords(nodes::Dict{Int,ENU}, id_list)
-    coords = zeros(length(id_list), 2)
+    coords = Array(Float64, length(id_list), 2)
 
     for k = 1:length(id_list)
         loc = nodes[id_list[k]]
