@@ -52,7 +52,7 @@ Usually routing can be simplified to the problem of starting and ending at a spe
 
 .. py:function:: segmentHighways(highways, intersections, classes, levels=Set(1:10))
 
-.. py:function:: highwaySegments(segments::Array{Segment,1})
+.. py:function:: highwaySegments(segments::Vector{Segment})
 
 **Note:** By default, segmentHighways() converts only the first 10 levels into
 segments. If you wish to exclude certain road classes, you should do so here

@@ -163,28 +163,28 @@ function plotMap(nodes;
 
     # Draw route
     if route != nothing
-        if typeof(route) == Array{Int,1}
+        if typeof(route) == Vector{Int}
             # Get coordinates of all nodes for route
             coords = getNodeCoords(nodes, route)
 
             # Add line(s) to plot
             drawNodes(coords, route_style, realtime)
-        elseif typeof(route) == Array{Array{Int,1},1}
+        elseif typeof(route) == Vector{Vector{Int}}
             for k = 1:length(route)
                 coords = getNodeCoords(nodes, route[k])
-                if typeof(route_style) == Array{Style,1}
+                if typeof(route_style) == Vector{Style}
                     drawNodes(coords, route_style[k], realtime)
                 elseif typeof(route_style) == Style
                     drawNodes(coords, route_style, realtime)
                 else
                     println("[OpenStreetMap.jl] Warning: Route in plotMap() could not be plotted.")
-                    println("[OpenStreetMap.jl] Required <route_style> type: Style or Array{Style,1}")
+                    println("[OpenStreetMap.jl] Required <route_style> type: Style or Vector{Style}")
                     println("[OpenStreetMap.jl] Current type: $(typeof(route_style))")
                 end
             end
         else
             println("[OpenStreetMap.jl] Warning: Input argument <route> in plotMap() could not be plotted.")
-            println("[OpenStreetMap.jl] Required type: Array{Int64,1}")
+            println("[OpenStreetMap.jl] Required type: Vector{Int64}")
             println("[OpenStreetMap.jl] Current type: $(typeof(route))")
         end
     end

@@ -30,7 +30,7 @@ eliminating all intermediate nodes, and can greatly speed up route planning.
 Inputs:
 
 * ``nodes`` [``Dict{Int,ENU}`` or ``Dict{Int,ECEF}``]: Dictionary of node locations
-* ``segments`` [``Array{Segment,1}``]: Array of segments
+* ``segments`` [``Vector{Segment}``]: Vector of segments
 * ``intersections`` [``Dict{Int,Intersection}``]: Dictionary of intersections, indexed by node ID
 
 Output:
@@ -52,7 +52,7 @@ Inputs:
 
 Outputs:
 
-* ``route_nodes`` [``Array{Int,1}``]: Ordered list of nodes along route
+* ``route_nodes`` [``Vector{Int}``]: Ordered list of nodes along route
 * ``distance`` [``Float64``]: Total route distance
 
 Fastest Routes
@@ -71,7 +71,7 @@ Inputs:
 
 Outputs:
 
-* ``route_nodes`` [``Array{Int,1}``]: Ordered list of nodes along route
+* ``route_nodes`` [``Vector{Int}``]: Ordered list of nodes along route
 * ``route_time`` [``Float64``]: Estimated total route time
 
 **Note 1:** A few built-in speed dictionaries are available in ``speeds.jl``. Highway classifications are defined in ``classes.jl``.
@@ -88,7 +88,7 @@ It is often of use to compute the total route distance, which is not returned by
 Inputs:
 
 * ``nodes`` [``Dict{Int,ENU}`` or ``Dict{Int,ECEF}``]: Dictionary of node locations
-* ``route`` [``Array{Int,1}``]: Ordered list of nodes along route
+* ``route`` [``Vector{Int}``]: Ordered list of nodes along route
 
 Outputs:
 
@@ -109,7 +109,7 @@ Edge Extraction
 comprises the route. ``routeEdges()`` can then convert this list of nodes into
 the list of edges, if desired:
 
-.. py:function:: routeEdges(network::Network, route::Array{Int,1})
+.. py:function:: routeEdges(network::Network, route::Vector{Int})
 
-The output is a list of edge indices with type Array{Int,1}.
+The output is a list of edge indices with type Vector{Int}.
 

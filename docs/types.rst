@@ -10,7 +10,7 @@ Highway
 ^^^^^^^^^^^^^^
 All roads and paths in OpenStreetMap are generically called “highways.” These types must include a list of nodes that comprises the path of the highway. All other fields are optional, and are empty strings when missing from the OSM database.
 
-When a highway is labeled as “oneway,” the road or path is only legally traversable in the order in which the nodes are listed. 
+When a highway is labeled as “oneway,” the road or path is only legally traversable in the order in which the nodes are listed.
 
 .. code-block:: python
 
@@ -22,20 +22,20 @@ When a highway is labeled as “oneway,” the road or path is only legally trav
         cycleway::String    # Cycleway classifier, if available
         bicycle::String     # Bicycle classifier, if available
         name::String        # Name, if available
-        nodes::Array{Int,1} # List of nodes
+        nodes::Vector{Int}  # List of nodes
     end
 
-"Segments" represent a subset of a highway, and can be used for faster route 
-planning. They begin and end at highway intersections (see below). Segments can 
+"Segments" represent a subset of a highway, and can be used for faster route
+planning. They begin and end at highway intersections (see below). Segments can
 be extracted from a list of roads and intersections using "extractSegments()."
 
 .. code-block:: python
-    
-    
+
+
     type Segment
         node0::Int          # Source node ID
         node1::Int          # Target node ID
-        nodes::Array{Int,1} # List of nodes falling within node0 and node1
+        nodes::Vector{Int}  # List of nodes falling within node0 and node1
         class::Int          # Class of the segment
         parent::Int         # ID of parent highway
         oneway::Bool        # True if road is one-way
@@ -72,7 +72,7 @@ Buildings in OpenStreetMap may optionally have a name and class (though typicall
     type Building
         class::String       # Building type (usually "yes")
         name::String        # Building name (usually unavailable)
-        nodes::Array{Int,1} # List of nodes
+        nodes::Vector{Int}  # List of nodes
     end
 
 Intersection
@@ -168,14 +168,14 @@ Plot Styles
 The ``Style`` type is used to define custom plot elements. More information on its usage can be found on the Plots page.
 
 .. code-block:: python
-    
+
     type Style
         color::Uint32   # Line color
         width::Real     # Line width
         spec::String    # Line type
     end
-    
+
     style(x, y) = style(x, y, "-")
-    
+
 
 

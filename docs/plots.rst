@@ -39,7 +39,7 @@ These parameters provided the actual data to be plotted.
 * ``buildings`` [``Dict{Int,Building}``]: List of buildings to display
 * ``highways`` [``Dict{Int,Highway}``]: List of highways to display
 * ``intersections`` [``Dict{Int,Intersection}``]: List of highway intersections
-* ``route`` [``Array{Int,1}`` or ``Array{Array{Int,1},1}``]: List of nodes comprising a highway route OR a list of lists of routes (if multiple routes are to be displayed).
+* ``route`` [``Vector{Int}`` or ``Vector{Vector{Int}}``]: List of nodes comprising a highway route OR a list of lists of routes (if multiple routes are to be displayed).
 
 Data Classifiers
 ----------------
@@ -71,7 +71,7 @@ The following optional inputs allow the user to customize the map display.
 * ``highway_style`` [``Style`` or ``Dict{Int,Style}``]: See note 3 below.
 * ``building_style`` [``Style``]: See note 3 below.
 * ``feature_style`` [``Style`` or ``Dict{Int,Style}``]: See note 3 below.
-* ``route_style`` [``Style`` or ``Array{Style,1}``]: Use an array of ``Style`` types to plot multiple routes with different appearances.
+* ``route_style`` [``Style`` or ``Vector{Style}``]: Use an vector of ``Style`` types to plot multiple routes with different appearances.
 * ``intersection_style`` [``Style``]
 
 These inputs all take a ``Style`` type, which is constructed as follows:

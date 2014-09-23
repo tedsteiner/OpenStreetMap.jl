@@ -172,7 +172,7 @@ function onBounds(loc::ENU, bounds::Bounds)
 end
 
 ### Remove specified items from an array ###
-function cropList!(list::Array, crop_list::BitArray{1})
+function cropList!(list::Array, crop_list::BitVector)
     kk = length(list)
     for k = 1:length(list)
         if crop_list[kk]
@@ -216,7 +216,7 @@ function boundaryPoint{T}(p1::T, p2::T, bounds::Bounds)
     error("Failed to find boundary point.")
 end
 
-function cropHighway!(nodes::Dict, bounds::Bounds, highway::Highway, valids::BitArray{1})
+function cropHighway!(nodes::Dict, bounds::Bounds, highway::Highway, valids::BitVector)
     prev_id, prev_valid = highway.nodes[1], valids[1]
     ni = 1
     for valid in valids

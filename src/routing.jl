@@ -51,7 +51,7 @@ function createGraph(nodes, highways::Dict{Int,Highway}, classes, levels, revers
     w = Float64[]                                               # Weights
     g_classes = Int[]                                           # Road classes
     e_lookup = Dict{Int,Set{Int}}()                             # Dictionary of edges
-    v_pair = Dict{Set{Int},Array{Int,1}}()
+    v_pair = Dict{Set{Int},Vector{Int}}()
     g = Graphs.inclist(Graphs.KeyVertex{Int}, is_directed=true) # Graph
 
     verts = highwayVertices(highways, classes, levels)
@@ -138,13 +138,13 @@ end
 
 
 ### Form transportation network graph of map ###
-function createGraph(segments::Array{Segment,1}, intersections, reverse::Bool=false)
+function createGraph(segments::Vector{Segment}, intersections, reverse::Bool=false)
     v = Dict{Int,Graphs.KeyVertex{Int}}()                       # Vertices
     e = Graphs.Edge[]                                           # Edges
     w = Float64[]                                               # Weights
     class = Int[]                                               # Road class
     e_lookup = Dict{Int,Set{Int}}()                             # Dictionary of edges
-    v_pair = Dict{Set{Int},Array{Int,1}}()
+    v_pair = Dict{Set{Int},Vector{Int}}()
     g = Graphs.inclist(Graphs.KeyVertex{Int}, is_directed=true) # Graph
 
     v_inv = zeros(Int, length(intersections))                   # Inverse vertex mapping
@@ -326,7 +326,7 @@ end
 
 
 ### Generate an ordered list of edges traversed in route
-function routeEdges(network::Network, route::Array{Int,1})
+function routeEdges(network::Network, route::Vector{Int})
     e = zeros(Int, length(route)-1)
 
     # For each node pair, find matching edge

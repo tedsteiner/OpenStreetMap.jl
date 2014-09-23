@@ -80,7 +80,7 @@ end
 
 
 ### Generate a list of highways from segments, for plotting purposes
-function highwaySegments(segments::Array{Segment,1})
+function highwaySegments(segments::Vector{Segment})
     highways = Dict{Int,Highway}()
 
     for k = 1:length(segments)

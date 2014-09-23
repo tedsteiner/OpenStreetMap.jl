@@ -10,13 +10,13 @@ type Highway
     cycleway::String    # Cycleway classifier, if available
     bicycle::String     # Bicycle classifier, if available
     name::String        # Name, if available
-    nodes::Array{Int,1} # List of nodes
+    nodes::Vector{Int}  # List of nodes
 end
 
 type Segment
     node0::Int          # Source node ID
     node1::Int          # Target node ID
-    nodes::Array{Int,1} # List of nodes falling within node0 and node1
+    nodes::Vector{Int}  # List of nodes falling within node0 and node1
     dist::Real          # Length of the segment
     class::Int          # Class of the segment
     parent::Int         # ID of parent highway
@@ -32,7 +32,7 @@ end
 type Building
     class::String       # Building type (usually "yes")
     name::String        # Building name (usually unavailable)
-    nodes::Array{Int,1} # List of nodes
+    nodes::Vector{Int}  # List of nodes
 end
 
 type Intersection
@@ -50,12 +50,12 @@ end
 type Network
     g                                   # Graph object
     v::Dict{Int,Graphs.KeyVertex{Int}}  # (node id) => (graph vertex)
-    e::Array{Graphs.Edge,1}             # Graph edges, indexed by edge id
-    w::Array{Float64,1}                 # Edge weights, indexed by edge id
-    v_inv::Array{Int,1}                 # Node ids indexed by graph vertex index
+    e::Vector{Graphs.Edge}              # Graph edges, indexed by edge id
+    w::Vector{Float64}                  # Edge weights, indexed by edge id
+    v_inv::Vector{Int}                  # Node ids indexed by graph vertex index
     e_lookup::Dict{Int,Set{Int}}        # (node id) => Set(attached edge ids)
-    v_pair::Dict{Set{Int},Array{Int,1}} # Set(vertex id pair) => Array(edge indices)
-    class::Array{Int,1}                 # Road class of each edge
+    v_pair::Dict{Set{Int},Vector{Int}}  # Set(vertex id pair) => Vector(edge indices)
+    class::Vector{Int}                 # Road class of each edge
 end
 
 ###################
