@@ -50,7 +50,7 @@ Working with Segments
 
 Usually routing can be simplified to the problem of starting and ending at a specified intersection, rather than any node in a highway. In these cases, we can use "Segments" rather than "Highways" to greatly reduce the computation required to compute routes. Segments are subsets of highways that begin and end on nodes, keep track of their parent highway, and hold all intermediate nodes in storage (allowing them to be converted back to Highway types for plotting or cropping). The following functions extract Segments from Highways and convert Segments to Highways, respectively:
 
-.. py:function:: segmentHighways(highways, intersections, classes, levels=Set(1:10...))
+.. py:function:: segmentHighways(highways, intersections, classes, levels=Set(1:10))
 
 .. py:function:: highwaySegments(segments::Array{Segment,1})
 

@@ -50,7 +50,7 @@ Create transportation network:
 
 .. code-block:: python
 
-	network = createGraph(nodesENU, hwys, roads, Set(1:8...))
+	network = createGraph(nodesENU, hwys, roads, Set(1:8))
 
 	println("Graph formed with $(Graphs.num_vertices(network.g)) vertices and $(Graphs.num_edges(network.g)) edges.")
 

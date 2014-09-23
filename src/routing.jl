@@ -54,13 +54,14 @@ function createGraph(nodes, highways::Dict{Int,Highway}, classes, levels, revers
     v_pair = Dict{Set{Int},Array{Int,1}}()
     g = Graphs.inclist(Graphs.KeyVertex{Int}, is_directed=true) # Graph
 
-    verts = [highwayVertices(highways, classes, levels)...]
-    v_inv = zeros(Int, length(verts))                           # Inverse vertex mapping
-    for k = 1:length(verts)
-        vert = verts[k]
+    verts = highwayVertices(highways, classes, levels)
+    v_inv = Array(Int, length(verts))
+    i = 0
+    for vert in verts
         v[vert] = Graphs.add_vertex!(g, vert)
-        v_inv[k] = vert
+        v_inv[i+=1] = vert
     end
+
     @assert length(v_inv) == length(v)
 
     for (key, class) in classes
@@ -138,20 +139,19 @@ end
 
 ### Form transportation network graph of map ###
 function createGraph(segments::Array{Segment,1}, intersections, reverse::Bool=false)
-    v = Dict{Int,Graphs.KeyVertex{Int}}()                      # Vertices
-    e = Graphs.Edge[]                                          # Edges
-    w = Float64[]                                              # Weights
-    class = Int[]                                              # Road class
-    e_lookup = Dict{Int,Set{Int}}()                            # Dictionary of edges
+    v = Dict{Int,Graphs.KeyVertex{Int}}()                       # Vertices
+    e = Graphs.Edge[]                                           # Edges
+    w = Float64[]                                               # Weights
+    class = Int[]                                               # Road class
+    e_lookup = Dict{Int,Set{Int}}()                             # Dictionary of edges
     v_pair = Dict{Set{Int},Array{Int,1}}()
     g = Graphs.inclist(Graphs.KeyVertex{Int}, is_directed=true) # Graph
 
-    verts = collect(keys(intersections))
-    v_inv = zeros(Int, length(verts))                           # Inverse vertex mapping
-    for k = 1:length(verts)
-        vert = verts[k]
+    v_inv = zeros(Int, length(intersections))                   # Inverse vertex mapping
+    i = 0
+    for vert in keys(intersections)
         v[vert] = Graphs.add_vertex!(g, vert)
-        v_inv[k] = vert
+        v_inv[i+=1] = vert
     end
     @assert length(v_inv) == length(v)
 
@@ -333,9 +333,8 @@ function routeEdges(network::Network, route::Array{Int,1})
     for n = 1:length(route)-1
         s = route[n]
         t = route[n+1]
-        e_candidates = [network.e_lookup[s]...]
 
-        for e_candidate in e_candidates
+        for e_candidate in network.e_lookup[s]
             if t == network.e[e_candidate].target.key
                 e[n] = e_candidate
                 break

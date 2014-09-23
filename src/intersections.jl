@@ -47,7 +47,7 @@ end
 
 
 ### Generate a new list of highways divided up by intersections
-function segmentHighways(nodes, highways, intersections, classes, levels=Set(1:10...))
+function segmentHighways(nodes, highways, intersections, classes, levels=Set(1:10))
     segments = Segment[]
     inters = collect(keys(intersections))
 

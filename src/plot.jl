@@ -233,9 +233,8 @@ end
 
 ### Draw layered features ###
 function drawFeatureLayer(nodes::Dict, features, classes, layer, realtime=false)
-    class_ids = Set(collect(values(classes))...)
 
-    for id in class_ids
+    for id in unique(values(classes))
         ids = Int[]
 
         for (key, class) in classes
