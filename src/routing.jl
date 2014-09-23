@@ -307,21 +307,9 @@ function extractRoute(dijkstra, start_index, finish_index)
         end
     end
 
-    route = reverse(route)
+    reverse!(route)
 
     return route, distance
-end
-
-
-# Flip the route order (Dijkstra gives reverse order)
-function reverse(route)
-    m = length(route)
-    reversed = Array(Int, m)
-    for k = 1:m
-        reversed[m-(k-1)] = route[k]
-    end
-
-    return reversed
 end
 
 

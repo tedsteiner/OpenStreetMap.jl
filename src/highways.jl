@@ -155,10 +155,7 @@ function getHighwayData(highway::LightXML.XMLElement, class::String="")
 
     # If road is marked as backwards (should be rare), reverse the node order
     if oneway_reverse
-        nodes_temp = deepcopy(nodes)
-        for k = 1:length(nodes)
-            nodes[k] = nodes_temp[length(nodes)-k+1]
-        end
+        reverse!(nodes)
     end
 
 
