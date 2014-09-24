@@ -10,12 +10,12 @@ OSM XML files do not provide sharp edges on boundaries. Also, it is often the ca
 
 .. code-block:: python
 
-    function cropMap!( nodes::Dict,
-                       bounds::Bounds;
-                       highways=nothing,
-                       buildings=nothing,
-                       features=nothing,
-                       delete_nodes::Bool=true )
+    function cropMap!(nodes::Dict,
+                      bounds::Bounds;
+                      highways=nothing,
+                      buildings=nothing,
+                      features=nothing,
+                      delete_nodes::Bool=true)
 
 
 
@@ -33,11 +33,11 @@ Each of these schemes classifies map elements using their OSM tags according to 
 
 The following functions take their respective map element lists as the single parameter and output a classification dictionary of type ``Dict{Int,Int}``. The ``keys`` of the dictionary are the highway ID numbers, and the ``values`` provide the classification of that map element.
 
-* ``roadways( highways )``
-* ``walkways( highways )``
-* ``cycleways( highways )``
-* ``classify( buildings )``
-* ``classify( features )``
+* ``roadways(highways)``
+* ``walkways(highways)``
+* ``cycleways(highways)``
+* ``classify(buildings)``
+* ``classify(features)``
 
 These classification dictionaries can be used for both route planning and map plotting.
 
@@ -46,10 +46,10 @@ Converting Map Coordinate Systems
 
 OpenStreetMap.jl is capable of converting map data between LLA, ECEF, and ENU coordinates (see "Data Types") for definitions of these standard coordinates. Because point location data is ONLY stored in the ``nodes`` dictionary (type ``Dict{Int,Point-Type}``), only this object needs to be converted. Note that Bounds objects also need to be converted, although they don't technically store map data. The following functions can be used to convert between coordinate systems:
 
-* ``lla2ecef( nodes::Dict{Int,LLA} )``
-* ``ecef2lla( nodes::Dict{Int,ECEF} )``
-* ``ecef2enu( nodes::Dict{Int,ECEF}, reference::LLA )``
-* ``lla2enu( nodes::Dict{Int,LLA}, reference::LLA )``
+* ``lla2ecef(nodes::Dict{Int,LLA})``
+* ``ecef2lla(nodes::Dict{Int,ECEF})``
+* ``ecef2enu(nodes::Dict{Int,ECEF}, reference::LLA)``
+* ``lla2enu(nodes::Dict{Int,LLA}, reference::LLA)``
 
 East-North-Up coordinates require an additional input parameter, ``reference``, which gives the origin of the ENU coordinate system. LLA and ECEF coordinates both have their origins fixed at the center of the earth.
 

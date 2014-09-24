@@ -5,25 +5,25 @@ OpenStreetMap.jl includes a single plotting function. This function has numerous
 
 .. code-block:: python
 
-    function plotMap( nodes;
-                      highways=nothing,
-                      buildings=nothing,
-                      features=nothing,
-                      bounds=nothing,
-                      intersections=nothing,
-                      roadways=nothing,
-                      cycleways=nothing,
-                      walkways=nothing,
-                      feature_classes=nothing,
-                      building_classes=nothing,
-                      route=nothing,
-                      highway_style::Style = Style(0x007CFF,1.5,"-"),
-                      building_style::Style = Style(0x000000,1,"-"),
-                      feature_style = Style(0xCC0000,2.5,"."),
-                      route_style = Style(0xFF0000, 3, "-"),
-                      intersection_style::Style = Style(0x000000,3,"."),
-                      width::Integer=500,
-                      realtime::Bool=false )
+    function plotMap(nodes;
+                     highways=nothing,
+                     buildings=nothing,
+                     features=nothing,
+                     bounds=nothing,
+                     intersections=nothing,
+                     roadways=nothing,
+                     cycleways=nothing,
+                     walkways=nothing,
+                     feature_classes=nothing,
+                     building_classes=nothing,
+                     route=nothing,
+                     highway_style::Style = Style(0x007CFF, 1.5, "-"),
+                     building_style::Style = Style(0x000000, 1, "-"),
+                     feature_style = Style(0xCC0000, 2.5, "."),
+                     route_style = Style(0xFF0000, 3, "-"),
+                     intersection_style::Style = Style(0x000000, 3, "."),
+                     width::Integer=500,
+                     realtime::Bool=false)
 
 The function, ``plotMap()``, has a single required input: ``nodes``. However, providing ``plotMap()`` with only the list of nodes will result in an empty plot. The user then has the choice between a variety of plotting options. It is important to note that this function is designed for convenience rather than speed. It is highly recommended that a Bounds object is input, as this is used to provided plot scaling.
 
@@ -39,7 +39,7 @@ These parameters provided the actual data to be plotted.
 * ``buildings`` [``Dict{Int,Building}``]: List of buildings to display
 * ``highways`` [``Dict{Int,Highway}``]: List of highways to display
 * ``intersections`` [``Dict{Int,Intersection}``]: List of highway intersections
-* ``route`` [``Array{Int,1}`` or ``Array{Array{Int,1},1}``]: List of nodes comprising a highway route OR a list of lists of routes (if multiple routes are to be displayed).
+* ``route`` [``Vector{Int}`` or ``Vector{Vector{Int}}``]: List of nodes comprising a highway route OR a list of lists of routes (if multiple routes are to be displayed).
 
 Data Classifiers
 ----------------
@@ -71,22 +71,22 @@ The following optional inputs allow the user to customize the map display.
 * ``highway_style`` [``Style`` or ``Dict{Int,Style}``]: See note 3 below.
 * ``building_style`` [``Style``]: See note 3 below.
 * ``feature_style`` [``Style`` or ``Dict{Int,Style}``]: See note 3 below.
-* ``route_style`` [``Style`` or ``Array{Style,1}``]: Use an array of ``Style`` types to plot multiple routes with different appearances.
+* ``route_style`` [``Style`` or ``Vector{Style}``]: Use an vector of ``Style`` types to plot multiple routes with different appearances.
 * ``intersection_style`` [``Style``]
 
 These inputs all take a ``Style`` type, which is constructed as follows:
 
 .. code-block:: python
-    
-    style = OpenStreetMap.Style( color, width, spec )
+
+    style = OpenStreetMap.Style(color, width, spec)
 
 For example:
 
 .. code-block:: python
 
-    highway_style = OpenStreetMap.Style( "b", 1.5, "-")
-    feature_style = OpenStreetMap.Style( 0xf57900, 2, ".")
-    
+    highway_style = OpenStreetMap.Style("b", 1.5, "-")
+    feature_style = OpenStreetMap.Style(0xf57900, 2, ".")
+
 **Note 1:** ``color`` must be a hex color code.
 
 **Note 2:** ``spec`` is a line specification code used by Winston.jl. Common examples are the following:

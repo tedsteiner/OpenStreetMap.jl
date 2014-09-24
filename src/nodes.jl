@@ -3,15 +3,14 @@
 ### Copyright 2014              ###
 
 ### Get dictionary of all nodes from an OSM XML file ###
-function getNodes( street_map::LightXML.XMLDocument )
+function getNodes(street_map::LightXML.XMLDocument)
 
     xroot = LightXML.root(street_map)
     all_nodes = LightXML.get_elements_by_tagname(xroot, "node")
     nodes = Dict{Int,LLA}()
 
-    for n = 1:length(all_nodes)
-        node = all_nodes[n]
-        
+    for node in all_nodes
+
         if LightXML.has_attribute(node, "visible")
             if LightXML.attribute(node, "visible") == "false"
                 # Visible=false indicates historic data, which we will ignore
@@ -31,31 +30,31 @@ end
 
 
 ### Find the nearest node to a given location ###
-function nearestNode( nodes::Dict{Int,ENU}, loc::ENU, node_list=0 )
-    return nearestNodeInternal( nodes, loc, node_list )
+function nearestNode(nodes::Dict{Int,ENU}, loc::ENU, node_list=0)
+    return nearestNodeInternal(nodes, loc, node_list)
 end
 
-function nearestNode( nodes::Dict{Int,ECEF}, loc::ECEF, node_list=0 )
-    return nearestNodeInternal( nodes, loc, node_list )
+function nearestNode(nodes::Dict{Int,ECEF}, loc::ECEF, node_list=0)
+    return nearestNodeInternal(nodes, loc, node_list)
 end
 
-function nearestNodeInternal( nodes, loc, node_list=0 )
+function nearestNodeInternal(nodes, loc, node_list=0)
     min_dist = 1e8
     best_ind = 0
 
     if node_list != 0
         # Search only nodes in node_list
-        for k = 1:length(node_list)
-            dist = distance( nodes[node_list[k]], loc )
+        for ind in node_list
+            dist = distance(nodes[ind], loc)
             if dist < min_dist
                 min_dist = dist
-                best_ind = node_list[k]
+                best_ind = ind
             end
         end
     else
         # Search all nodes
-        for key in keys(nodes)
-            dist = distance( nodes[key], loc )
+        for (key, node) in nodes
+            dist = distance(node, loc)
             if dist < min_dist
                 min_dist = dist
                 best_ind = key
@@ -78,7 +77,7 @@ end
 function addNewNodeInternal(nodes, loc)
     id = 1
     while id <= typemax(Int)
-        if !haskey(nodes,id)
+        if !haskey(nodes, id)
             nodes[id] = loc
             return id
         else

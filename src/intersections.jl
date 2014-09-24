@@ -8,85 +8,84 @@
 function findIntersections(highways::Dict{Int,Highway})
     intersections = Dict{Int,Intersection}()
     crossings = Int[]
-    
+
     # Highway ends
-    for k in keys(highways)
-        node0 = highways[k].nodes[1]
-        node1 = highways[k].nodes[end]
-        nodes = [node0,node1]
-        for kk = 1:length(nodes)
-            node = nodes[kk]
+    for (k, highway_k) in highways
+        node0 = highway_k.nodes[1]
+        node1 = highway_k.nodes[end]
+        nodes = [node0, node1]
+        for node in nodes
             if haskey(intersections, node)
                 intersections[node] = Intersection(union(intersections[node].highways, Set(k)))
             else
-                intersections[node] = Intersection( Set(k) )
+                intersections[node] = Intersection(Set(k))
             end
         end
     end
-    
+
     # Highway crossings
-    for i in keys(highways)
+    for (i, highway_i) in highways
         for j in keys(highways)
             if i > j
-                node = intersect(highways[i].nodes,highways[j].nodes)
-                for k = 1:length(node)
-                    node_id = node[k]
+                node = intersect(highway_i.nodes, highways[j].nodes)
+                for node_id in node
                     if haskey(intersections, node_id)
-                        intersections[node_id] = Intersection(union(intersections[node_id].highways, Set(i,j)))
+                        intersections[node_id] = Intersection(union(intersections[node_id].highways, Set(i, j)))
                     else
-                        intersections[node_id] = Intersection( Set(i, j) )
+                        intersections[node_id] = Intersection(Set(i, j))
                     end
-                    push!(crossings,node_id)
+                    push!(crossings, node_id)
                 end
             end
         end
     end
-    
-    
+
+
 
     return intersections, unique(crossings)
 end
 
 
 ### Generate a new list of highways divided up by intersections
-function segmentHighways( nodes, highways, intersections, classes, levels=Set(1:10...) )
+function segmentHighways(nodes, highways, intersections, classes, levels=Set(1:10))
     segments = Segment[]
     inters = collect(keys(intersections))
-    
+
     for i in keys(highways)
-        if in(classes[i],levels)
+        if in(classes[i], levels)
+            highway = highways[i]
             first = 1
-            for j = 2:length(highways[i].nodes)            
-                if in(highways[i].nodes[j],inters) || j == length(highways[i].nodes)
-                    node0 = highways[i].nodes[first]
-                    node1 = highways[i].nodes[j]
+            for j = 2:length(highway.nodes)
+                if in(highway.nodes[j], inters) || j == length(highway.nodes)
+                    node0 = highway.nodes[first]
+                    node1 = highway.nodes[j]
                     class = classes[i]
-                    route_nodes = highways[i].nodes[first:j]
+                    route_nodes = highway.nodes[first:j]
                     dist = distance(nodes, route_nodes)
                     s = Segment(node0, node1, route_nodes, dist, class, i, true)
-                    push!(segments,s)
-                    
-                    if !highways[i].oneway
+                    push!(segments, s)
+
+                    if !highway.oneway
                         s = Segment(node1, node0, reverse(route_nodes), dist, class, i, true)
-                        push!(segments,s)
+                        push!(segments, s)
                     end
                     first = j
                 end
             end
         end
     end
-    
+
     return segments
 end
 
 
 ### Generate a list of highways from segments, for plotting purposes
-function highwaySegments( segments::Array{Segment,1} )
+function highwaySegments(segments::Vector{Segment})
     highways = Dict{Int,Highway}()
-    
+
     for k = 1:length(segments)
-        highways[k] = Highway("",1,true,"","","","$(segments[k].parent)",segments[k].nodes)   
+        highways[k] = Highway("", 1, true, "", "", "", "$(segments[k].parent)", segments[k].nodes)
     end
-    
+
     return highways
 end

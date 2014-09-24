@@ -4,9 +4,9 @@ module TestSimCity
 using OpenStreetMap
 using Base.Test
 
-roads_north = [3,5,7]
-roads_east = [3,4,5,4]
-nodes, highways, roads = simCityGrid(roads_north,roads_east)
+roads_north = [3, 5, 7]
+roads_east = [3, 4, 5, 4]
+nodes, highways, roads = simCityGrid(roads_north, roads_east)
 
 @test length(nodes) == 12
 @test length(highways) == 7
@@ -23,9 +23,9 @@ nodes, highways, roads = simCityGrid(roads_north,roads_east)
 # Test highway simulation
 @test highways[1].name == "North_1"
 @test highways[5].name == "East_2"
-@test highways[2].nodes == [5,6,7,8]
-@test highways[4].nodes == [1,5,9]
-@test highways[6].nodes == [3,7,11]
+@test highways[2].nodes == [5, 6, 7, 8]
+@test highways[4].nodes == [1, 5, 9]
+@test highways[6].nodes == [3, 7, 11]
 
 # Test road classes
 @test roads[1] == roads_north[1]

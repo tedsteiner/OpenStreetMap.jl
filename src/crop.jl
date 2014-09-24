@@ -3,12 +3,12 @@
 ### Copyright 2014              ###
 
 ### Crop map elements without copying data ###
-function cropMap!( nodes::Dict,
-                   bounds::Bounds;
-                   highways=nothing,
-                   buildings=nothing,
-                   features=nothing,
-                   delete_nodes::Bool=true )
+function cropMap!(nodes::Dict,
+                  bounds::Bounds;
+                  highways=nothing,
+                  buildings=nothing,
+                  features=nothing,
+                  delete_nodes::Bool=true)
 
     if typeof(nodes) != Dict{Int,LLA} && typeof(nodes) != Dict{Int,ENU}
         println("[OpenStreetMap.jl] ERROR: Input argument <nodes> in cropMap!() has unsupported type.")
@@ -56,9 +56,9 @@ end
 
 ### Crop nodes ###
 function crop!(nodes::Dict, bounds::Bounds)
-    for key in keys(nodes)
-        if !inBounds(nodes[key],bounds)
-            delete!(nodes,key)
+    for (key, node) in nodes
+        if !inBounds(node, bounds)
+            delete!(nodes, key)
         end
     end
 
@@ -77,13 +77,13 @@ function crop!(nodes::Dict, bounds::Bounds, highways::Dict{Int,Highway})
         while n <= length(highway.nodes)
             #println("Length: $(length(highway.nodes)), n = $(n)")
             if haskey(nodes, highway.nodes[n])
-                valid[n] = inBounds(nodes[highway.nodes[n]],bounds)
+                valid[n] = inBounds(nodes[highway.nodes[n]], bounds)
                 n += 1
             else
                 #println(highway.nodes)
-                push!(missing_nodes,highway.nodes[n])
-                splice!(highway.nodes,n)
-                splice!(valid,n)
+                push!(missing_nodes, highway.nodes[n])
+                splice!(highway.nodes, n)
+                splice!(valid, n)
                 #println(highway.nodes)
                 #println("n = $(n)")
             end
@@ -92,9 +92,9 @@ function crop!(nodes::Dict, bounds::Bounds, highways::Dict{Int,Highway})
         nodes_in_bounds = sum(valid)
 
         if nodes_in_bounds == 0
-            delete!(highways,key)   # Remove highway from list
+            delete!(highways, key)   # Remove highway from list
         elseif nodes_in_bounds < length(valid)
-            cropHighway!(nodes,bounds,highway,valid) # Crop highway length
+            cropHighway!(nodes, bounds, highway, valid) # Crop highway length
         end
     end
 
@@ -107,20 +107,20 @@ end
 
 ### Crop buildings ###
 function crop!(nodes::Dict, bounds::Bounds, buildings::Dict{Int,Building})
-    for key in keys(buildings)
-        valid = falses(length(buildings[key].nodes))
-        for n = 1:length(buildings[key].nodes)
-            if haskey(nodes, buildings[key].nodes[n])
-                valid[n] = inBounds(nodes[buildings[key].nodes[n]],bounds)
+    for (key, building) in buildings
+        valid = falses(length(building.nodes))
+        for n = 1:length(building.nodes)
+            if haskey(nodes, building.nodes[n])
+                valid[n] = inBounds(nodes[building.nodes[n]], bounds)
             end
         end
 
         nodes_in_bounds = sum(valid)
         if nodes_in_bounds == 0
-            delete!(buildings,key)   # Remove building from list
+            delete!(buildings, key)   # Remove building from list
         elseif nodes_in_bounds < length(valid)
             # TODO: Interpolate buildings to bounds?
-            delete!(buildings,key)   # Remove building from list
+            delete!(buildings, key)   # Remove building from list
         end
     end
 
@@ -131,7 +131,7 @@ end
 function crop!(nodes::Dict, bounds::Bounds, features::Dict{Int,Feature})
     for key in keys(features)
         if !haskey(nodes, key) || !inBounds(nodes[key], bounds)
-            delete!(features,key)
+            delete!(features, key)
         end
     end
 
@@ -172,11 +172,11 @@ function onBounds(loc::ENU, bounds::Bounds)
 end
 
 ### Remove specified items from an array ###
-function cropList!(list::Array, crop_list::BitArray{1})
+function cropList!(list::Array, crop_list::BitVector)
     kk = length(list)
     for k = 1:length(list)
         if crop_list[kk]
-            splice!(list,kk)
+            splice!(list, kk)
         end
         kk -= 1
     end
@@ -216,11 +216,11 @@ function boundaryPoint{T}(p1::T, p2::T, bounds::Bounds)
     error("Failed to find boundary point.")
 end
 
-function cropHighway!(nodes::Dict, bounds::Bounds, highway::Highway, valids::BitArray{1})
+function cropHighway!(nodes::Dict, bounds::Bounds, highway::Highway, valids::BitVector)
     prev_id, prev_valid = highway.nodes[1], valids[1]
     ni = 1
-    for i in 1:length(valids)
-        id, valid = highway.nodes[ni], valids[i]
+    for valid in valids
+        id = highway.nodes[ni]
 
         if !valid
             deleteat!(highway.nodes, ni)

@@ -3,22 +3,21 @@
 ### Copyright 2014              ###
 
 ### Create list of all features in OSM file ###
-function getFeatures( street_map::LightXML.XMLDocument )
+function getFeatures(street_map::LightXML.XMLDocument)
 
     xroot = LightXML.root(street_map)
     nodes = LightXML.get_elements_by_tagname(xroot, "node")
     features = Dict{Int,Feature}()
 
-    for n = 1:length(nodes)
-        node = nodes[n]
-        
+    for node in nodes
+
         if LightXML.has_attribute(node, "visible")
             if LightXML.attribute(node, "visible") == "false"
                 # Visible=false indicates historic data, which we will ignore
                 continue
             end
         end
-        
+
         # Search for tag giving feature information
         for tag in LightXML.child_elements(node)
             if LightXML.name(tag) == "tag"
@@ -38,7 +37,7 @@ function getFeatures( street_map::LightXML.XMLDocument )
 end
 
 ### Gather feature data from OSM element ###
-function getFeatureData( node::LightXML.XMLElement )
+function getFeatureData(node::LightXML.XMLElement)
 
     class = ""
     detail = ""
@@ -101,12 +100,12 @@ function getFeatureData( node::LightXML.XMLElement )
 end
 
 ### Classify features ###
-function classify( features::Dict{Int,Feature} )
+function classify(features::Dict{Int,Feature})
     feats = Dict{Int,Int}()
 
-    for key in keys(features)
-        if haskey(FEATURE_CLASSES,features[key].class)
-            feats[key] = FEATURE_CLASSES[features[key].class]
+    for (key, feature) in features
+        if haskey(FEATURE_CLASSES, feature.class)
+            feats[key] = FEATURE_CLASSES[feature.class]
         end
     end
 

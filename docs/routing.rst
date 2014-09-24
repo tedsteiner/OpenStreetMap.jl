@@ -1,14 +1,14 @@
 Route Planning
 ==============
 
-OpenStreetMap.jl provides a user-friendly interface to the Graphs.jl package for route planning on transportation networks. Either shortest or fastest routes may be computed using Dijkstra's algorithm. 
+OpenStreetMap.jl provides a user-friendly interface to the Graphs.jl package for route planning on transportation networks. Either shortest or fastest routes may be computed using Dijkstra's algorithm.
 
 Transportation Network
 ----------------------
 
 In order to plot routes within the map, the streets must first be converted into a transportation network using ``createGraph()``:
 
-.. py:function:: createGraph( nodes, highways, classes, levels )
+.. py:function:: createGraph(nodes, highways, classes, levels)
 
 Inputs:
 
@@ -21,16 +21,16 @@ Output:
 
 * ``Network`` type, containing all data necessary for route planning with Graphs.jl
 
-A transportation network graph can alternatively be created using highway 
-"segments" rather than highways. These segments begin and end at intersections, 
+A transportation network graph can alternatively be created using highway
+"segments" rather than highways. These segments begin and end at intersections,
 eliminating all intermediate nodes, and can greatly speed up route planning.
 
-.. py:function:: createGraph( nodes, segments, intersections )
+.. py:function:: createGraph(nodes, segments, intersections)
 
 Inputs:
 
 * ``nodes`` [``Dict{Int,ENU}`` or ``Dict{Int,ECEF}``]: Dictionary of node locations
-* ``segments`` [``Array{Segment,1}``]: Array of segments
+* ``segments`` [``Vector{Segment}``]: Vector of segments
 * ``intersections`` [``Dict{Int,Intersection}``]: Dictionary of intersections, indexed by node ID
 
 Output:
@@ -42,7 +42,7 @@ Shortest Routes
 
 Compute the route with the shortest total distance between two nodes.
 
-.. py:function:: shortestRoute( network, node0, node1 )
+.. py:function:: shortestRoute(network, node0, node1)
 
 Inputs:
 
@@ -52,7 +52,7 @@ Inputs:
 
 Outputs:
 
-* ``route_nodes`` [``Array{Int,1}``]: Ordered list of nodes along route
+* ``route_nodes`` [``Vector{Int}``]: Ordered list of nodes along route
 * ``distance`` [``Float64``]: Total route distance
 
 Fastest Routes
@@ -60,7 +60,7 @@ Fastest Routes
 
 Given estimated typical speeds for each road type, compute the route with the shortest total traversal time between two nodes.
 
-.. py:function:: fastestRoute( network, node0, node1, class_speeds=SPEED_ROADS_URBAN )
+.. py:function:: fastestRoute(network, node0, node1, class_speeds=SPEED_ROADS_URBAN)
 
 Inputs:
 
@@ -71,7 +71,7 @@ Inputs:
 
 Outputs:
 
-* ``route_nodes`` [``Array{Int,1}``]: Ordered list of nodes along route
+* ``route_nodes`` [``Vector{Int}``]: Ordered list of nodes along route
 * ``route_time`` [``Float64``]: Estimated total route time
 
 **Note 1:** A few built-in speed dictionaries are available in ``speeds.jl``. Highway classifications are defined in ``classes.jl``.
@@ -83,12 +83,12 @@ Route Distance
 
 It is often of use to compute the total route distance, which is not returned by ``fastestRoute()``. An additional function is available for this purpose:
 
-.. py:function:: distance( nodes, route )
+.. py:function:: distance(nodes, route)
 
 Inputs:
 
 * ``nodes`` [``Dict{Int,ENU}`` or ``Dict{Int,ECEF}``]: Dictionary of node locations
-* ``route`` [``Array{Int,1}``]: Ordered list of nodes along route
+* ``route`` [``Vector{Int}``]: Ordered list of nodes along route
 
 Outputs:
 
@@ -96,20 +96,20 @@ Outputs:
 
 For added convenience, ``distance()`` is additionally overloaded for the following inputs, all of which return a Euclidean distance:
 
-.. py:function:: distance( nodes::Dict{Int,ECEF}, node0::Int, node1::Int )
-.. py:function:: distance( loc0::ECEF, loc1::ECEF )
-.. py:function:: distance( nodes::Dict{Int,ENU}, node0::Int, node1::Int )
-.. py:function:: distance( loc0::ENU, loc1::ENU )
-.. py:function:: distance( x0, y0, z0, x1, y1, z1 )
+.. py:function:: distance(nodes::Dict{Int,ECEF}, node0::Int, node1::Int)
+.. py:function:: distance(loc0::ECEF, loc1::ECEF)
+.. py:function:: distance(nodes::Dict{Int,ENU}, node0::Int, node1::Int)
+.. py:function:: distance(loc0::ENU, loc1::ENU)
+.. py:function:: distance(x0, y0, z0, x1, y1, z1)
 
 Edge Extraction
 ---------------
 
-``shortestRoute()`` and ``fastestRoute()`` both return a list of nodes, which 
-comprises the route. ``routeEdges()`` can then convert this list of nodes into 
+``shortestRoute()`` and ``fastestRoute()`` both return a list of nodes, which
+comprises the route. ``routeEdges()`` can then convert this list of nodes into
 the list of edges, if desired:
 
-.. py:function:: routeEdges( network::Network, route::Array{Int,1} )
+.. py:function:: routeEdges(network::Network, route::Vector{Int})
 
-The output is a list of edge indices with type Array{Int,1}.
+The output is a list of edge indices with type Vector{Int}.
 

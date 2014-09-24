@@ -9,14 +9,14 @@
 ###############################################
 
 # For single-point calculations
-function lla2ecef( lla::LLA )
+function lla2ecef(lla::LLA)
     datum = WGS84() # Get WGS84 datum
 
-    lla2ecef( lla, datum )
+    lla2ecef(lla, datum)
 end
 
 # For multi-point loops
-function lla2ecef( lla::LLA, d::WGS84 )
+function lla2ecef(lla::LLA, d::WGS84)
     lat = lla.lat
     lon = lla.lon
     alt = lla.alt
@@ -27,16 +27,16 @@ function lla2ecef( lla::LLA, d::WGS84 )
     y = (N + alt) * cosd(lat) * sind(lon)
     z = (N * (1 - d.e*d.e) + alt) * sind(lat)
 
-    return ECEF(x,y,z)
+    return ECEF(x, y, z)
 end
 
 # For dictionary of nodes
-function lla2ecef( nodes::Dict{Int,LLA} )
+function lla2ecef(nodes::Dict{Int,LLA})
     nodesECEF = Dict{Int,ECEF}()
     datum = WGS84()
 
-    for key in keys(nodes)
-        nodesECEF[key] = lla2ecef( nodes[key], datum )
+    for (key, node) in nodes
+        nodesECEF[key] = lla2ecef(node, datum)
     end
 
     return nodesECEF
@@ -48,21 +48,21 @@ end
 ###############################################
 
 # For single-point calculations
-function ecef2lla( ecef::ECEF )
+function ecef2lla(ecef::ECEF)
     datum = WGS84() # Get WGS84 datum
 
-    return ecef2lla( ecef, datum )
+    return ecef2lla(ecef, datum)
 end
 
 # For multi-point loops
-function ecef2lla( ecef::ECEF, d::WGS84 )
+function ecef2lla(ecef::ECEF, d::WGS84)
     x = ecef.x
     y = ecef.y
     z = ecef.z
 
-    p = sqrt( x*x + y*y )
-    theta = atan2( z*d.a, p*d.b )
-    lambda = atan2(y,x)
+    p = sqrt(x*x + y*y)
+    theta = atan2(z*d.a, p*d.b)
+    lambda = atan2(y, x)
     phi = atan2(z + d.e_prime^2 * d.b * sin(theta)^3, p - d.e*d.e*d.a*cos(theta)^3)
 
     N = d.a / sqrt(1 - d.e*d.e * sin(phi)^2)   # Radius of curvature (meters)
@@ -72,12 +72,12 @@ function ecef2lla( ecef::ECEF, d::WGS84 )
 end
 
 # For dictionary of nodes
-function ecef2lla( nodes::Dict{Int,ECEF} )
+function ecef2lla(nodes::Dict{Int,ECEF})
     nodesLLA = Dict{Int,LLA}()
     datum = WGS84()
 
-    for key in keys(nodes)
-        nodesLLA[key] = ecef2lla( nodes[key], datum )
+    for (key, node) in nodes
+        nodesLLA[key] = ecef2lla(node, datum)
     end
 
     return nodesLLA
@@ -88,7 +88,7 @@ end
 ###############################################
 
 # Given a reference point for linarization
-function ecef2enu( ecef::ECEF, lla_ref::LLA )
+function ecef2enu(ecef::ECEF, lla_ref::LLA)
     # Reference point to linearize about
     phi = lla_ref.lat
     lambda = lla_ref.lon
@@ -107,23 +107,23 @@ function ecef2enu( ecef::ECEF, lla_ref::LLA )
     north = ned[2]
     up = ned[3]
 
-    return ENU(east,north,up)
+    return ENU(east, north, up)
 end
 
 # Given Bounds object for linearization
-function ecef2enu( ecef::ECEF, bounds::Bounds )
-    lla_ref = centerBounds( bounds )
+function ecef2enu(ecef::ECEF, bounds::Bounds)
+    lla_ref = centerBounds(bounds)
 
-    return ecef2enu( ecef, lla_ref )
+    return ecef2enu(ecef, lla_ref)
 end
 
 # For dictionary of nodes
-function ecef2enu( nodes::Dict{Int,ECEF}, bounds::Bounds )
+function ecef2enu(nodes::Dict{Int,ECEF}, bounds::Bounds)
     nodesENU = Dict{Int,ENU}()
-    lla_ref = centerBounds( bounds )
+    lla_ref = centerBounds(bounds)
 
-    for key in keys(nodes)
-        nodesENU[key] = ecef2enu( nodes[key], lla_ref )
+    for (key, node) in nodes
+        nodesENU[key] = ecef2enu(node, lla_ref)
     end
 
     return nodesENU
@@ -135,52 +135,52 @@ end
 ##############################################
 
 # For single-point calculations, given bounds
-function lla2enu( lla::LLA , bounds::Bounds )
-    ecef = lla2ecef( lla )
-    enu = ecef2enu( ecef, bounds )
+function lla2enu(lla::LLA, bounds::Bounds)
+    ecef = lla2ecef(lla)
+    enu = ecef2enu(ecef, bounds)
     return enu
 end
 
 # For single-point calculations, given reference point
-function lla2enu( lla::LLA, lla_ref::LLA )
-    ecef = lla2ecef( lla )
-    enu = ecef2enu( ecef, lla_ref )
+function lla2enu(lla::LLA, lla_ref::LLA)
+    ecef = lla2ecef(lla)
+    enu = ecef2enu(ecef, lla_ref)
     return enu
 end
 
 # For multi-point loops, given reference point in LLA
-function lla2enu( lla::LLA, datum::WGS84, lla_ref::LLA )
-    ecef = lla2ecef( lla, datum )
-    enu = ecef2enu( ecef, lla_ref )
+function lla2enu(lla::LLA, datum::WGS84, lla_ref::LLA)
+    ecef = lla2ecef(lla, datum)
+    enu = ecef2enu(ecef, lla_ref)
     return enu
 end
 
 # For dictionary of LLA nodes, given Bounds
-function lla2enu( nodes::Dict{Int,LLA}, bounds::Bounds )
-    lla_ref = centerBounds( bounds )
+function lla2enu(nodes::Dict{Int,LLA}, bounds::Bounds)
+    lla_ref = centerBounds(bounds)
 
     return lla2enu(nodes, lla_ref)
 end
 
 # For dictionary of LLA nodes, given reference point
-function lla2enu( nodes::Dict{Int,LLA}, lla_ref::LLA )
+function lla2enu(nodes::Dict{Int,LLA}, lla_ref::LLA)
     nodesENU = Dict{Int,ENU}()
     datum = WGS84()
 
-    for key in keys(nodes)
-        nodesENU[key] = lla2enu( nodes[key], datum, lla_ref )
+    for (key, node) in nodes
+        nodesENU[key] = lla2enu(node, datum, lla_ref)
     end
 
     return nodesENU
 end
 
 # For Bounds objects without a reference point
-function lla2enu( bounds::Bounds )
-    top_left_LLA = LLA( bounds.max_lat, bounds.min_lon )
-    bottom_right_LLA = LLA( bounds.min_lat, bounds.max_lon )
+function lla2enu(bounds::Bounds)
+    top_left_LLA = LLA(bounds.max_lat, bounds.min_lon)
+    bottom_right_LLA = LLA(bounds.min_lat, bounds.max_lon)
 
-    top_left_ENU = lla2enu( top_left_LLA, bounds )
-    bottom_right_ENU = lla2enu( bottom_right_LLA, bounds )
+    top_left_ENU = lla2enu(top_left_LLA, bounds)
+    bottom_right_ENU = lla2enu(bottom_right_LLA, bounds)
 
     bounds_ENU = Bounds(bottom_right_ENU.north, top_left_ENU.north, top_left_ENU.east, bottom_right_ENU.east)
 
@@ -188,12 +188,12 @@ function lla2enu( bounds::Bounds )
 end
 
 # For Bounds objects given a reference point
-function lla2enu( bounds::Bounds, lla_ref::LLA )
-    top_left_LLA = LLA( bounds.max_lat, bounds.min_lon )
-    bottom_right_LLA = LLA( bounds.min_lat, bounds.max_lon )
+function lla2enu(bounds::Bounds, lla_ref::LLA)
+    top_left_LLA = LLA(bounds.max_lat, bounds.min_lon)
+    bottom_right_LLA = LLA(bounds.min_lat, bounds.max_lon)
 
-    top_left_ENU = lla2enu( top_left_LLA, lla_ref )
-    bottom_right_ENU = lla2enu( bottom_right_LLA, lla_ref )
+    top_left_ENU = lla2enu(top_left_LLA, lla_ref)
+    bottom_right_ENU = lla2enu(bottom_right_LLA, lla_ref)
 
     bounds_ENU = Bounds(bottom_right_ENU.north, top_left_ENU.north, top_left_ENU.east, bottom_right_ENU.east)
 
@@ -206,9 +206,9 @@ end
 ########################
 
 ### Get center point of Bounds region ###
-function centerBounds( bounds::Bounds )
-    lat_ref = ( bounds.min_lat + bounds.max_lat ) / 2
-    lon_ref = ( bounds.min_lon + bounds.max_lon ) / 2
+function centerBounds(bounds::Bounds)
+    lat_ref = (bounds.min_lat + bounds.max_lat) / 2
+    lon_ref = (bounds.min_lon + bounds.max_lon) / 2
 
     return LLA(lat_ref, lon_ref)
 end
