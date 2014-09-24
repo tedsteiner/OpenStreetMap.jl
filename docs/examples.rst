@@ -84,14 +84,14 @@ Display classified roadways, buildings, and features:
 .. code-block:: python
 
 	fignum = plotMap(nodesENU,
-					 highways=hwys,
-					 buildings=builds,
-					 features=feats,
-					 bounds=boundsENU,
-					 width=1000,
-					 feature_classes=feat_classes,
-					 building_classes=bldg_classes,
-					 roadways=roads)
+	                 highways=hwys,
+	                 buildings=builds,
+	                 features=feats,
+	                 bounds=boundsENU,
+	                 width=1000,
+	                 feature_classes=feat_classes,
+	                 building_classes=bldg_classes,
+	                 roadways=roads)
 
 	Winston.savefig("osm_map.png")
 
