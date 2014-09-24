@@ -28,7 +28,7 @@ node0 = nearestNode(nodesENU, loc_start, network.v_inv)
 node1 = nearestNode(nodesENU, loc_end, network.v_inv)
 
 @test_approx_eq nodesENU[node0].east -197.70015977531895
-@test_approx_eq nodesENU[node0].north 129.2258444276026
+@test_approx_eq_eps nodesENU[node0].north 129.2258444276026 1e-8
 @test_approx_eq nodesENU[node1].east 197.70887841015576
 @test_approx_eq nodesENU[node1].north -179.66432048909172
 

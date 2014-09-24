@@ -31,8 +31,8 @@ P_ecef = lla2ecef(P_lla)
 P_enu = lla2enu(P_lla, P_ref_lla)
 
 @test_approx_eq P_enu.east -343.49374908345493
-@test_approx_eq P_enu.north 478.7648554687071
-@test_approx_eq P_enu.up -0.027242884564486758
+@test_approx_eq_eps P_enu.north 478.7648554687071 1e-8
+@test_approx_eq_eps P_enu.up -0.027242884564486758 1e-8
 
 #####
 # Bounds object
