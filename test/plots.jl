@@ -1,15 +1,16 @@
 # Test plotting
-module TestPlots
+#module TestPlots
 
 using OpenStreetMap
 using Base.Test
+import Winston
 
 MAP_FILENAME = "tech_square.osm"
 
 # Load and crop map to file bounds
-nodes, hwys, builds, feats = getOSMData(MAP_FILENAME, nodes=true, highways=true, buildings=true, features=true)
-bounds = getBounds(parseMapXML(MAP_FILENAME))
-cropMap!(nodes, bounds, highways=hwys, buildings=builds, features=feats, delete_nodes=true)
+nodesLLA, hwys, builds, feats = getOSMData(MAP_FILENAME, nodes=true, highways=true, buildings=true, features=true)
+boundsLLA = getBounds(parseMapXML(MAP_FILENAME))
+cropMap!(nodesLLA, boundsLLA, highways=hwys, buildings=builds, features=feats, delete_nodes=true)
 
 roads = roadways(hwys)
 peds = walkways(hwys)
@@ -17,8 +18,30 @@ cycles = cycleways(hwys)
 bldg_classes = classify(builds)
 feat_classes = classify(feats)
 
-fignum = plotMap(nodes, highways=hwys, buildings=builds, features=feats, bounds=bounds, width=500, feature_classes=feat_classes, building_classes=bldg_classes, cycleways=cycles, walkways=peds, roadways=roads)
+p = plotMap(nodesLLA, highways=hwys, buildings=builds, features=feats, bounds=boundsLLA, width=500, feature_classes=feat_classes, building_classes=bldg_classes, cycleways=cycles, walkways=peds, roadways=roads)
 
-@test fignum == 1
+@test typeof(p) == Winston.FramedPlot
+@test Winston.getattr(p,"xlabel") == "Longitude (deg)"
+@test Winston.getattr(p,"ylabel") == "Latitude (deg)"
+@test Winston.getattr(p.x1,"draw_axis") == true
+@test Winston.getattr(p.x1,"draw_grid") == false
+@test Winston.getattr(p,"xrange") == (-71.0939,-71.0891)
+@test Winston.getattr(p,"yrange") == (42.3626,42.3659)
 
-end # module TestPlots
+lla_ref = OpenStreetMap.centerBounds(boundsLLA)
+nodesENU = OpenStreetMap.lla2enu(nodesLLA, lla_ref)
+boundsENU = OpenStreetMap.lla2enu(boundsLLA, lla_ref)
+
+p2 = plotMap(nodesENU, highways=hwys, buildings=builds, features=feats, bounds=boundsENU, width=500, feature_classes=feat_classes, building_classes=bldg_classes, cycleways=cycles, walkways=peds, roadways=roads, km=true, fontsize=4)
+
+@test typeof(p2) == Winston.FramedPlot
+@test Winston.getattr(p2,"xlabel") == "East (km)"
+@test Winston.getattr(p2,"ylabel") == "North (km)"
+@test Winston.getattr(p2.x1,"draw_axis") == true
+@test Winston.getattr(p2.x1,"draw_grid") == false
+@test_approx_eq_eps Winston.getattr(p2,"xrange")[1] -0.1976986338592228 1e-6
+@test_approx_eq_eps Winston.getattr(p2,"xrange")[2] 0.19770898045628862 1e-6
+@test_approx_eq_eps Winston.getattr(p2,"yrange")[1] -0.1832797798024081 1e-6
+@test_approx_eq_eps Winston.getattr(p2,"yrange")[2] 0.18328541309049148 1e-6
+
+#end # module TestPlots
