@@ -171,19 +171,6 @@ function onBounds(loc::ENU, bounds::Bounds)
     east == bounds.min_lon || east == bounds.max_lon
 end
 
-### Remove specified items from an array ###
-function cropList!(list::Array, crop_list::BitVector)
-    kk = length(list)
-    for k = 1:length(list)
-        if crop_list[kk]
-            splice!(list, kk)
-        end
-        kk -= 1
-    end
-
-    return nothing
-end
-
 function boundaryPoint{T}(p1::T, p2::T, bounds::Bounds)
     x1, y1 = getX(p1), getY(p1)
     x2, y2 = getX(p2), getY(p2)
