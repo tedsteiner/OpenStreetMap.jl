@@ -23,7 +23,7 @@ function plotMap(nodes;
                  route_style=Style(0xFF0000, 3, "-"),
                  intersection_style::Style=Style(0x000000, 3, "."),
                  width::Integer=500,
-                 fontsize::Integer=4,
+                 fontsize::Integer=0,
                  km::Bool=false,
                  realtime::Bool=false)
 
@@ -225,10 +225,12 @@ function plotMap(nodes;
         end
     end
 
-    Winston.setattr(p.x1,"label_style",[:fontsize=>fontsize])
-    Winston.setattr(p.y1,"label_style",[:fontsize=>fontsize])
-    Winston.setattr(p.x1,"ticklabels_style",[:fontsize=>fontsize])
-    Winston.setattr(p.y1,"ticklabels_style",[:fontsize=>fontsize])
+    if fontsize > 0
+        Winston.setattr(p.x1,"label_style",[:fontsize=>fontsize])
+        Winston.setattr(p.y1,"label_style",[:fontsize=>fontsize])
+        Winston.setattr(p.x1,"ticklabels_style",[:fontsize=>fontsize])
+        Winston.setattr(p.y1,"ticklabels_style",[:fontsize=>fontsize])
+    end
 
     display(p)
 
