@@ -114,7 +114,7 @@ Example of saving a plot as an image in png, eps, and pdf formats:
     xrange = bounds.max_lon - bounds.min_lon
     yrange = bounds.max_lat - bounds.min_lat
     aspect_ratio = xrange / yrange
-    height = int( width / aspect_ratio 
+    height = int( width / aspect_ratio )
     Winston.file(p,"filename.png","width",width,"height",height)
     Winston.file(p,"filename.eps","width",width,"height",height)
     Winston.file(p,"filename.pdf","width",width,"height",height)
