@@ -50,7 +50,7 @@ function plotMap(nodes;
     elseif typeof(nodes) == Dict{Int,ENU}
         if km
             xlab = "East (km)"
-            ylab = "East (km)"
+            ylab = "North (km)"
         else
             xlab = "East (m)"
             ylab = "North (m)"
@@ -130,7 +130,7 @@ function plotMap(nodes;
                     if typeof(highway_style) == Dict{Int,Style}
                         drawWayLayer(p, nodes, highways, cycleways, highway_style, km, realtime)
                     else
-                        drawWayLayer(p, nodes, highways, cycleways, LAYER_CYCLE, km, ealtime)
+                        drawWayLayer(p, nodes, highways, cycleways, LAYER_CYCLE, km, realtime)
                     end
                 end
                 if walkways != nothing
