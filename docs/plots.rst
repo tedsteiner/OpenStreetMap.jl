@@ -64,7 +64,7 @@ Plot Display Options
 * ``bounds`` [``Bounds``]: X and Y axes limits of plot, also used to compute appropriate plot aspect ratio
 * ``width`` [``Integer``]: Width of the plot, in pixels
 * ``fontsize`` [``Integer``]: Fontsize of axes labels. If 0, let Winston decide (default). Use this if you need consistency amongst many plots.
-  ``km`` [``Bool``]: If ``nodes`` is in ENU coordinates, converts plot axes to use kilometers rather than meters
+* ``km`` [``Bool``]: If ``nodes`` is in ENU coordinates, converts plot axes to use kilometers rather than meters
 * ``realtime`` [``Bool``]: When true, elements are added to the map individually (this drastically slows down plotting, but is fun to watch)
 
 Plot Customization
@@ -101,8 +101,8 @@ For example:
 
 **Note 3:** For highways, buildings, and features, if an additional classifier is input (e.g., ``roadways``), the respective style input must be a dictionary of styles, with type ``Dict{Int,Style}``, with a style given for each classification. This dictionary is called a "layer" in OpenStreetMap terminology, and defines how a specific map layer is displayed. The default layers are defined as constants in ``layers.jl``.
 
-Plot Outputs and Saving
------------------------
+Saving Map Images
+-----------------
 ``plotMap()`` returns the ``Winston.FramedPlot`` object. This allows the user to futher modify the plot or save it using the ``file`` function available from ``Winston.jl`` with the desired aspect ratio. 
 
 Example of saving a plot as an image in png, eps, and pdf formats:
@@ -114,7 +114,7 @@ Example of saving a plot as an image in png, eps, and pdf formats:
     xrange = bounds.max_lon - bounds.min_lon
     yrange = bounds.max_lat - bounds.min_lat
     aspect_ratio = xrange / yrange
-    height = int( width / aspect_ratio )
+    height = int(width / aspect_ratio)
     Winston.file(p,"filename.png","width",width,"height",height)
     Winston.file(p,"filename.eps","width",width,"height",height)
     Winston.file(p,"filename.pdf","width",width,"height",height)
