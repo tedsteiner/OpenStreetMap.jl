@@ -23,6 +23,7 @@ function plotMap(nodes;
                  route_style=Style(0xFF0000, 3, "-"),
                  intersection_style::Style=Style(0x000000, 3, "."),
                  width::Integer=500,
+                 fontsize::Integer=4,
                  realtime::Bool=false)
 
     # Check if bounds type is correct
@@ -65,12 +66,13 @@ function plotMap(nodes;
 
     # Create the figure
     fignum = Winston.figure(name="OpenStreetMap Plot", width=width, height=height)
-    Winston.hold(true)
+    p = Winston.FramedPlot("xlabel",xlab,"ylabel",ylab)
 
     # Limit plot to specified bounds
     if bounds != nothing
         Winston.xlim(bounds.min_lon, bounds.max_lon)
         Winston.ylim(bounds.min_lat, bounds.max_lat)
+        p = Winston.FramedPlot("xlabel",xlab,"ylabel",ylab,xrange=(bounds.min_lon,bounds.max_lon),yrange=(bounds.min_lat,bounds.max_lat))
     end
 
     # Iterate over all buildings and draw
@@ -78,9 +80,9 @@ function plotMap(nodes;
         if typeof(buildings) == Dict{Int,Building}
             if building_classes != nothing && typeof(building_classes) == Dict{Int,Int}
                 if typeof(building_style) == Dict{Int,Style}
-                    drawWayLayer(nodes, buildings, building_classes, building_style, realtime)
+                    drawWayLayer(p, nodes, buildings, building_classes, building_style, realtime)
                 else
-                    drawWayLayer(nodes, buildings, building_classes, LAYER_BUILDINGS, realtime)
+                    drawWayLayer(p, nodes, buildings, building_classes, LAYER_BUILDINGS, realtime)
                 end
             else
                 for (key, building) in buildings
@@ -88,7 +90,7 @@ function plotMap(nodes;
                     coords = getNodeCoords(nodes, building.nodes)
 
                     # Add line(s) to plot
-                    drawNodes(coords, building_style, realtime)
+                    drawNodes(p, coords, building_style, realtime)
                 end
             end
         else
@@ -104,23 +106,23 @@ function plotMap(nodes;
             if roadways != nothing || cycleways != nothing || walkways != nothing
                 if roadways != nothing
                     if typeof(highway_style) == Dict{Int,Style}
-                        drawWayLayer(nodes, highways, roadways, highway_style, realtime)
+                        drawWayLayer(p, nodes, highways, roadways, highway_style, realtime)
                     else
-                        drawWayLayer(nodes, highways, roadways, LAYER_STANDARD, realtime)
+                        drawWayLayer(p, nodes, highways, roadways, LAYER_STANDARD, realtime)
                     end
                 end
                 if cycleways != nothing
                     if typeof(highway_style) == Dict{Int,Style}
-                        drawWayLayer(nodes, highways, cycleways, highway_style, realtime)
+                        drawWayLayer(p, nodes, highways, cycleways, highway_style, realtime)
                     else
-                        drawWayLayer(nodes, highways, cycleways, LAYER_CYCLE, realtime)
+                        drawWayLayer(p, nodes, highways, cycleways, LAYER_CYCLE, realtime)
                     end
                 end
                 if walkways != nothing
                     if typeof(highway_style) == Dict{Int,Style}
-                        drawWayLayer(nodes, highways, walkways, highway_style, realtime)
+                        drawWayLayer(p, nodes, highways, walkways, highway_style, realtime)
                     else
-                        drawWayLayer(nodes, highways, walkways, LAYER_PED, realtime)
+                        drawWayLayer(p, nodes, highways, walkways, LAYER_PED, realtime)
                     end
                 end
             else
@@ -129,7 +131,7 @@ function plotMap(nodes;
                     coords = getNodeCoords(nodes, highway.nodes)
 
                     # Add line(s) to plot
-                    drawNodes(coords, highway_style, realtime)
+                    drawNodes(p, coords, highway_style, realtime)
                 end
             end
         else
@@ -144,15 +146,15 @@ function plotMap(nodes;
         if typeof(features) == Dict{Int,Feature}
             if feature_classes != nothing && typeof(feature_classes) == Dict{Int,Int}
                 if typeof(feature_style) == Style
-                    drawFeatureLayer(nodes, features, feature_classes, LAYER_FEATURES, realtime)
+                    drawFeatureLayer(p, nodes, features, feature_classes, LAYER_FEATURES, realtime)
                 elseif typeof(feature_style) == Dict{Int,Style}
-                    drawFeatureLayer(nodes, features, feature_classes, feature_style, realtime)
+                    drawFeatureLayer(p, nodes, features, feature_classes, feature_style, realtime)
                 end
             else
                 coords = getNodeCoords(nodes, collect(keys(features)))
 
                 # Add feature point(s) to plot
-                drawNodes(coords, feature_style, realtime)
+                drawNodes(p, coords, feature_style, realtime)
             end
         else
             println("[OpenStreetMap.jl] Warning: Input argument <features> in plotMap() could not be plotted.")
@@ -168,14 +170,14 @@ function plotMap(nodes;
             coords = getNodeCoords(nodes, route)
 
             # Add line(s) to plot
-            drawNodes(coords, route_style, realtime)
+            drawNodes(p, coords, route_style, realtime)
         elseif typeof(route) == Vector{Vector{Int}}
             for k = 1:length(route)
                 coords = getNodeCoords(nodes, route[k])
                 if typeof(route_style) == Vector{Style}
-                    drawNodes(coords, route_style[k], realtime)
+                    drawNodes(p, coords, route_style[k], realtime)
                 elseif typeof(route_style) == Style
-                    drawNodes(coords, route_style, realtime)
+                    drawNodes(p, coords, route_style, realtime)
                 else
                     println("[OpenStreetMap.jl] Warning: Route in plotMap() could not be plotted.")
                     println("[OpenStreetMap.jl] Required <route_style> type: Style or Vector{Style}")
@@ -200,7 +202,7 @@ function plotMap(nodes;
             end
 
             # Add intersection(s) to plot
-            drawNodes(coords, intersection_style, realtime)
+            drawNodes(p, coords, intersection_style, realtime)
         else
             println("[OpenStreetMap.jl] Warning: Input argument <intersections> in plotMap() could not be plotted.")
             println("[OpenStreetMap.jl] Required type: Dict{Int,Intersection}")
@@ -208,30 +210,32 @@ function plotMap(nodes;
         end
     end
 
-    # Axes labels, etc.
-    Winston.xlabel(xlab)
-    display(Winston.ylabel(ylab))
-    Winston.hold(false)
+    Winston.setattr(p.x1,"label_style",[:fontsize=>fontsize])
+    Winston.setattr(p.y1,"label_style",[:fontsize=>fontsize])
+    Winston.setattr(p.x1,"ticklabels_style",[:fontsize=>fontsize])
+    Winston.setattr(p.y1,"ticklabels_style",[:fontsize=>fontsize])
 
-    # Return figure number
-    return fignum
+    display(p)
+
+    # Return figure object (enables further manipulation)
+    return p
 end
 
 
 ### Draw layered Map ###
-function drawWayLayer(nodes::Dict, ways, classes, layer, realtime=false)
+function drawWayLayer(p::Winston.FramedPlot, nodes::Dict, ways, classes, layer, realtime=false)
     for (key, class) in classes
         # Get coordinates of all nodes for object
         coords = getNodeCoords(nodes, ways[key].nodes)
 
         # Add line(s) to plot
-        drawNodes(coords, layer[class], realtime)
+        drawNodes(p, coords, layer[class], realtime)
     end
 end
 
 
 ### Draw layered features ###
-function drawFeatureLayer(nodes::Dict, features, classes, layer, realtime=false)
+function drawFeatureLayer(p::Winston.FramedPlot, nodes::Dict, features, classes, layer, realtime=false)
 
     for id in unique(values(classes))
         ids = Int[]
@@ -246,7 +250,7 @@ function drawFeatureLayer(nodes::Dict, features, classes, layer, realtime=false)
         coords = getNodeCoords(nodes, ids)
 
         # Add point to plot
-        drawNodes(coords, layer[id], realtime)
+        drawNodes(p, coords, layer[id], realtime)
     end
 end
 
@@ -281,14 +285,14 @@ end
 
 
 ### Draw a line between all points in a coordinate list ###
-function drawNodes(coords, style="k-", width=1, realtime=false)
+function drawNodes(p::Winston.FramedPlot, coords, style="k-", width=1, realtime=false)
     x = coords[:, 1]
     y = coords[:, 2]
     if length(x) > 1
         if realtime
-            display(Winston.plot(x, y, style, linewidth=width))
+            display(Winston.plot(p, x, y, style, linewidth=width))
         else
-            Winston.plot(x, y, style, linewidth=width)
+            Winston.plot(p, x, y, style, linewidth=width)
         end
     end
     nothing
@@ -296,14 +300,14 @@ end
 
 
 ### Draw a line between all points in a coordinate list given Style object ###
-function drawNodes(coords, line_style::Style, realtime=false)
+function drawNodes(p::Winston.FramedPlot, coords, line_style::Style, realtime=false)
     x = coords[:, 1]
     y = coords[:, 2]
     if length(x) > 1
         if realtime
-            display(Winston.plot(x, y, line_style.spec, color=line_style.color, linewidth=line_style.width))
+            display(Winston.plot(p, x, y, line_style.spec, color=line_style.color, linewidth=line_style.width))
         else
-            Winston.plot(x, y, line_style.spec, color=line_style.color, linewidth=line_style.width)
+            Winston.plot(p, x, y, line_style.spec, color=line_style.color, linewidth=line_style.width)
         end
     end
     nothing
