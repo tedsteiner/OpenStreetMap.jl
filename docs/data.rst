@@ -60,3 +60,32 @@ prior to routing. By default, OpenStreetMap.jl uses only 8 road classes, but
 only classes 1-6 represent roads used for typical routing (levels 7 and 8 are
 service and pedestrian roads, such as parking lot entrances and driveways). In
 the United States, roads with class 8 should not be used by cars.
+
+Downloading OSM Data
+====================
+
+Downloading OpenStreetMap data in the form of a .osm file is very easy for a simple square region. However, OpenStreetMap.org provides so many options that it is sometimes a little hard to understand the simple tasks.
+
+For a simple region, you want to use the "OpenStreetMap Overpass API." There are a few mirrors available, but I have had the best luck with the server in Denmark, hence its usage in the example below.
+
+There are a few ways to access the API. Here are a few of them.
+
+OpenStreetMap Interface
+-----------------------
+On OpenStreetMap.org, there is a big "Export" button at the top. For very small regions, this is the best option, because the region boundary will be embedded in the file for you (so you don't have to record it). Just drag the box around your region and click export. Easy!  
+
+If your region is too large, you will usually just get a blank page in your browser without any error messages. If this happens, there is a link below the "Export" button that says "Overpass API." This will very conveniently send your region to the API for an automatic download through that system. Unforunately, this .osm file will not include the boundary information, so you will not be able to use OpenStreetMap.jl's convenient ``getBounds`` function. Otherwise, as far as I can tell, it's the same as clicking the "Export" button.
+
+Overpass API Interface
+----------------------
+If you're not the type to like easy interfaces like dragging a box around your desired region and clicking a button, then this is the option for you! There are two ways to interact with the API. The syntax is confusing, so we will just download a simple rectangular region and do everything else happily within Julia.
+
+The easist  way to access the API is just directly through the web. The syntax is as follows:
+
+.. code-block:: python
+
+    http://overpass-api.de/api/map?bbox=minLon,minLat,maxLon,maxLat
+
+Be sure to replace minLon, etc., with the decimal latitude and longitudes of your bounding box. This will download the file for you, but it is missing the ".osm" extension (you can add this yourself, if you'd like). You can use this to script downloads, but please don't overload the OpenStreetMap servers, which are donation-supported.
+
+
