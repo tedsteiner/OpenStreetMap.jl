@@ -8,18 +8,15 @@
 function findIntersections(highways::Dict{Int,Highway})
     intersections = Dict{Int,Intersection}()
     crossings = Int[]
+    seen = Set{Int}()
 
     # Highway ends
     for (k, highway_k) in highways
-        node0 = highway_k.nodes[1]
-        node1 = highway_k.nodes[end]
-        nodes = [node0, node1]
-        for node in nodes
-            if haskey(intersections, node)
-                intersections[node] = Intersection(union(intersections[node].highways, Set(k)))
-            else
-                intersections[node] = Intersection(Set(k))
-            end
+        n_nodes = length(highway_k.nodes)
+        for i in 1:max(1, n_nodes - 1):n_nodes
+            node = highway_k.nodes[i]
+            hwys = get!(Intersection, intersections, node).highways
+            push!(hwys, k)
         end
     end
 
@@ -27,22 +24,21 @@ function findIntersections(highways::Dict{Int,Highway})
     for (i, highway_i) in highways
         for j in keys(highways)
             if i > j
-                node = intersect(highway_i.nodes, highways[j].nodes)
-                for node_id in node
-                    if haskey(intersections, node_id)
-                        intersections[node_id] = Intersection(union(intersections[node_id].highways, Set(i, j)))
-                    else
-                        intersections[node_id] = Intersection(Set(i, j))
+                for node in intersect(highway_i.nodes, highways[j].nodes)
+
+                    hwys = get!(Intersection, intersections, node).highways
+                    push!(hwys, i, j)
+
+                    if !in(node, seen)
+                        push!(seen, node)
+                        push!(crossings, node)
                     end
-                    push!(crossings, node_id)
                 end
             end
         end
     end
 
-
-
-    return intersections, unique(crossings)
+    return intersections, crossings
 end
 
 
