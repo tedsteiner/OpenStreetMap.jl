@@ -49,17 +49,16 @@ end
 ### Generate a new list of highways divided up by intersections
 function segmentHighways(nodes, highways, intersections, classes, levels=Set(1:10))
     segments = Segment[]
-    inters = collect(keys(intersections))
+    inters = Set(keys(intersections))
 
-    for i in keys(highways)
-        if in(classes[i], levels)
+    for (i, class) in classes
+        if in(class, levels)
             highway = highways[i]
             first = 1
             for j = 2:length(highway.nodes)
                 if in(highway.nodes[j], inters) || j == length(highway.nodes)
                     node0 = highway.nodes[first]
                     node1 = highway.nodes[j]
-                    class = classes[i]
                     route_nodes = highway.nodes[first:j]
                     dist = distance(nodes, route_nodes)
                     s = Segment(node0, node1, route_nodes, dist, class, i, true)

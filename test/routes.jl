@@ -24,6 +24,7 @@ network = createGraph(nodesENU, hwys, roads, Set(1:8))
 
 loc_start = OpenStreetMap.ENU(-5000, 5500, 0)
 loc_end = OpenStreetMap.ENU(5500, -4000, 0)
+
 node0 = nearestNode(nodesENU, loc_start, network.v_inv)
 node1 = nearestNode(nodesENU, loc_end, network.v_inv)
 
@@ -61,5 +62,21 @@ shortest_edges = routeEdges(network, shortest_route)
 
 fastest_edges = routeEdges(network, fastest_route)
 @test length(fastest_edges) == 21
+
+# Form transportation network from segments
+intersections, crossings = findIntersections(hwys)
+segments = segmentHighways(nodesENU, hwys, intersections, roads, Set(1:8))
+segment_network = createGraph(segments, intersections)
+
+node0 = nearestNode(nodesENU, loc_start, segment_network.v_inv)
+node1 = nearestNode(nodesENU, loc_end, segment_network.v_inv)
+
+# Shortest route
+_, shortest_segment_distance = shortestRoute(network, node0, node1)
+@test shortest_segment_distance == shortest_distance
+
+# Fastest route
+_, fastest_segment_time = fastestRoute(network, node0, node1)
+@test fastest_segment_time == fastest_time
 
 end # module TestRoutes
