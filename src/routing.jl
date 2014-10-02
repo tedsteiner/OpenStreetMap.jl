@@ -85,23 +85,9 @@ function createGraph(nodes, highways::Dict{Int,Highway}, classes, levels, revers
                     push!(e, edge)
                     node_set = Set(node0, node1)
 
-                    if haskey(e_lookup, node0)
-                        e_lookup[node0] = union(e_lookup[node0], Set(length(e)))
-                    else
-                        e_lookup[node0] = Set(length(e))
-                    end
-
-                    if haskey(e_lookup, node1)
-                        e_lookup[node1] = union(e_lookup[node1], Set(length(e)))
-                    else
-                        e_lookup[node1] = Set(length(e))
-                    end
-
-                    if haskey(v_pair, node_set)
-                        v_pair[node_set] = [v_pair[node_set],length(e)]
-                    else
-                        v_pair[node_set] = [length(e)]
-                    end
+                    push!(get!(Set{Int}, e_lookup, node0), length(e))
+                    push!(get!(Set{Int}, e_lookup, node1), length(e))
+                    push!(get!(() -> Int[], v_pair, node_set), length(e))
 
                     if !highway.oneway
                         edge = Graphs.make_edge(g, v[node1], v[node0])
@@ -110,23 +96,9 @@ function createGraph(nodes, highways::Dict{Int,Highway}, classes, levels, revers
                         push!(g_classes, class)
                         push!(e, edge)
 
-                        if haskey(e_lookup, node1)
-                            e_lookup[node1] = union(e_lookup[node1], Set(length(e)))
-                        else
-                            e_lookup[node1] = Set(length(e))
-                        end
-
-                        if haskey(e_lookup, node0)
-                            e_lookup[node0] = union(e_lookup[node0], Set(length(e)))
-                        else
-                            e_lookup[node0] = Set(length(e))
-                        end
-
-                        if haskey(v_pair, node_set)
-                            v_pair[node_set] = [v_pair[node_set], length(e)]
-                        else
-                            v_pair[node_set] = [length(e)]
-                        end
+                        push!(e_lookup[node0], length(e))
+                        push!(e_lookup[node1], length(e))
+                        push!(v_pair[node_set], length(e))
                     end
                 end
             end
@@ -172,23 +144,9 @@ function createGraph(segments::Vector{Segment}, intersections, reverse::Bool=fal
         push!(e, edge)
         node_set = Set(node0, node1)
 
-        if haskey(e_lookup, node0)
-            e_lookup[node0] = union(e_lookup[node0], Set(length(e)))
-        else
-            e_lookup[node0] = Set(length(e))
-        end
-
-        if haskey(e_lookup, node1)
-            e_lookup[node1] = union(e_lookup[node1], Set(length(e)))
-        else
-            e_lookup[node1] = Set(length(e))
-        end
-
-        if haskey(v_pair, node_set)
-            v_pair[node_set] = [v_pair[node_set], length(e)]
-        else
-            v_pair[node_set] = [length(e)]
-        end
+        push!(get!(Set{Int}, e_lookup, node0), length(e))
+        push!(get!(Set{Int}, e_lookup, node1), length(e))
+        push!(get!(() -> Int[], v_pair, node_set), length(e))
 
         if !segment.oneway
             edge = Graphs.make_edge(g, v[node1], v[node0])
@@ -197,23 +155,9 @@ function createGraph(segments::Vector{Segment}, intersections, reverse::Bool=fal
             push!(class, segment.class)
             push!(e, edge)
 
-            if haskey(e_lookup, node1)
-                e_lookup[node1] = union(e_lookup[node1], Set(length(e)))
-            else
-                e_lookup[node1] = Set(length(e))
-            end
-
-            if haskey(e_lookup, node0)
-                e_lookup[node0] = union(e_lookup[node0], Set(length(e)))
-            else
-                e_lookup[node0] = Set(length(e))
-            end
-
-            if haskey(v_pair,node_set)
-                v_pair[node_set] = [v_pair[node_set], length(e)]
-            else
-                v_pair[node_set] = [length(e)]
-            end
+            push!(e_lookup[node0], length(e))
+            push!(e_lookup[node1], length(e))
+            push!(v_pair[node_set], length(e))
         end
     end
 

@@ -38,6 +38,7 @@ end
 type Intersection
     highways::Set{Int} # Set of highway IDs
 end
+Intersection() = Intersection(Set{Int}())
 
 type Bounds
     min_lat
