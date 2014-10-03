@@ -1,5 +1,5 @@
 # Test plotting
-#module TestPlots
+module TestPlots
 
 using OpenStreetMap
 using Base.Test
@@ -21,12 +21,12 @@ feat_classes = classify(feats)
 p = plotMap(nodesLLA, highways=hwys, buildings=builds, features=feats, bounds=boundsLLA, width=500, feature_classes=feat_classes, building_classes=bldg_classes, cycleways=cycles, walkways=peds, roadways=roads)
 
 @test typeof(p) == Winston.FramedPlot
-@test Winston.getattr(p,"xlabel") == "Longitude (deg)"
-@test Winston.getattr(p,"ylabel") == "Latitude (deg)"
-@test Winston.getattr(p.x1,"draw_axis") == true
-@test Winston.getattr(p.x1,"draw_grid") == false
-@test Winston.getattr(p,"xrange") == (-71.0939,-71.0891)
-@test Winston.getattr(p,"yrange") == (42.3626,42.3659)
+@test Winston.getattr(p, "xlabel") == "Longitude (deg)"
+@test Winston.getattr(p, "ylabel") == "Latitude (deg)"
+@test Winston.getattr(p.x1, "draw_axis") == true
+@test Winston.getattr(p.x1, "draw_grid") == false
+@test Winston.getattr(p, "xrange") == (-71.0939, -71.0891)
+@test Winston.getattr(p, "yrange") == (42.3626, 42.3659)
 
 lla_ref = OpenStreetMap.centerBounds(boundsLLA)
 nodesENU = OpenStreetMap.lla2enu(nodesLLA, lla_ref)
@@ -35,13 +35,13 @@ boundsENU = OpenStreetMap.lla2enu(boundsLLA, lla_ref)
 p2 = plotMap(nodesENU, highways=hwys, buildings=builds, features=feats, bounds=boundsENU, width=500, feature_classes=feat_classes, building_classes=bldg_classes, cycleways=cycles, walkways=peds, roadways=roads, km=true, fontsize=4)
 
 @test typeof(p2) == Winston.FramedPlot
-@test Winston.getattr(p2,"xlabel") == "East (km)"
-@test Winston.getattr(p2,"ylabel") == "North (km)"
-@test Winston.getattr(p2.x1,"draw_axis") == true
-@test Winston.getattr(p2.x1,"draw_grid") == false
-@test_approx_eq_eps Winston.getattr(p2,"xrange")[1] -0.1976986338592228 1e-6
-@test_approx_eq_eps Winston.getattr(p2,"xrange")[2] 0.19770898045628862 1e-6
-@test_approx_eq_eps Winston.getattr(p2,"yrange")[1] -0.1832797798024081 1e-6
-@test_approx_eq_eps Winston.getattr(p2,"yrange")[2] 0.18328541309049148 1e-6
+@test Winston.getattr(p2, "xlabel") == "East (km)"
+@test Winston.getattr(p2, "ylabel") == "North (km)"
+@test Winston.getattr(p2.x1, "draw_axis") == true
+@test Winston.getattr(p2.x1, "draw_grid") == false
+@test_approx_eq_eps Winston.getattr(p2, "xrange")[1] -0.1976986338592228 1e-6
+@test_approx_eq_eps Winston.getattr(p2, "xrange")[2] 0.19770898045628862 1e-6
+@test_approx_eq_eps Winston.getattr(p2, "yrange")[1] -0.1832797798024081 1e-6
+@test_approx_eq_eps Winston.getattr(p2, "yrange")[2] 0.18328541309049148 1e-6
 
-#end # module TestPlots
+end # module TestPlots

@@ -31,7 +31,7 @@ function getHighways(street_map::LightXML.XMLDocument)
                             # Note: Highways marked "services" are not traversable
                             if class != "services"
                                 id = int(LightXML.attribute(way, "id"))
-                                highways[id] = getHighwayData(way,class)
+                                highways[id] = getHighwayData(way, class)
                             end
                         end
                         break

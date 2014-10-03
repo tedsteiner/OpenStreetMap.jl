@@ -71,21 +71,15 @@ function crop!(nodes::Dict, bounds::Bounds, highways::Dict{Int,Highway})
 
     for (key, highway) in highways
         valid = falses(length(highway.nodes))
-        #println(highway.nodes)
-        #for n = 1:length(highway.nodes)
         n = 1
         while n <= length(highway.nodes)
-            #println("Length: $(length(highway.nodes)), n = $(n)")
             if haskey(nodes, highway.nodes[n])
                 valid[n] = inBounds(nodes[highway.nodes[n]], bounds)
                 n += 1
             else
-                #println(highway.nodes)
                 push!(missing_nodes, highway.nodes[n])
                 splice!(highway.nodes, n)
                 splice!(valid, n)
-                #println(highway.nodes)
-                #println("n = $(n)")
             end
         end
 

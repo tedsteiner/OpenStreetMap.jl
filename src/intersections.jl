@@ -41,7 +41,6 @@ function findIntersections(highways::Dict{Int,Highway})
     return intersections, crossings
 end
 
-
 ### Generate a new list of highways divided up by intersections
 function segmentHighways(nodes, highways, intersections, classes, levels=Set(1:10))
     segments = Segment[]
@@ -72,7 +71,6 @@ function segmentHighways(nodes, highways, intersections, classes, levels=Set(1:1
 
     return segments
 end
-
 
 ### Generate a list of highways from segments, for plotting purposes
 function highwaySegments(segments::Vector{Segment})

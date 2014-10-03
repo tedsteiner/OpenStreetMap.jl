@@ -74,7 +74,7 @@ There are a few ways to access the API. Here are a few of them.
 OpenStreetMap Interface
 -----------------------
 
-On OpenStreetMap.org, there is a big "Export" button at the top. For very small regions, this is the best option, because the region boundary will be embedded in the file for you (so you don't have to record it). Just drag the box around your region and click export. Easy!  
+On OpenStreetMap.org, there is a big "Export" button at the top. For very small regions, this is the best option, because the region boundary will be embedded in the file for you (so you don't have to record it). Just drag the box around your region and click export. Easy!
 
 If your region is too large, you will usually just get a blank page in your browser without any error messages. If this happens, there is a link below the "Export" button that says "Overpass API." This will very conveniently send your region to the API for an automatic download through that system. Unforunately, this .osm file will not include the boundary information, so you will not be able to use OpenStreetMap.jl's convenient ``getBounds`` function. Otherwise, as far as I can tell, it's the same as clicking the "Export" button.
 
@@ -103,8 +103,8 @@ Here is an example:
 
 .. code-block:: python
 
-    roads_north = [6,6,4,6,6,3,6,6,4,6,6]
-    roads_east = [6,3,6,3,6]
-    nodes, highways, highway_classes = simCityGrid(roads_north,roads_east)
+    roads_north = [6, 6, 4, 6, 6, 3, 6, 6, 4, 6, 6]
+    roads_east = [6, 3, 6, 3, 6]
+    nodes, highways, highway_classes = simCityGrid(roads_north, roads_east)
 
 

@@ -72,7 +72,7 @@ function plotMap(nodes;
 
     # Create the figure
     fignum = Winston.figure(name="OpenStreetMap Plot", width=width, height=height)
-    p = Winston.FramedPlot("xlabel",xlab,"ylabel",ylab)
+    p = Winston.FramedPlot("xlabel", xlab, "ylabel", ylab)
 
     # Limit plot to specified bounds
     if bounds != nothing
@@ -80,14 +80,14 @@ function plotMap(nodes;
         Winston.ylim(bounds.min_lat, bounds.max_lat)
 
         if km && typeof(nodes) == Dict{Int,ENU}
-            xrange = (bounds.min_lon/1000,bounds.max_lon/1000)
-            yrange = (bounds.min_lat/1000,bounds.max_lat/1000)
+            xrange = (bounds.min_lon/1000, bounds.max_lon/1000)
+            yrange = (bounds.min_lat/1000, bounds.max_lat/1000)
         else
-            xrange = (bounds.min_lon,bounds.max_lon)
-            yrange = (bounds.min_lat,bounds.max_lat)
+            xrange = (bounds.min_lon, bounds.max_lon)
+            yrange = (bounds.min_lat, bounds.max_lat)
         end
 
-        p = Winston.FramedPlot("xlabel",xlab,"ylabel",ylab,xrange=xrange,yrange=yrange)
+        p = Winston.FramedPlot("xlabel", xlab, "ylabel", ylab, xrange=xrange, yrange=yrange)
     end
 
     # Iterate over all buildings and draw
@@ -226,10 +226,10 @@ function plotMap(nodes;
     end
 
     if fontsize > 0
-        Winston.setattr(p.x1,"label_style",[:fontsize=>fontsize])
-        Winston.setattr(p.y1,"label_style",[:fontsize=>fontsize])
-        Winston.setattr(p.x1,"ticklabels_style",[:fontsize=>fontsize])
-        Winston.setattr(p.y1,"ticklabels_style",[:fontsize=>fontsize])
+        Winston.setattr(p.x1, "label_style", [:fontsize=>fontsize])
+        Winston.setattr(p.y1, "label_style", [:fontsize=>fontsize])
+        Winston.setattr(p.x1, "ticklabels_style", [:fontsize=>fontsize])
+        Winston.setattr(p.y1, "ticklabels_style", [:fontsize=>fontsize])
     end
 
     display(p)
@@ -237,7 +237,6 @@ function plotMap(nodes;
     # Return figure object (enables further manipulation)
     return p
 end
-
 
 ### Draw layered Map ###
 function drawWayLayer(p::Winston.FramedPlot, nodes::Dict, ways, classes, layer, km=false, realtime=false)
@@ -249,7 +248,6 @@ function drawWayLayer(p::Winston.FramedPlot, nodes::Dict, ways, classes, layer, 
         drawNodes(p, coords, layer[class], realtime)
     end
 end
-
 
 ### Draw layered features ###
 function drawFeatureLayer(p::Winston.FramedPlot, nodes::Dict, features, classes, layer, km=false, realtime=false)
@@ -271,7 +269,6 @@ function drawFeatureLayer(p::Winston.FramedPlot, nodes::Dict, features, classes,
     end
 end
 
-
 ### Get coordinates of lists of nodes ###
 # Nodes in LLA coordinates
 function getNodeCoords(nodes::Dict{Int,LLA}, id_list, km=false)
@@ -285,7 +282,6 @@ function getNodeCoords(nodes::Dict{Int,LLA}, id_list, km=false)
 
     return coords
 end
-
 
 # Nodes in ENU coordinates
 function getNodeCoords(nodes::Dict{Int,ENU}, id_list, km=false)
@@ -304,7 +300,6 @@ function getNodeCoords(nodes::Dict{Int,ENU}, id_list, km=false)
     return coords
 end
 
-
 ### Draw a line between all points in a coordinate list ###
 function drawNodes(p::Winston.FramedPlot, coords, style="k-", width=1, realtime=false)
     x = coords[:, 1]
@@ -319,7 +314,6 @@ function drawNodes(p::Winston.FramedPlot, coords, style="k-", width=1, realtime=
     nothing
 end
 
-
 ### Draw a line between all points in a coordinate list given Style object ###
 function drawNodes(p::Winston.FramedPlot, coords, line_style::Style, realtime=false)
     x = coords[:, 1]
@@ -333,7 +327,6 @@ function drawNodes(p::Winston.FramedPlot, coords, line_style::Style, realtime=fa
     end
     nothing
 end
-
 
 ### Compute approximate "aspect ratio" at mean latitude ###
 function getAspectRatio(bounds::Bounds)

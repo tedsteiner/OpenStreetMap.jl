@@ -38,4 +38,4 @@ include("routing.jl")
 
 include("simulate.jl")
 
-end
+end # module OpenStreetMap
