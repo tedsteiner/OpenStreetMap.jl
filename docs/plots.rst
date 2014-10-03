@@ -111,9 +111,7 @@ Example of saving a plot as an image in png, eps, and pdf formats:
 
     p = plotMap(nodes, bounds=bounds, highways=highways)
     width = 500
-    xrange = bounds.max_lon - bounds.min_lon
-    yrange = bounds.max_lat - bounds.min_lat
-    aspect_ratio = xrange / yrange
+    aspect_ratio = OpenStreetMap.aspectRatio(bounds)
     height = int(width / aspect_ratio)
     Winston.file(p, "filename.png", "width", width, "height", height)
     Winston.file(p, "filename.eps", "width", width, "height", height)

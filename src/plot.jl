@@ -29,7 +29,7 @@ function plotMap(nodes;
 
     # Check if bounds type is correct
     if bounds != nothing
-        if typeof(bounds) != Bounds
+        if !isa(bounds, Bounds)
             println("[OpenStreetMap.jl] Warning: Input argument <bounds> in plotMap() unused due to incorrect type.")
             println("[OpenStreetMap.jl] Required type: Bounds")
             println("[OpenStreetMap.jl] Current type: $(typeof(bounds))")
@@ -39,15 +39,15 @@ function plotMap(nodes;
 
     # Check input node type and compute plot height accordingly
     height = width
-    if typeof(nodes) == Dict{Int,LLA}
+    if isa(nodes, Dict{Int,LLA})
         xlab = "Longitude (deg)"
         ylab = "Latitude (deg)"
 
         if bounds != nothing
-            aspect_ratio = getAspectRatio(bounds)
+            aspect_ratio = aspectRatio(bounds)
             height = int(height / aspect_ratio)
         end
-    elseif typeof(nodes) == Dict{Int,ENU}
+    elseif isa(nodes, Dict{Int,ENU})
         if km
             xlab = "East (km)"
             ylab = "North (km)"
@@ -58,8 +58,8 @@ function plotMap(nodes;
 
         # Waiting for Winston to add capability to force equal scales. For now:
         if bounds != nothing
-            xrange = bounds.max_lon - bounds.min_lon
-            yrange = bounds.max_lat - bounds.min_lat
+            xrange = bounds.max_x - bounds.min_x
+            yrange = bounds.max_y - bounds.min_y
             aspect_ratio = xrange / yrange
             height = int(width / aspect_ratio)
         end
@@ -76,15 +76,15 @@ function plotMap(nodes;
 
     # Limit plot to specified bounds
     if bounds != nothing
-        Winston.xlim(bounds.min_lon, bounds.max_lon)
-        Winston.ylim(bounds.min_lat, bounds.max_lat)
+        Winston.xlim(bounds.min_x, bounds.max_x)
+        Winston.ylim(bounds.min_y, bounds.max_y)
 
-        if km && typeof(nodes) == Dict{Int,ENU}
-            xrange = (bounds.min_lon/1000, bounds.max_lon/1000)
-            yrange = (bounds.min_lat/1000, bounds.max_lat/1000)
+        if km && isa(nodes, Dict{Int,ENU})
+            xrange = (bounds.min_x/1000, bounds.max_x/1000)
+            yrange = (bounds.min_y/1000, bounds.max_y/1000)
         else
-            xrange = (bounds.min_lon, bounds.max_lon)
-            yrange = (bounds.min_lat, bounds.max_lat)
+            xrange = (bounds.min_x, bounds.max_x)
+            yrange = (bounds.min_y, bounds.max_y)
         end
 
         p = Winston.FramedPlot("xlabel", xlab, "ylabel", ylab, xrange=xrange, yrange=yrange)
@@ -92,9 +92,9 @@ function plotMap(nodes;
 
     # Iterate over all buildings and draw
     if buildings != nothing
-        if typeof(buildings) == Dict{Int,Building}
-            if building_classes != nothing && typeof(building_classes) == Dict{Int,Int}
-                if typeof(building_style) == Dict{Int,Style}
+        if isa(buildings, Dict{Int,Building})
+            if building_classes != nothing && isa(building_classes, Dict{Int,Int})
+                if isa(building_style, Dict{Int,Style})
                     drawWayLayer(p, nodes, buildings, building_classes, building_style, km, realtime)
                 else
                     drawWayLayer(p, nodes, buildings, building_classes, LAYER_BUILDINGS, km, realtime)
@@ -117,24 +117,24 @@ function plotMap(nodes;
 
     # Iterate over all highways and draw
     if highways != nothing
-        if typeof(highways) == Dict{Int,Highway}
+        if isa(highways, Dict{Int,Highway})
             if roadways != nothing || cycleways != nothing || walkways != nothing
                 if roadways != nothing
-                    if typeof(highway_style) == Dict{Int,Style}
+                    if isa(highway_style, Dict{Int,Style})
                         drawWayLayer(p, nodes, highways, roadways, highway_style, km, realtime)
                     else
                         drawWayLayer(p, nodes, highways, roadways, LAYER_STANDARD, km, realtime)
                     end
                 end
                 if cycleways != nothing
-                    if typeof(highway_style) == Dict{Int,Style}
+                    if isa(highway_style, Dict{Int,Style})
                         drawWayLayer(p, nodes, highways, cycleways, highway_style, km, realtime)
                     else
                         drawWayLayer(p, nodes, highways, cycleways, LAYER_CYCLE, km, realtime)
                     end
                 end
                 if walkways != nothing
-                    if typeof(highway_style) == Dict{Int,Style}
+                    if isa(highway_style, Dict{Int,Style})
                         drawWayLayer(p, nodes, highways, walkways, highway_style, km, realtime)
                     else
                         drawWayLayer(p, nodes, highways, walkways, LAYER_PED, km, realtime)
@@ -158,11 +158,11 @@ function plotMap(nodes;
 
     # Iterate over all features and draw
     if features != nothing
-        if typeof(features) == Dict{Int,Feature}
-            if feature_classes != nothing && typeof(feature_classes) == Dict{Int,Int}
-                if typeof(feature_style) == Style
+        if isa(features, Dict{Int,Feature})
+            if feature_classes != nothing && isa(feature_classes, Dict{Int,Int})
+                if isa(feature_style, Style)
                     drawFeatureLayer(p, nodes, features, feature_classes, LAYER_FEATURES, km, realtime)
-                elseif typeof(feature_style) == Dict{Int,Style}
+                elseif isa(feature_style, Dict{Int,Style})
                     drawFeatureLayer(p, nodes, features, feature_classes, feature_style, km, realtime)
                 end
             else
@@ -180,18 +180,18 @@ function plotMap(nodes;
 
     # Draw route
     if route != nothing
-        if typeof(route) == Vector{Int}
+        if isa(route, Vector{Int})
             # Get coordinates of all nodes for route
             coords = getNodeCoords(nodes, route, km)
 
             # Add line(s) to plot
             drawNodes(p, coords, route_style, realtime)
-        elseif typeof(route) == Vector{Vector{Int}}
+        elseif isa(route, Vector{Vector{Int}})
             for k = 1:length(route)
                 coords = getNodeCoords(nodes, route[k], km)
-                if typeof(route_style) == Vector{Style}
+                if isa(route_style, Vector{Style})
                     drawNodes(p, coords, route_style[k], realtime)
-                elseif typeof(route_style) == Style
+                elseif isa(route_style, Style)
                     drawNodes(p, coords, route_style, realtime)
                 else
                     println("[OpenStreetMap.jl] Warning: Route in plotMap() could not be plotted.")
@@ -208,7 +208,7 @@ function plotMap(nodes;
 
     # Iterate over all intersections and draw
     if intersections != nothing
-        if typeof(intersections) == Dict{Int,Intersection}
+        if isa(intersections, Dict{Int,Intersection})
             coords = Array(Float64, length(intersections), 2)
             k = 1
             for key in keys(intersections)
@@ -329,10 +329,18 @@ function drawNodes(p::Winston.FramedPlot, coords, line_style::Style, realtime=fa
 end
 
 ### Compute approximate "aspect ratio" at mean latitude ###
-function getAspectRatio(bounds::Bounds)
-    c_adj = cosd(mean([bounds.min_lat, bounds.max_lat]))
-    range_lat = bounds.max_lat - bounds.min_lat
-    range_lon = bounds.max_lon - bounds.min_lon
+function aspectRatio(bounds::Bounds{LLA})
+    c_adj = cosd((bounds.min_y + bounds.max_y) / 2)
+    range_y = bounds.max_y - bounds.min_y
+    range_x = bounds.max_x - bounds.min_x
 
-    return range_lon * c_adj / range_lat
+    return range_x * c_adj / range_y
+end
+
+### Compute excact "aspect ratio" ###
+function aspectRatio(bounds::Bounds{ENU})
+    range_y = bounds.max_y - bounds.min_y
+    range_x = bounds.max_x - bounds.min_x
+
+    return range_x / range_y
 end

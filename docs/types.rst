@@ -87,15 +87,15 @@ OpenStreetMap.jl includes an intersection detector. An intersection is a node wh
 
 Region Boundaries
 ^^^^^^^^^^^^^^^^^^
-Region boundaries include the minimum and maximum latitude and longitude of a region. While the names of the types are clearly focused on the LLA coordinate system, Bounds can also be used with ENU coordinates. They will not work well with ECEF coordinates.
+Region boundaries include the minimum and maximum latitude and longitude of a region. While Bounds targets the LLA coordinate system, Bounds{ENU} can be used with ENU coordinates. Bounds will not work well with ECEF coordinates.
 
 .. code-block:: python
 
     type Bounds
-        min_lat    # Or min_north
-        max_lat    # Or max_north
-        min_lon    # Or min_east
-        max_lon    # Or max_east
+        min_y    # min_lat or min_north
+        max_y    # max_lat or max_north
+        min_x    # min_lon or min_east
+        max_x    # max_lon or max_east
     end
 
 Point Types

@@ -10,7 +10,7 @@ function cropMap!(nodes::Dict,
                   features=nothing,
                   delete_nodes::Bool=true)
 
-    if typeof(nodes) != Dict{Int,LLA} && typeof(nodes) != Dict{Int,ENU}
+    if !isa(nodes, Dict{Int,LLA}) && !isa(nodes, Dict{Int,ENU})
         println("[OpenStreetMap.jl] ERROR: Input argument <nodes> in cropMap!() has unsupported type.")
         println("[OpenStreetMap.jl] Required type: Dict{Int,LLA} OR Dict{Int,ENU}")
         println("[OpenStreetMap.jl] Current type: $(typeof(nodes))")
@@ -18,7 +18,7 @@ function cropMap!(nodes::Dict,
     end
 
     if highways != nothing
-        if typeof(highways) == Dict{Int,Highway}
+        if isa(highways, Dict{Int,Highway})
             crop!(nodes, bounds, highways)
         else
             println("[OpenStreetMap.jl] Warning: Input argument <highways> in cropMap!() could not be plotted.")
@@ -28,7 +28,7 @@ function cropMap!(nodes::Dict,
     end
 
     if buildings != nothing
-        if typeof(buildings) == Dict{Int,Building}
+        if isa(buildings, Dict{Int,Building})
             crop!(nodes, bounds, buildings)
         else
             println("[OpenStreetMap.jl] Warning: Input argument <buildings> in cropMap!() could not be plotted.")
@@ -38,7 +38,7 @@ function cropMap!(nodes::Dict,
     end
 
     if features != nothing
-        if typeof(features) == Dict{Int,Feature}
+        if isa(features, Dict{Int,Feature})
             crop!(nodes, bounds, features)
         else
             println("[OpenStreetMap.jl] Warning: Input argument <features> in cropMap!() could not be plotted.")
@@ -133,65 +133,47 @@ function crop!(nodes::Dict, bounds::Bounds, features::Dict{Int,Feature})
 end
 
 ### Check whether a location is within bounds ###
-function inBounds(loc::LLA, bounds::Bounds)
-    lat = loc.lat
-    lon = loc.lon
+function inBounds{T<:Union(LLA,ENU)}(loc::T, bounds::Bounds{T})
+    x, y = getX(loc), getY(loc)
 
-    bounds.min_lat <= lat <= bounds.max_lat &&
-    bounds.min_lon <= lon <= bounds.max_lon
+    bounds.min_x <= x <= bounds.max_x &&
+    bounds.min_y <= y <= bounds.max_y
 end
 
-function inBounds(loc::ENU, bounds::Bounds)
-    north = loc.north
-    east = loc.east
+function onBounds{T<:Union(LLA,ENU)}(loc::T, bounds::Bounds{T})
+    x, y = getX(loc), getY(loc)
 
-    bounds.min_lat <= north <= bounds.max_lat &&
-    bounds.min_lon <= east <= bounds.max_lon
+    x == bounds.min_x || x == bounds.max_x ||
+    y == bounds.min_y || y == bounds.max_y
 end
 
-function onBounds(loc::LLA, bounds::Bounds)
-    lat = loc.lat
-    lon = loc.lon
-
-    lat == bounds.min_lat || lat == bounds.max_lat ||
-    lon == bounds.min_lon || lon == bounds.max_lon
-end
-
-function onBounds(loc::ENU, bounds::Bounds)
-    north = loc.north
-    east = loc.east
-
-    north == bounds.min_lat || north == bounds.max_lat ||
-    east == bounds.min_lon || east == bounds.max_lon
-end
-
-function boundaryPoint{T}(p1::T, p2::T, bounds::Bounds)
+function boundaryPoint{T<:Union(LLA,ENU)}(p1::T, p2::T, bounds::Bounds)
     x1, y1 = getX(p1), getY(p1)
     x2, y2 = getX(p2), getY(p2)
 
     x, y = x1, y1
 
     # checks assume inBounds(p1) != inBounds(p2)
-    if x1 < bounds.min_lon < x2 || x1 > bounds.min_lon > x2
-        x = bounds.min_lon
-        y = y1 + (y2 - y1) * (bounds.min_lon - x1) / (x2 - x1)
-    elseif x1 < bounds.max_lon < x2 || x1 > bounds.max_lon > x2
-        x = bounds.max_lon
-        y = y1 + (y2 - y1) * (bounds.max_lon - x1) / (x2 - x1)
+    if x1 < bounds.min_x < x2 || x1 > bounds.min_x > x2
+        x = bounds.min_x
+        y = y1 + (y2 - y1) * (bounds.min_x - x1) / (x2 - x1)
+    elseif x1 < bounds.max_x < x2 || x1 > bounds.max_x > x2
+        x = bounds.max_x
+        y = y1 + (y2 - y1) * (bounds.max_x - x1) / (x2 - x1)
     end
 
-    p3 = T == LLA ? T(y, x) : T(x, y)
+    p3 = T(XY(x, y))
     inBounds(p3, bounds) && return p3
 
-    if y1 < bounds.min_lat < y2 || y1 > bounds.min_lat > y2
-        x = x1 + (x2 - x1) * (bounds.min_lat - y1) / (y2 - y1)
-        y = bounds.min_lat
-    elseif y1 < bounds.max_lat < y2 || y1 > bounds.max_lat > y2
-        x = x1 + (x2 - x1) * (bounds.max_lat - y1) / (y2 - y1)
-        y = bounds.max_lat
+    if y1 < bounds.min_y < y2 || y1 > bounds.min_y > y2
+        x = x1 + (x2 - x1) * (bounds.min_y - y1) / (y2 - y1)
+        y = bounds.min_y
+    elseif y1 < bounds.max_y < y2 || y1 > bounds.max_y > y2
+        x = x1 + (x2 - x1) * (bounds.max_y - y1) / (y2 - y1)
+        y = bounds.max_y
     end
 
-    p3 = T == LLA ? T(y, x) : T(x, y)
+    p3 = T(XY(x, y))
     inBounds(p3, bounds) && return p3
 
     error("Failed to find boundary point.")

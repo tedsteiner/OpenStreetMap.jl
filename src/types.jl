@@ -40,11 +40,18 @@ type Intersection
 end
 Intersection() = Intersection(Set{Int}())
 
-type Bounds
-    min_lat
-    max_lat
-    min_lon
-    max_lon
+type Bounds{T}
+    min_y::Float64
+    max_y::Float64
+    min_x::Float64
+    max_x::Float64
+end
+function Bounds(min_lat, max_lat, min_lon, max_lon)
+    if !(-90 <= min_lat <= max_lat <= 90 && -180 <= min_lon <= max_lon <= 180)
+        throw(ArgumentError("Bounds out of range of LLA coordinate system. " *
+                            "Perhaps you're looking for Bounds{ENU}(...)"))
+    end
+    Bounds{LLA}(min_lat, max_lat, min_lon, max_lon)
 end
 
 # Transporation network graph data and helpers to increase routing speed
@@ -90,19 +97,23 @@ type ENU
 end
 ENU(x, y) = ENU(x, y, 0)
 
+### Helper for creating other point types
+type XYZ
+    x
+    y
+    z
+end
+XY(x, y) = XYZ(x, y, 0)
+
+LLA(xyz::XYZ) = LLA(xyz.y, xyz.x, xyz.z)
+ENU(xyz::XYZ) = ENU(xyz.x, xyz.y, xyz.z)
+
 ### Point translators
-function getX(lla::LLA)
-    return lla.lon
-end
-function getY(lla::LLA)
-    return lla.lat
-end
-function getX(enu::ENU)
-    return enu.east
-end
-function getY(enu::ENU)
-    return enu.north
-end
+getX(lla::LLA) = lla.lon
+getY(lla::LLA) = lla.lat
+
+getX(enu::ENU) = enu.east
+getY(enu::ENU) = enu.north
 
 ### World Geodetic Coordinate System of 1984 (WGS 84)
 # Standardized coordinate system for Earth
