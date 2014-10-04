@@ -103,19 +103,17 @@ For example:
 
 Saving Map Images
 -----------------
-``plotMap()`` returns the ``Winston.FramedPlot`` object. This allows the user to futher modify the plot or save it using the ``file`` function available from ``Winston.jl`` with the desired aspect ratio. 
+``plotMap()`` returns the ``Winston.FramedPlot`` object. This allows the user to futher modify the plot or save it using the ``file`` function available from ``Winston.jl`` with the desired aspect ratio.
 
 Example of saving a plot as an image in png, eps, and pdf formats:
 
 .. code-block:: python
-    
-    p = plotMap(nodes,bounds=bounds,highways=highways)
+
+    p = plotMap(nodes, bounds=bounds, highways=highways)
     width = 500
-    xrange = bounds.max_lon - bounds.min_lon
-    yrange = bounds.max_lat - bounds.min_lat
-    aspect_ratio = xrange / yrange
+    aspect_ratio = OpenStreetMap.aspectRatio(bounds)
     height = int(width / aspect_ratio)
-    Winston.file(p,"filename.png","width",width,"height",height)
-    Winston.file(p,"filename.eps","width",width,"height",height)
-    Winston.file(p,"filename.pdf","width",width,"height",height)
+    Winston.file(p, "filename.png", "width", width, "height", height)
+    Winston.file(p, "filename.eps", "width", width, "height", height)
+    Winston.file(p, "filename.pdf", "width", width, "height", height)
 

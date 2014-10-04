@@ -42,7 +42,6 @@ function lla2ecef(nodes::Dict{Int,LLA})
     return nodesECEF
 end
 
-
 ###############################################
 ### Conversion from ECEF to LLA coordinates ###
 ###############################################
@@ -111,14 +110,14 @@ function ecef2enu(ecef::ECEF, lla_ref::LLA)
 end
 
 # Given Bounds object for linearization
-function ecef2enu(ecef::ECEF, bounds::Bounds)
+function ecef2enu(ecef::ECEF, bounds::Bounds{LLA})
     lla_ref = centerBounds(bounds)
 
     return ecef2enu(ecef, lla_ref)
 end
 
 # For dictionary of nodes
-function ecef2enu(nodes::Dict{Int,ECEF}, bounds::Bounds)
+function ecef2enu(nodes::Dict{Int,ECEF}, bounds::Bounds{LLA})
     nodesENU = Dict{Int,ENU}()
     lla_ref = centerBounds(bounds)
 
@@ -129,13 +128,12 @@ function ecef2enu(nodes::Dict{Int,ECEF}, bounds::Bounds)
     return nodesENU
 end
 
-
 ##############################################
 ### Conversion from LLA to ENU coordinates ###
 ##############################################
 
 # For single-point calculations, given bounds
-function lla2enu(lla::LLA, bounds::Bounds)
+function lla2enu(lla::LLA, bounds::Bounds{LLA})
     ecef = lla2ecef(lla)
     enu = ecef2enu(ecef, bounds)
     return enu
@@ -156,7 +154,7 @@ function lla2enu(lla::LLA, datum::WGS84, lla_ref::LLA)
 end
 
 # For dictionary of LLA nodes, given Bounds
-function lla2enu(nodes::Dict{Int,LLA}, bounds::Bounds)
+function lla2enu(nodes::Dict{Int,LLA}, bounds::Bounds{LLA})
     lla_ref = centerBounds(bounds)
 
     return lla2enu(nodes, lla_ref)
@@ -174,41 +172,28 @@ function lla2enu(nodes::Dict{Int,LLA}, lla_ref::LLA)
     return nodesENU
 end
 
-# For Bounds objects without a reference point
-function lla2enu(bounds::Bounds)
-    top_left_LLA = LLA(bounds.max_lat, bounds.min_lon)
-    bottom_right_LLA = LLA(bounds.min_lat, bounds.max_lon)
-
-    top_left_ENU = lla2enu(top_left_LLA, bounds)
-    bottom_right_ENU = lla2enu(bottom_right_LLA, bounds)
-
-    bounds_ENU = Bounds(bottom_right_ENU.north, top_left_ENU.north, top_left_ENU.east, bottom_right_ENU.east)
-
-    return bounds_ENU
-end
-
-# For Bounds objects given a reference point
-function lla2enu(bounds::Bounds, lla_ref::LLA)
-    top_left_LLA = LLA(bounds.max_lat, bounds.min_lon)
-    bottom_right_LLA = LLA(bounds.min_lat, bounds.max_lon)
+# For Bounds objects
+function lla2enu(bounds::Bounds{LLA}, lla_ref::LLA=centerBounds(bounds))
+    top_left_LLA = LLA(bounds.max_y, bounds.min_x)
+    bottom_right_LLA = LLA(bounds.min_y, bounds.max_x)
 
     top_left_ENU = lla2enu(top_left_LLA, lla_ref)
     bottom_right_ENU = lla2enu(bottom_right_LLA, lla_ref)
 
-    bounds_ENU = Bounds(bottom_right_ENU.north, top_left_ENU.north, top_left_ENU.east, bottom_right_ENU.east)
-
-    return bounds_ENU
+    return Bounds{ENU}(bottom_right_ENU.north,
+                       top_left_ENU.north,
+                       top_left_ENU.east,
+                       bottom_right_ENU.east)
 end
-
 
 ########################
 ### Helper Functions ###
 ########################
 
 ### Get center point of Bounds region ###
-function centerBounds(bounds::Bounds)
-    lat_ref = (bounds.min_lat + bounds.max_lat) / 2
-    lon_ref = (bounds.min_lon + bounds.max_lon) / 2
+function centerBounds{T}(bounds::Bounds{T})
+    y_ref = (bounds.min_y + bounds.max_y) / 2
+    x_ref = (bounds.min_x + bounds.max_x) / 2
 
-    return LLA(lat_ref, lon_ref)
+    return T(XY(x_ref, y_ref))
 end

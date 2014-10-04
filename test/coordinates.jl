@@ -39,9 +39,9 @@ P_enu = lla2enu(P_lla, P_ref_lla)
 bounds = OpenStreetMap.Bounds(42.365, 42.3695, -71.1, -71.094)
 bounds_enu = lla2enu(bounds)
 
-@test_approx_eq bounds_enu.min_lat -249.92653559014204
-@test_approx_eq bounds_enu.max_lat 249.9353534127322
-@test_approx_eq bounds_enu.min_lon -247.1091823451915
-@test_approx_eq bounds_enu.max_lon 247.1268196141778
+@test_approx_eq bounds_enu.min_y -249.92653559014204
+@test_approx_eq bounds_enu.max_y 249.9353534127322
+@test_approx_eq bounds_enu.min_x -247.1091823451915
+@test_approx_eq bounds_enu.max_x 247.1268196141778
 
 end # module TestCoordinates

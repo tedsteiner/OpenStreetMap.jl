@@ -28,37 +28,33 @@ function getNodes(street_map::LightXML.XMLDocument)
     return nodes
 end
 
-
 ### Find the nearest node to a given location ###
-function nearestNode(nodes::Dict{Int,ENU}, loc::ENU, node_list=0)
-    return nearestNodeInternal(nodes, loc, node_list)
-end
-
-function nearestNode(nodes::Dict{Int,ECEF}, loc::ECEF, node_list=0)
-    return nearestNodeInternal(nodes, loc, node_list)
-end
-
-function nearestNodeInternal(nodes, loc, node_list=0)
-    min_dist = 1e8
+function nearestNode{T<:Union(ENU,ECEF)}(nodes::Dict{Int,T}, loc::T)
+    min_dist = Inf
     best_ind = 0
 
-    if node_list != 0
-        # Search only nodes in node_list
-        for ind in node_list
-            dist = distance(nodes[ind], loc)
-            if dist < min_dist
-                min_dist = dist
-                best_ind = ind
-            end
+    for (key, node) in nodes
+        dist = distance(node, loc)
+        if dist < min_dist
+            min_dist = dist
+            best_ind = key
         end
-    else
-        # Search all nodes
-        for (key, node) in nodes
-            dist = distance(node, loc)
-            if dist < min_dist
-                min_dist = dist
-                best_ind = key
-            end
+    end
+
+    return best_ind
+end
+
+function nearestNode{T<:Union(ENU,ECEF)}(nodes::Dict{Int,T},
+                                         loc::T,
+                                         node_list::Vector{Int})
+    min_dist = Inf
+    best_ind = 0
+
+    for ind in node_list
+        dist = distance(nodes[ind], loc)
+        if dist < min_dist
+            min_dist = dist
+            best_ind = ind
         end
     end
 
@@ -66,15 +62,7 @@ function nearestNodeInternal(nodes, loc, node_list=0)
 end
 
 ### Add a new node ###
-function addNewNode(nodes::Dict{Int,LLA}, loc::LLA)
-    return addNewNodeInternal(nodes, loc)
-end
-
-function addNewNode(nodes::Dict{Int,ENU}, loc::ENU)
-    return addNewNodeInternal(nodes, loc)
-end
-
-function addNewNodeInternal(nodes, loc)
+function addNewNode{T<:Union(LLA,ENU)}(nodes::Dict{Int,T}, loc::T)
     id = 1
     while id <= typemax(Int)
         if !haskey(nodes, id)

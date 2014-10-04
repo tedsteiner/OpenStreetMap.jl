@@ -16,7 +16,6 @@ function highwayVertices(highways::Dict{Int,Highway})
     return vertices
 end
 
-
 # For classified highways
 function highwayVertices(highways::Dict{Int,Highway}, classes::Dict{Int,Int})
     vertices = Set{Int}()
@@ -27,7 +26,6 @@ function highwayVertices(highways::Dict{Int,Highway}, classes::Dict{Int,Int})
 
     return vertices
 end
-
 
 # For specified levels of a classifier dictionary
 function highwayVertices(highways::Dict{Int,Highway}, classes::Dict{Int,Int}, levels)
@@ -41,8 +39,6 @@ function highwayVertices(highways::Dict{Int,Highway}, classes::Dict{Int,Int}, le
 
     return vertices
 end
-
-
 
 ### Form transportation network graph of map ###
 function createGraph(nodes, highways::Dict{Int,Highway}, classes, levels, reverse::Bool=false)
@@ -108,7 +104,6 @@ function createGraph(nodes, highways::Dict{Int,Highway}, classes, levels, revers
     return Network(g, v, e, w, v_inv, e_lookup, v_pair, g_classes)
 end
 
-
 ### Form transportation network graph of map ###
 function createGraph(segments::Vector{Segment}, intersections, reverse::Bool=false)
     v = Dict{Int,Graphs.KeyVertex{Int}}()                       # Vertices
@@ -164,8 +159,6 @@ function createGraph(segments::Vector{Segment}, intersections, reverse::Bool=fal
     return Network(g, v, e, w, v_inv, e_lookup, v_pair, class)
 end
 
-
-
 ### Get distance between two nodes ###
 # ENU Coordinates
 function distance(nodes::Dict{Int,ENU}, node0, node1)
@@ -174,7 +167,6 @@ function distance(nodes::Dict{Int,ENU}, node0, node1)
 
     return distance(loc0, loc1)
 end
-
 
 function distance(loc0::ENU, loc1::ENU)
     x0 = loc0.east
@@ -188,7 +180,6 @@ function distance(loc0::ENU, loc1::ENU)
     return distance(x0, y0, z0, x1, y1, z1)
 end
 
-
 # ECEF Coordinates
 function distance(nodes::Dict{Int,ECEF}, node0, node1)
     loc0 = nodes[node0]
@@ -196,7 +187,6 @@ function distance(nodes::Dict{Int,ECEF}, node0, node1)
 
     return distance(loc0, loc1)
 end
-
 
 function distance(loc0::ECEF, loc1::ECEF)
     x0 = loc0.x
@@ -210,12 +200,10 @@ function distance(loc0::ECEF, loc1::ECEF)
     return distance(x0, y0, z0, x1, y1, z1)
 end
 
-
 # Cartesian coordinates
 function distance(x0, y0, z0, x1, y1, z1)
     return sqrt((x1-x0)^2 + (y1-y0)^2 + (z1-z0)^2)
 end
-
 
 ### Compute the distance of a route ###
 function distance(nodes, route)
@@ -227,14 +215,11 @@ function distance(nodes, route)
     return dist
 end
 
-
-
 ### Shortest Paths ###
 # Dijkstra's Algorithm
 function dijkstra(g, w, start_vertex)
     return Graphs.dijkstra_shortest_paths(g, w, start_vertex)
 end
-
 
 # Extract route from Dijkstra results object
 function extractRoute(dijkstra, start_index, finish_index)
@@ -256,7 +241,6 @@ function extractRoute(dijkstra, start_index, finish_index)
     return route, distance
 end
 
-
 ### Generate an ordered list of edges traversed in route
 function routeEdges(network::Network, route::Vector{Int})
     e = Array(Int, length(route)-1)
@@ -277,7 +261,6 @@ function routeEdges(network::Network, route::Vector{Int})
     return e
 end
 
-
 ### Shortest Route ###
 function shortestRoute(network, node0, node1)
     start_vertex = network.v[node0]
@@ -293,7 +276,6 @@ function shortestRoute(network, node0, node1)
     return route_nodes, distance
 end
 
-
 function getRouteNodes(network, route_indices)
     route_nodes = Array(Int, length(route_indices))
     for n = 1:length(route_indices)
@@ -302,7 +284,6 @@ function getRouteNodes(network, route_indices)
 
     return route_nodes
 end
-
 
 ### Fastest Route ###
 function fastestRoute(network, node0, node1, class_speeds=SPEED_ROADS_URBAN)
@@ -322,10 +303,6 @@ function fastestRoute(network, node0, node1, class_speeds=SPEED_ROADS_URBAN)
     route_indices, route_time = extractRoute(dijkstra_result, start_index, finish_index)
 
     route_nodes = getRouteNodes(network, route_indices)
-    #Array(Int, length(route_indices))
-    #for n = 1:length(route_indices)
-    #    route_nodes[n] = network.v_inv[route_indices[n]]
-    #end
 
     return route_nodes, route_time
 end

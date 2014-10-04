@@ -31,7 +31,7 @@ function getHighways(street_map::LightXML.XMLDocument)
                             # Note: Highways marked "services" are not traversable
                             if class != "services"
                                 id = int(LightXML.attribute(way, "id"))
-                                highways[id] = getHighwayData(way,class)
+                                highways[id] = getHighwayData(way, class)
                             end
                         end
                         break
@@ -67,7 +67,7 @@ function getHighwayData(highway::LightXML.XMLElement, class::String="")
             k = LightXML.attribute(label, "k")
 
             # If empty, find the class type
-            if class == "" && k == "highway"
+            if isempty(class) && k == "highway"
                 if LightXML.has_attribute(label, "v")
                     class = LightXML.attribute(label, "v")
                     if !oneway_override
@@ -111,7 +111,7 @@ function getHighwayData(highway::LightXML.XMLElement, class::String="")
             end
 
             # Check if street has a name
-            if road_name == "" && k == "name"
+            if isempty(road_name) && k == "name"
                 if LightXML.has_attribute(label, "v")
                     road_name = LightXML.attribute(label, "v")
                     continue
@@ -119,7 +119,7 @@ function getHighwayData(highway::LightXML.XMLElement, class::String="")
             end
 
             # Check for cycleway
-            if cycleway == "" && k == "cycleway"
+            if isempty(cycleway) && k == "cycleway"
                 if LightXML.has_attribute(label, "v")
                     cycleway = LightXML.attribute(label, "v")
                     continue
@@ -127,7 +127,7 @@ function getHighwayData(highway::LightXML.XMLElement, class::String="")
             end
 
             # Check for sidewalk
-            if sidewalk == "" && k == "sidewalk"
+            if isempty(sidewalk) && k == "sidewalk"
                 if LightXML.has_attribute(label, "v")
                     sidewalk = LightXML.attribute(label, "v")
                     continue
@@ -138,7 +138,7 @@ function getHighwayData(highway::LightXML.XMLElement, class::String="")
             if lanes == 1 && k == "lanes"
                 if LightXML.has_attribute(label, "v")
                     lane_str = LightXML.attribute(label, "v")
-                    if lane_str=="1" || lane_str=="2" || lane_str=="3" || lane_str=="4" || lane_str=="5" || lane_str=="6" || lane_str=="7" || lane_str=="8" || lane_str=="9"
+                    if length(lane_str) == 1 && '1' <= lane_str[1] <= '9'
                         lanes = int(lane_str)
                     end
                     continue

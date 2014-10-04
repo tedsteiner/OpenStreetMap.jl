@@ -1,7 +1,7 @@
 
 Overview
 =============
-This package is provided to give researchers quick and convenient access to OpenStreetMap data in Julia. It provides means for extracting and classifying map data, basic route planning, and convenient data visualization. 
+This package is provided to give researchers quick and convenient access to OpenStreetMap data in Julia. It provides means for extracting and classifying map data, basic route planning, and convenient data visualization.
 
 I found comparable tools for Matlab to be painfully slow, and therefore decided to write a new set of functions from scratch in Julia. Julia provides an excellent platform for quickly and easily working with very large datasets. With the exception of the plotting tools, the functions in this Julia package run significantly faster than comparable tools available in Matlab.
 
@@ -19,7 +19,7 @@ The following features are provided:
    - Ways suitable for driving, walking, or cycling
    - Freeways, major city streets, residential streets, etc.
    - Accomodations, shops, industry, etc.
-   
+
 * Draw detailed maps using Julia's Winston graphics package with a variety of options
 * Compute shortest or fastest driving, cycling, and walking routes using Julia's Graphs package
 
