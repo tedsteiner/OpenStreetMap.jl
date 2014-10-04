@@ -58,7 +58,7 @@ function getBuildingData(building::LightXML.XMLElement, class::String="")
             k = LightXML.attribute(label, "k")
 
             # If not yet set, find the class type
-            if class == "" && k == "building"
+            if isempty(class) && k == "building"
                 if LightXML.has_attribute(label, "v")
                     class = LightXML.attribute(label, "v")
                     continue
@@ -66,7 +66,7 @@ function getBuildingData(building::LightXML.XMLElement, class::String="")
             end
 
             # Check if building has a name
-            if building_name == "" && k == "name"
+            if isempty(building_name) && k == "name"
                 if LightXML.has_attribute(label, "v")
                     building_name = LightXML.attribute(label, "v")
                     continue
