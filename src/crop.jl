@@ -3,48 +3,21 @@
 ### Copyright 2014              ###
 
 ### Crop map elements without copying data ###
-function cropMap!(nodes::Dict,
+function cropMap!(nodes::Union(Dict{Int,LLA},Dict{Int,ENU}),
                   bounds::Bounds;
-                  highways=nothing,
-                  buildings=nothing,
-                  features=nothing,
+                  highways::Union(Nothing,Dict{Int,Highway})=nothing,
+                  buildings::Union(Nothing,Dict{Int,Building})=nothing,
+                  features::Union(Nothing,Dict{Int,Feature})=nothing,
                   delete_nodes::Bool=true)
 
-    if !isa(nodes, Dict{Int,LLA}) && !isa(nodes, Dict{Int,ENU})
-        println("[OpenStreetMap.jl] ERROR: Input argument <nodes> in cropMap!() has unsupported type.")
-        println("[OpenStreetMap.jl] Required type: Dict{Int,LLA} OR Dict{Int,ENU}")
-        println("[OpenStreetMap.jl] Current type: $(typeof(nodes))")
-        return
+    if !isa(highways, Nothing)
+        crop!(nodes, bounds, highways)
     end
-
-    if highways != nothing
-        if isa(highways, Dict{Int,Highway})
-            crop!(nodes, bounds, highways)
-        else
-            println("[OpenStreetMap.jl] Warning: Input argument <highways> in cropMap!() could not be plotted.")
-            println("[OpenStreetMap.jl] Required type: Dict{Int,Highway}")
-            println("[OpenStreetMap.jl] Current type: $(typeof(highways))")
-        end
+    if !isa(buildings, Nothing)
+        crop!(nodes, bounds, buildings)
     end
-
-    if buildings != nothing
-        if isa(buildings, Dict{Int,Building})
-            crop!(nodes, bounds, buildings)
-        else
-            println("[OpenStreetMap.jl] Warning: Input argument <buildings> in cropMap!() could not be plotted.")
-            println("[OpenStreetMap.jl] Required type: Dict{Int,Building}")
-            println("[OpenStreetMap.jl] Current type: $(typeof(buildings))")
-        end
-    end
-
-    if features != nothing
-        if isa(features, Dict{Int,Feature})
-            crop!(nodes, bounds, features)
-        else
-            println("[OpenStreetMap.jl] Warning: Input argument <features> in cropMap!() could not be plotted.")
-            println("[OpenStreetMap.jl] Required type: Dict{Int,Feature}")
-            println("[OpenStreetMap.jl] Current type: $(typeof(features))")
-        end
+    if !isa(features, Nothing)
+        crop!(nodes, bounds, features)
     end
 
     if delete_nodes
@@ -93,7 +66,7 @@ function crop!(nodes::Dict, bounds::Bounds, highways::Dict{Int,Highway})
     end
 
     if length(missing_nodes) > 0
-        println("[OpenStreetMap.jl] WARNING: $(length(missing_nodes)) missing nodes were removed from highways.")
+        warn("$(length(missing_nodes)) missing nodes were removed from highways.")
     end
 
     return missing_nodes

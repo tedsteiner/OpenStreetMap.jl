@@ -9,7 +9,7 @@ function parseMapXML(filename::String)
     street_map = LightXML.parse_file(filename)
 
     if LightXML.name(LightXML.root(street_map)) != "osm"
-        println("Warning: Not an OpenStreetMap datafile.")
+        throw(ArgumentError("Not an OpenStreetMap datafile."))
     end
 
     return street_map
