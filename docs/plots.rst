@@ -73,7 +73,7 @@ Plot Customization
 The following optional inputs allow the user to customize the map display.
 
 * ``highway_style`` [``Style`` or ``Dict{Int,Style}``]: See note 3 below.
-* ``building_style`` [``Style``]: See note 3 below.
+* ``building_style`` [``Style`` or ``Dict{Int,Style}``]: See note 3 below.
 * ``feature_style`` [``Style`` or ``Dict{Int,Style}``]: See note 3 below.
 * ``route_style`` [``Style`` or ``Vector{Style}``]: Use an vector of ``Style`` types to plot multiple routes with different appearances.
 * ``intersection_style`` [``Style``]

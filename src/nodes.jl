@@ -68,11 +68,10 @@ function addNewNode{T<:Union(LLA,ENU)}(nodes::Dict{Int,T}, loc::T)
         if !haskey(nodes, id)
             nodes[id] = loc
             return id
-        else
-            id += 1
         end
+        id += 1
     end
 
-    println("[OpenStreetMap.jl] WARNING: Unable to add a new node to map, $(typemax(Int)) nodes is currently the maximum.")
-    return 0
+    msg = "Unable to add new node to map, $(typemax(Int)) nodes is the current limit."
+    throw(OverflowError(msg))
 end
