@@ -60,9 +60,6 @@ type Network
     v::Dict{Int,Graphs.KeyVertex{Int}}  # (node id) => (graph vertex)
     e::Vector{Graphs.Edge}              # Graph edges, indexed by edge id
     w::Vector{Float64}                  # Edge weights, indexed by edge id
-    v_inv::Vector{Int}                  # Node ids indexed by graph vertex index
-    e_lookup::Dict{Int,Set{Int}}        # (node id) => Set(attached edge ids)
-    v_pair::Dict{Set{Int},Vector{Int}}  # Set(vertex id pair) => Vector(edge indices)
     class::Vector{Int}                 # Road class of each edge
 end
 

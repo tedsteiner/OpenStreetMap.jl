@@ -25,8 +25,8 @@ network = createGraph(nodesENU, hwys, roads, Set(1:8))
 loc_start = OpenStreetMap.ENU(-5000, 5500, 0)
 loc_end = OpenStreetMap.ENU(5500, -4000, 0)
 
-node0 = nearestNode(nodesENU, loc_start, network.v_inv)
-node1 = nearestNode(nodesENU, loc_end, network.v_inv)
+node0 = nearestNode(nodesENU, loc_start, collect(keys(network.v)))
+node1 = nearestNode(nodesENU, loc_end, collect(keys(network.v)))
 
 @test_approx_eq nodesENU[node0].east -197.70015977531895
 @test_approx_eq_eps nodesENU[node0].north 129.2258444276026 1e-8
@@ -68,8 +68,8 @@ intersections, crossings = findIntersections(hwys)
 segments = segmentHighways(nodesENU, hwys, intersections, roads, Set(1:8))
 segment_network = createGraph(segments, intersections)
 
-node0 = nearestNode(nodesENU, loc_start, segment_network.v_inv)
-node1 = nearestNode(nodesENU, loc_end, segment_network.v_inv)
+node0 = nearestNode(nodesENU, loc_start, collect(keys(segment_network.v)))
+node1 = nearestNode(nodesENU, loc_end, collect(keys(segment_network.v)))
 
 # Shortest route
 _, shortest_segment_distance = shortestRoute(network, node0, node1)

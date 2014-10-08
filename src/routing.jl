@@ -46,19 +46,12 @@ function createGraph(nodes, highways::Dict{Int,Highway}, classes, levels, revers
     e = Graphs.Edge[]                                           # Edges
     w = Float64[]                                               # Weights
     g_classes = Int[]                                           # Road classes
-    e_lookup = Dict{Int,Set{Int}}()                             # Dictionary of edges
-    v_pair = Dict{Set{Int},Vector{Int}}()
     g = Graphs.inclist(Graphs.KeyVertex{Int}, is_directed=true) # Graph
 
     verts = highwayVertices(highways, classes, levels)
-    v_inv = Array(Int, length(verts))
-    i = 0
     for vert in verts
         v[vert] = Graphs.add_vertex!(g, vert)
-        v_inv[i+=1] = vert
     end
-
-    @assert length(v_inv) == length(v)
 
     for (key, class) in classes
         if in(class, levels)
@@ -81,27 +74,19 @@ function createGraph(nodes, highways::Dict{Int,Highway}, classes, levels, revers
                     push!(e, edge)
                     node_set = Set(node0, node1)
 
-                    push!(get!(Set{Int}, e_lookup, node0), length(e))
-                    push!(get!(Set{Int}, e_lookup, node1), length(e))
-                    push!(get!(() -> Int[], v_pair, node_set), length(e))
-
                     if !highway.oneway
                         edge = Graphs.make_edge(g, v[node1], v[node0])
                         Graphs.add_edge!(g, edge)
                         push!(w, weight)
                         push!(g_classes, class)
                         push!(e, edge)
-
-                        push!(e_lookup[node0], length(e))
-                        push!(e_lookup[node1], length(e))
-                        push!(v_pair[node_set], length(e))
                     end
                 end
             end
         end
     end
 
-    return Network(g, v, e, w, v_inv, e_lookup, v_pair, g_classes)
+    return Network(g, v, e, w, g_classes)
 end
 
 ### Form transportation network graph of map ###
@@ -110,17 +95,11 @@ function createGraph(segments::Vector{Segment}, intersections, reverse::Bool=fal
     e = Graphs.Edge[]                                           # Edges
     w = Float64[]                                               # Weights
     class = Int[]                                               # Road class
-    e_lookup = Dict{Int,Set{Int}}()                             # Dictionary of edges
-    v_pair = Dict{Set{Int},Vector{Int}}()
     g = Graphs.inclist(Graphs.KeyVertex{Int}, is_directed=true) # Graph
 
-    v_inv = Array(Int, length(intersections))                   # Inverse vertex mapping
-    i = 0
     for vert in keys(intersections)
         v[vert] = Graphs.add_vertex!(g, vert)
-        v_inv[i+=1] = vert
     end
-    @assert length(v_inv) == length(v)
 
     for segment in segments
         # Add edges to graph and compute weights
@@ -139,24 +118,16 @@ function createGraph(segments::Vector{Segment}, intersections, reverse::Bool=fal
         push!(e, edge)
         node_set = Set(node0, node1)
 
-        push!(get!(Set{Int}, e_lookup, node0), length(e))
-        push!(get!(Set{Int}, e_lookup, node1), length(e))
-        push!(get!(() -> Int[], v_pair, node_set), length(e))
-
         if !segment.oneway
             edge = Graphs.make_edge(g, v[node1], v[node0])
             Graphs.add_edge!(g, edge)
             push!(w, weight)
             push!(class, segment.class)
             push!(e, edge)
-
-            push!(e_lookup[node0], length(e))
-            push!(e_lookup[node1], length(e))
-            push!(v_pair[node_set], length(e))
         end
     end
 
-    return Network(g, v, e, w, v_inv, e_lookup, v_pair, class)
+    return Network(g, v, e, w, class)
 end
 
 ### Get distance between two nodes ###
@@ -250,9 +221,9 @@ function routeEdges(network::Network, route::Vector{Int})
         s = route[n]
         t = route[n+1]
 
-        for e_candidate in network.e_lookup[s]
-            if t == network.e[e_candidate].target.key
-                e[n] = e_candidate
+        for e_candidate in Graphs.out_edges(network.v[s],network.g)
+            if t == e_candidate.target.key
+                e[n] = e_candidate.index
                 break
             end
         end
@@ -278,8 +249,9 @@ end
 
 function getRouteNodes(network, route_indices)
     route_nodes = Array(Int, length(route_indices))
+    v = Graphs.vertices(network.g)
     for n = 1:length(route_indices)
-        route_nodes[n] = network.v_inv[route_indices[n]]
+        route_nodes[n] = v[route_indices[n]].key
     end
 
     return route_nodes
