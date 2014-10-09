@@ -9,6 +9,7 @@ module OpenStreetMap
 import LightXML
 import Winston
 import Graphs
+import Compat
 
 export parseMapXML, getOSMData, getBounds
 export plotMap, cropMap!
