@@ -58,7 +58,6 @@ end
 type Network
     g                                   # Graph object
     v::Dict{Int,Graphs.KeyVertex{Int}}  # (node id) => (graph vertex)
-    e::Vector{Graphs.Edge}              # Graph edges, indexed by edge id
     w::Vector{Float64}                  # Edge weights, indexed by edge id
     class::Vector{Int}                 # Road class of each edge
 end

@@ -63,6 +63,18 @@ shortest_edges = routeEdges(network, shortest_route)
 fastest_edges = routeEdges(network, fastest_route)
 @test length(fastest_edges) == 21
 
+# Get list of all edges in network
+edges = OpenStreetMap.getEdges(network)
+for k = 1:Graphs.num_edges(network.g)
+    @test edges[k].index == k
+end
+@test edges[10].source.index == 128
+@test edges[10].target.index == 154
+@test edges[20].source.index == 111
+@test edges[30].source.index == 106
+@test edges[40].source.index == 9
+@test edges[50].source.index == 22
+
 # Form transportation network from segments
 intersections, crossings = findIntersections(hwys)
 segments = segmentHighways(nodesENU, hwys, intersections, roads, Set(1:8))

@@ -156,8 +156,7 @@ The Network type is used to represent a street transportation network as a graph
 
     type Network
         g        # Incidence graph of streets
-        v        # Dictionary of vertices
-        e        # Vector of edges
+        v        # Dictionary of vertices indexed by their OSM node IDs
         w        # Edge weights
         class    # Edge classification
     end

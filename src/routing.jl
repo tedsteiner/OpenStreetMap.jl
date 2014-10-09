@@ -43,7 +43,6 @@ end
 ### Form transportation network graph of map ###
 function createGraph(nodes, highways::Dict{Int,Highway}, classes, levels, reverse::Bool=false)
     v = Dict{Int,Graphs.KeyVertex{Int}}()                       # Vertices
-    e = Graphs.Edge[]                                           # Edges
     w = Float64[]                                               # Weights
     g_classes = Int[]                                           # Road classes
     g = Graphs.inclist(Graphs.KeyVertex{Int}, is_directed=true) # Graph
@@ -71,7 +70,6 @@ function createGraph(nodes, highways::Dict{Int,Highway}, classes, levels, revers
                     weight = distance(nodes, node0, node1)
                     push!(w, weight)
                     push!(g_classes, class)
-                    push!(e, edge)
                     node_set = Set(node0, node1)
 
                     if !highway.oneway
@@ -79,20 +77,18 @@ function createGraph(nodes, highways::Dict{Int,Highway}, classes, levels, revers
                         Graphs.add_edge!(g, edge)
                         push!(w, weight)
                         push!(g_classes, class)
-                        push!(e, edge)
                     end
                 end
             end
         end
     end
 
-    return Network(g, v, e, w, g_classes)
+    return Network(g, v, w, g_classes)
 end
 
 ### Form transportation network graph of map ###
 function createGraph(segments::Vector{Segment}, intersections, reverse::Bool=false)
     v = Dict{Int,Graphs.KeyVertex{Int}}()                       # Vertices
-    e = Graphs.Edge[]                                           # Edges
     w = Float64[]                                               # Weights
     class = Int[]                                               # Road class
     g = Graphs.inclist(Graphs.KeyVertex{Int}, is_directed=true) # Graph
@@ -115,7 +111,6 @@ function createGraph(segments::Vector{Segment}, intersections, reverse::Bool=fal
         weight = segment.dist
         push!(w, weight)
         push!(class, segment.class)
-        push!(e, edge)
         node_set = Set(node0, node1)
 
         if !segment.oneway
@@ -123,12 +118,28 @@ function createGraph(segments::Vector{Segment}, intersections, reverse::Bool=fal
             Graphs.add_edge!(g, edge)
             push!(w, weight)
             push!(class, segment.class)
-            push!(e, edge)
         end
     end
 
-    return Network(g, v, e, w, class)
+    return Network(g, v, w, class)
 end
+
+
+# Put all edges in network.g in an array, indexed by their edge index
+function getEdges( network::Network )
+    edges = Array(Any,Graphs.num_edges(network.g))
+    vertices = Graphs.vertices(network.g)
+
+    for v in vertices
+        out_edges = Graphs.out_edges(v,network.g)
+        for edge in out_edges
+            edges[edge.index] = edge
+        end
+    end
+
+    return edges
+end
+
 
 ### Get distance between two nodes ###
 # ENU Coordinates
