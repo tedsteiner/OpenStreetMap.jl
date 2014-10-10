@@ -3,6 +3,7 @@ module TestCropMap
 
 using OpenStreetMap
 using Base.Test
+using Compat
 
 import OpenStreetMap: Bounds, LLA, aspectRatio, getX, getY, inBounds
 
@@ -36,9 +37,9 @@ let bounds = Bounds(0, 1, 0, 1)
 
     hwy = first(values(hwys))
     hwy.nodes = [1:length(coords)]
-    highways = [1 => hwy]
+    highways = Compat.@Dict(1 => hwy)
 
-    nodes = Dict(hwy.nodes, coords)
+    nodes = Dict{Int,LLA}([(hwy.nodes[i], coords[i]) for i in 1:length(coords)])
     cropMap!(nodes, bounds, highways=highways)
 
     hwy_nodes = highways[1].nodes
