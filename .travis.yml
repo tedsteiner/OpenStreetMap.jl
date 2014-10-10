@@ -20,7 +20,6 @@ before_install:
   - "sh -e /etc/init.d/xvfb start"
 script:
   - julia -e 'versioninfo(); Pkg.init(); Pkg.clone(pwd())'
-  - if [ $JULIAVERSION = "julianightlies" ]; then julia -e 'Pkg.test("OpenStreetMap", coverage=true)'; fi
-  - if [ $JULIAVERSION = "juliareleases" ]; then julia -e 'Pkg.test("OpenStreetMap")'; fi
+  - julia -e 'Pkg.test("OpenStreetMap", coverage=true)'
 after_success:
-    - if [ $JULIAVERSION = "julianightlies" ]; julia -e 'cd(Pkg.dir("OpenStreetMap")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'; fi
+  - julia -e 'cd(Pkg.dir("OpenStreetMap")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
