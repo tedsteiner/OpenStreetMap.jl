@@ -1,5 +1,7 @@
 ## OpenStreetMap.jl
 
+[![Build Status](https://travis-ci.org/tedsteiner/OpenStreetMap.jl.png)](https://travis-ci.org/tedsteiner/OpenStreetMap.jl) [![Coverage Status](http://img.shields.io/coveralls/tedsteiner/OpenStreetMap.jl.svg)](https://coveralls.io/r/tedsteiner/OpenStreetMap.jl) [![OpenStreetMap](http://pkg.julialang.org/badges/OpenStreetMap_release.svg)](http://pkg.julialang.org/?pkg=OpenStreetMap&ver=release) [![OpenStreetMap](http://pkg.julialang.org/badges/OpenStreetMap_nightly.svg)](http://pkg.julialang.org/?pkg=OpenStreetMap&ver=nightly)
+
 This package provides basic functionality for parsing, viewing, and working with [OpenStreetMap](http://www.openstreetmap.org) map data. The package is intended mainly for researchers who want to incorporate this rich, global data into their work, and has been designed with both speed and simplicity in mind, especially for those who might be new to Julia.
 
 ### Capabilities
@@ -30,7 +32,7 @@ Add this package within Julia using:
 ```
 Pkg.add("OpenStreetMap")
 ```
-[![Build Status](https://travis-ci.org/tedsteiner/OpenStreetMap.jl.png)](https://travis-ci.org/tedsteiner/OpenStreetMap.jl)
+
 ##### Dependencies
 The following packages should automatically be added as "additional packages", if you do not already have them:
 * LightXML.jl: parsing OpenStreetMap datafiles
