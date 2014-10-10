@@ -84,11 +84,27 @@ node0 = nearestNode(nodesENU, loc_start, collect(keys(segment_network.v)))
 node1 = nearestNode(nodesENU, loc_end, collect(keys(segment_network.v)))
 
 # Shortest route
-_, shortest_segment_distance = shortestRoute(network, node0, node1)
-@test shortest_segment_distance == shortest_distance
+_, shortest_segment_distance = shortestRoute(segment_network, node0, node1)
+@test_approx_eq shortest_segment_distance shortest_distance
 
 # Fastest route
-_, fastest_segment_time = fastestRoute(network, node0, node1)
-@test fastest_segment_time == fastest_time
+_, fastest_segment_time = fastestRoute(segment_network, node0, node1)
+@test_approx_eq fastest_segment_time fastest_time
+
+# Form transportation networks with directions reversed
+r_network = createGraph(nodesENU, hwys, roads, Set(1:8), true)
+r_segment_network = createGraph(segments, intersections, true)
+
+# Reverse routes over reversed network
+_, r_shortest_distance = shortestRoute(r_network, node1, node0)
+_, r_fastest_time = fastestRoute(r_network, node1, node0)
+@test_approx_eq r_shortest_distance shortest_distance
+@test_approx_eq r_fastest_time fastest_time
+
+# Reverse routes over reversed segment network
+_, r_shortest_segment_distance = shortestRoute(r_segment_network, node1, node0)
+_, r_fastest_segment_time = fastestRoute(r_segment_network, node1, node0)
+@test_approx_eq r_shortest_segment_distance shortest_distance
+@test_approx_eq r_fastest_segment_time fastest_time
 
 end # module TestRoutes

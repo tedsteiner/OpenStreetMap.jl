@@ -44,4 +44,6 @@ bounds_enu = lla2enu(bounds)
 @test_approx_eq bounds_enu.min_x -247.1091823451915
 @test_approx_eq bounds_enu.max_x 247.1268196141778
 
+@test_throws ArgumentError OpenStreetMap.Bounds(-90.1, 90.1, -181.1, 181.1)
+
 end # module TestCoordinates
