@@ -157,10 +157,10 @@ node_indices, distances = nodesWithinDrivingTime(network, start_index, 50.0)
 @test_approx_eq_eps distances[15] 44.29039553503941 1e-5
 @test_approx_eq_eps distances[20] 33.10080430980987 1e-5
 @test_approx_eq_eps distances[25] 45.06680630696164 1e-5
-@test_approx_eq_eps distances[30] 6.51756575933207 1e-5
+@test_approx_eq_eps distances[30] 46.51756575933207 1e-5
 
 # Test nodes within driving time, with multi-start
-node_indices, distances = nodesWithinDrivingDistance(network, local_indices, 50.0)
+node_indices, distances = nodesWithinDrivingTime(network, local_indices, 50.0)
 @test length(node_indices) == length(distances)
 @test length(node_indices) == 42
 @test node_indices[1] == 575444707
