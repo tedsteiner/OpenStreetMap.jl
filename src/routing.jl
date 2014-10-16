@@ -203,6 +203,11 @@ function dijkstra(g, w, start_vertex)
     return Graphs.dijkstra_shortest_paths(g, w, start_vertex)
 end
 
+# Bellman Ford's Algorithm
+function bellmanFord(g, w, start_vertices)
+    return Graphs.bellman_ford_shortest_paths(g, w, start_vertices)
+end
+
 # Extract route from Dijkstra results object
 function extractRoute(dijkstra, start_index, finish_index)
     route = Int[]
@@ -268,17 +273,21 @@ function getRouteNodes(network, route_indices)
     return route_nodes
 end
 
-### Fastest Route ###
-function fastestRoute(network, node0, node1, class_speeds=SPEED_ROADS_URBAN)
-    start_vertex = network.v[node0]
-
-    # Modify weights to be times rather than distances
+function networkTravelTimes(network, class_speeds)
     w = Array(Float64, length(network.w))
     for k = 1:length(w)
         w[k] = network.w[k] / class_speeds[network.class[k]]
         w[k] *= 3.6 # (3600/1000) unit conversion to seconds
     end
+    return w
+end
 
+### Fastest Route ###
+function fastestRoute(network, node0, node1, class_speeds=SPEED_ROADS_URBAN)
+    start_vertex = network.v[node0]
+
+    # Modify weights to be times rather than distances
+    w = networkTravelTimes(network, class_speeds)
     dijkstra_result = dijkstra(network.g, w, start_vertex)
 
     start_index = network.v[node0].index
@@ -288,4 +297,61 @@ function fastestRoute(network, node0, node1, class_speeds=SPEED_ROADS_URBAN)
     route_nodes = getRouteNodes(network, route_indices)
 
     return route_nodes, route_time
+end
+
+function filterVertices(vertices, weights, limit)
+    if limit == Inf
+        @assert length(vertices) == length(weights)
+        return keys(vertices), weights
+    end
+    indices = Int[]
+    distances = Float64[]
+    for vertex in vertices
+        distance = weights[vertex.index]
+        if distance < limit
+            push!(indices, vertex.key)
+            push!(distances, distance)
+        end
+    end
+    return indices, distances
+end
+
+# Extract nodes from BellmanFordStates object within an (optional) limit
+# based on driving distance
+function nodesWithinDrivingDistance(network::Network, start_indices, limit=Inf)
+    start_vertices = [network.v[i] for i in start_indices]
+    bellmanford = bellmanFord(network.g, network.w, start_vertices)
+    return filterVertices(values(network.v), bellmanford.dists, limit)
+end
+
+function nodesWithinDrivingDistance(network::Network,
+                                    loc::ENU,
+                                    limit=Inf,
+                                    loc_range=100.0)
+    return nodesWithinDrivingDistance(network,
+                                      nodesWithinRange(network.v, loc, loc_range),
+                                      limit)
+end
+
+# Extract nodes from BellmanFordStates object within a (optional) limit,
+# based on driving time
+function nodesWithinDrivingTime(network,
+                                start_indices,
+                                limit=Inf,
+                                class_speeds=SPEED_ROADS_URBAN)
+    # Modify weights to be times rather than distances
+    w = networkTravelTimes(network, class_speeds)
+    start_vertices = [network.v[i] for i in start_indices]
+    bellmanford = bellmanFord(network.g, w, start_vertices)
+    return filterVertices(values(network.v), bellmanford.dists, limit)
+end
+
+function nodesWithinDrivingTime(network::Network,
+                                loc::ENU,
+                                limit=Inf,
+                                class_speeds=SPEED_ROADS_URBAN,
+                                loc_range=100.0)
+    return nodesWithinDrivingTime(network,
+                                  nodesWithinRange(network.v, loc, loc_range),
+                                  limit)
 end
