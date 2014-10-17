@@ -1,7 +1,7 @@
-Route Planning
-==============
+Road Network Analysis
+=====================
 
-OpenStreetMap.jl provides a user-friendly interface to the Graphs.jl package for route planning on transportation networks. Either shortest or fastest routes may be computed using Dijkstra's algorithm.
+OpenStreetMap.jl provides a user-friendly interface to the Graphs.jl package for route planning on transportation networks. Either shortest or fastest routes may be computed using Dijkstra's algorithm. In addition, driving catchment areas may be computed using Bellman Ford's algorithm.
 
 Transportation Network
 ----------------------
@@ -36,9 +36,11 @@ Output:
 
 * ``Network`` type, containing all data necessary for route planning with Graphs.jl
 
-Shortest Routes
----------------
+Route Planning
+--------------
 
+Shortest Routes
+^^^^^^^^^^^^^^^
 Compute the route with the shortest total distance between two nodes.
 
 .. py:function:: shortestRoute(network, node0, node1)
@@ -55,7 +57,7 @@ Outputs:
 * ``distance`` [``Float64``]: Total route distance
 
 Fastest Routes
---------------
+^^^^^^^^^^^^^^
 
 Given estimated typical speeds for each road type, compute the route with the shortest total traversal time between two nodes.
 
@@ -78,7 +80,7 @@ Outputs:
 **Note 2:** Routing does not account for stoplights, traffic patterns, etc. ``fastestRoute`` merely weights each edge by both distance and typical speed.
 
 Route Distance
---------------
+^^^^^^^^^^^^^^
 
 It is often of use to compute the total route distance, which is not returned by ``fastestRoute()``. An additional function is available for this purpose:
 
@@ -102,7 +104,7 @@ For added convenience, ``distance()`` is additionally overloaded for the followi
 .. py:function:: distance(x0, y0, z0, x1, y1, z1)
 
 Edge Extraction
----------------
+^^^^^^^^^^^^^^^
 
 ``shortestRoute()`` and ``fastestRoute()`` both return a list of nodes, which
 comprises the route. ``routeEdges()`` can then convert this list of nodes into
@@ -112,3 +114,49 @@ the list of edges, if desired:
 
 The output is a list of edge indices with type Vector{Int}.
 
+Driving Regions
+---------------
+
+In addition to providing individual routes, the following functions can also be used for retrieving the set of nodes that are within a driving distance limit from a given starting point.
+
+Drive Distance Regions
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. py:function:: nodesWithinDrivingDistance(network, start, limit=Inf)
+
+Inputs:
+
+* ``network`` [``Network``]: Transportation network
+* ``start`` [``Int`` or ``Vector{Int}``]: ID(s) of start node(s)
+* ``limit`` [``Float64``]: Driving Distance limit from start node(s)
+
+Outputs:
+
+* ``node_indices`` [``Vector{Int}``]: Unordered list of indices of nodes within the driving distance limit
+* ``distances`` [``Float64``]: Unordered list of distances corresponding to the nodes in ``node_indices``
+
+**Note 1:** A few built-in speed dictionaries are available in ``speeds.jl``. Highway classifications are defined in ``classes.jl``.
+
+**Note 2:** Routing does not account for stoplights, traffic patterns, etc. Each edge is weighted by its distance.
+
+
+Drive Time Regions
+^^^^^^^^^^^^^^^^^^
+
+.. py:function:: nodesWithinDrivingTime(network, start, limit=Inf, class_speeds=SPEED_ROADS_URBAN)
+
+Inputs:
+
+* ``network`` [``Network``]: Transportation network
+* ``start`` [``Int`` or ``Vector{Int}`` or ``ENU``]: ID(s) of start node(s), or any ``ENU`` location
+* ``limit`` [``Float64``]: Driving time limit from start node(s)
+* ``class_speeds`` [``Dict{Int,Real}``]: Traversal speed (km/hr) for each road class
+
+Outputs:
+
+* ``node_indices`` [``Vector{Int}``]: Unordered list of indices of nodes within the driving time limit
+* ``timings`` [``Float64``]: Unordered list of driving timings corresponding to the nodes in ``node_indices``
+
+**Note 1:** A few built-in speed dictionaries are available in ``speeds.jl``. Highway classifications are defined in ``classes.jl``.
+
+**Note 2:** Routing does not account for stoplights, traffic patterns, etc. Each edge is weighted by both distance and typical speed.

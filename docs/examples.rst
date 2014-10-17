@@ -79,6 +79,27 @@ Display shortest and fastest routes:
 
     fignum_fastest = plotMap(nodesENU, highways=hwys, bounds=boundsENU, roadways=roads, route=fastest_route)
 
+Extract nearby Nodes (within range)
+
+.. code-block:: python
+
+    loc0 = nodesENU[node0]
+    filteredENU = filter((k,v)->haskey(network.v,k), nodesENU)
+    local_indices = nodesWithinRange(filteredENU, loc0, 100.0)
+
+Identify Driving Catchment Areas (within limit)
+
+.. code-block:: python
+
+    start_index = nearestNode(filteredENU, loc0)
+    node_indices, distances = nodesWithinDrivingDistance(network, local_indices, 300.0)
+
+Alternatively, switch to catchment areas based on driving time, rather than distance
+
+.. code-block:: python
+
+    node_indices, distances = nodesWithinDrivingTime(network, local_indices, 50.0)
+
 Display classified roadways, buildings, and features:
 
 .. code-block:: python
