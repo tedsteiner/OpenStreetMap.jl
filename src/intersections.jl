@@ -6,39 +6,36 @@
 
 ### Generate a list of intersections ###
 function findIntersections(highways::Dict{Int,Highway})
-    intersections = Dict{Int,Intersection}()
-    crossings = Int[]
     seen = Set{Int}()
+    intersections = Dict{Int,Intersection}()
 
-    # Highway ends
-    for (k, highway_k) in highways
-        n_nodes = length(highway_k.nodes)
-        for i in 1:max(1, n_nodes - 1):n_nodes
-            node = highway_k.nodes[i]
-            hwys = get!(Intersection, intersections, node).highways
-            push!(hwys, k)
-        end
-    end
+    for hwy in values(highways)
+        n_nodes = length(hwy.nodes)
 
-    # Highway crossings
-    for (i, highway_i) in highways
-        for j in keys(highways)
-            if i > j
-                for node in intersect(highway_i.nodes, highways[j].nodes)
+        for i in 1:n_nodes
+            node = hwy.nodes[i]
 
-                    hwys = get!(Intersection, intersections, node).highways
-                    push!(hwys, i, j)
-
-                    if !in(node, seen)
-                        push!(seen, node)
-                        push!(crossings, node)
-                    end
-                end
+            if i == 1 || i == n_nodes || in(node, seen)
+                get!(Intersection, intersections, node)
+            else
+                push!(seen, node)
             end
         end
     end
 
-    return intersections, crossings
+    for (hwy_key, hwy) in highways
+        n_nodes = length(hwy.nodes)
+
+        for i in 1:n_nodes
+            node = hwy.nodes[i]
+
+            if i == 1 || i == n_nodes || haskey(intersections, node)
+                push!(intersections[node].highways, hwy_key)
+            end
+        end
+    end
+
+    return intersections
 end
 
 ### Generate a new list of highways divided up by intersections

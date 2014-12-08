@@ -76,7 +76,7 @@ end
 @test edges[50].source.index == 22
 
 # Form transportation network from segments
-intersections, crossings = findIntersections(hwys)
+intersections = findIntersections(hwys)
 segments = segmentHighways(nodesENU, hwys, intersections, roads, Set(1:8))
 segment_network = createGraph(segments, intersections)
 
