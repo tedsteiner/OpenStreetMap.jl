@@ -69,37 +69,37 @@ end
 ### Point in Latitude-Longitude-Altitude (LLA) coordinates
 # Used to store node data in OpenStreetMap XML files
 type LLA
-    lat
-    lon
-    alt
+    lat::Float64
+    lon::Float64
+    alt::Float64
 end
-LLA(lat, lon) = LLA(lat, lon, 0)
+LLA(lat, lon) = LLA(lat, lon, 0.0)
 
 ### Point in Earth-Centered-Earth-Fixed (ECEF) coordinates
 # Global cartesian coordinate system rotating with the Earth
 type ECEF
-    x
-    y
-    z
+    x::Float64
+    y::Float64
+    z::Float64
 end
 
 ### Point in East-North-Up (ENU) coordinates
 # Local cartesian coordinate system
 # Linearized about a reference point
 type ENU
-    east
-    north
-    up
+    east::Float64
+    north::Float64
+    up::Float64
 end
-ENU(x, y) = ENU(x, y, 0)
+ENU(x, y) = ENU(x, y, 0.0)
 
 ### Helper for creating other point types
 type XYZ
-    x
-    y
-    z
+    x::Float64
+    y::Float64
+    z::Float64
 end
-XY(x, y) = XYZ(x, y, 0)
+XY(x, y) = XYZ(x, y, 0.0)
 
 LLA(xyz::XYZ) = LLA(xyz.y, xyz.x, xyz.z)
 ENU(xyz::XYZ) = ENU(xyz.x, xyz.y, xyz.z)
@@ -115,14 +115,14 @@ getY(enu::ENU) = enu.north
 # Standardized coordinate system for Earth
 # Global ellipsoidal reference surface
 type WGS84
-    a
-    b
-    e
-    e_prime
+    a::Float64
+    b::Float64
+    e::Float64
+    e_prime::Float64
     N
 
     function WGS84()
-        a = 6378137                         # Semi-major axis
+        a = 6378137.0                       # Semi-major axis
         b = 6356752.31424518                # Semi-minor axis
         e = sqrt((a*a - b*b) / (a*a))       # Eccentricity
         e_prime = sqrt((a*a - b*b) / (b*b)) # Second eccentricity

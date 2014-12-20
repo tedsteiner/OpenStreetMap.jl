@@ -8,7 +8,7 @@ import Winston
 MAP_FILENAME = "tech_square.osm"
 
 # Load and crop map to file bounds
-nodesLLA, hwys, builds, feats = getOSMData(MAP_FILENAME, nodes=true, highways=true, buildings=true, features=true)
+nodesLLA, hwys, builds, feats = getOSMData(MAP_FILENAME)
 boundsLLA = getBounds(parseMapXML(MAP_FILENAME))
 cropMap!(nodesLLA, boundsLLA, highways=hwys, buildings=builds, features=feats, delete_nodes=true)
 
