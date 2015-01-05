@@ -7,7 +7,7 @@ using Base.Test
 MAP_FILENAME = "tech_square.osm"
 
 # Load and crop map to file bounds
-nodes, hwys, builds, feats = getOSMData(MAP_FILENAME, nodes=true, highways=true, buildings=true, features=true)
+nodes, hwys, builds, feats = getOSMData(MAP_FILENAME)
 bounds = getBounds(parseMapXML(MAP_FILENAME))
 cropMap!(nodes, bounds, highways=hwys, buildings=builds, features=feats, delete_nodes=true)
 

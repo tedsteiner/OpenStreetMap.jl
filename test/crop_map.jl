@@ -9,15 +9,13 @@ import OpenStreetMap: Bounds, LLA, aspectRatio, getX, getY, inBounds
 
 MAP_FILENAME = "tech_square.osm"
 
-nodes, hwys, builds, feats = getOSMData(MAP_FILENAME, nodes=true, highways=true, buildings=true, features=true)
-
 bounds = Bounds(42.3637, 42.3655, -71.0919, -71.0893)
 
 bounds_ENU = lla2enu(bounds)
 @test_approx_eq_eps aspectRatio(bounds) aspectRatio(bounds_ENU) 5e-3
 
+nodes, hwys, builds, feats = getOSMData(MAP_FILENAME)
 cropMap!(nodes, bounds, highways=hwys, buildings=builds, features=feats, delete_nodes=true)
-
 @test length(nodes) == 198
 @test length(hwys) == 16
 @test length(builds) == 1

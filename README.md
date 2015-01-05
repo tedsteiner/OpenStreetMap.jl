@@ -39,6 +39,7 @@ Pkg.add("OpenStreetMap")
 ##### Dependencies
 The following packages should automatically be added as "additional packages", if you do not already have them:
 * LightXML.jl: parsing OpenStreetMap datafiles
+* LibExpat.jl: streaming OpenStreetMap datafiles
 * Winston.jl: map plotting
 * Graphs.jl: map routing
 

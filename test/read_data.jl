@@ -11,7 +11,7 @@ if !isfile(MAP_FILENAME)
     download(url, MAP_FILENAME)
 end
 
-nodes, hwys, builds, feats = getOSMData(MAP_FILENAME, nodes=true, highways=true, buildings=true, features=true)
+nodes, hwys, builds, feats = getOSMData(MAP_FILENAME)
 
 @test length(nodes) == 1410
 @test length(hwys) == 55

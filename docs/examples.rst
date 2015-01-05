@@ -5,7 +5,7 @@ Read data from an OSM XML file:
 
 .. code-block:: python
 
-    nodes, hwys, builds, feats = getOSMData(MAP_FILENAME, nodes=true, highways=true, buildings=true, features=true)
+    nodes, hwys, builds, feats = getOSMData(MAP_FILENAME)
 
     println("Number of nodes: $(length(nodes))")
     println("Number of highways: $(length(hwys))")

@@ -2,32 +2,6 @@
 ### MIT License                 ###
 ### Copyright 2014              ###
 
-### Get dictionary of all nodes from an OSM XML file ###
-function getNodes(street_map::LightXML.XMLDocument)
-
-    xroot = LightXML.root(street_map)
-    all_nodes = LightXML.get_elements_by_tagname(xroot, "node")
-    nodes = Dict{Int,LLA}()
-
-    for node in all_nodes
-
-        if LightXML.has_attribute(node, "visible")
-            if LightXML.attribute(node, "visible") == "false"
-                # Visible=false indicates historic data, which we will ignore
-                continue
-            end
-        end
-
-        id = int(LightXML.attribute(node, "id"))
-        lat = float(LightXML.attribute(node, "lat"))
-        lon = float(LightXML.attribute(node, "lon"))
-
-        nodes[id] = LLA(lat, lon)
-    end
-
-    return nodes
-end
-
 ### Find the nearest node to a given location ###
 function nearestNode{T<:Union(ENU,ECEF)}(nodes::Dict{Int,T}, loc::T)
     min_dist = Inf

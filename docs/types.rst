@@ -92,10 +92,10 @@ Region boundaries include the minimum and maximum latitude and longitude of a re
 .. code-block:: python
 
     type Bounds
-        min_y    # min_lat or min_north
-        max_y    # max_lat or max_north
-        min_x    # min_lon or min_east
-        max_x    # max_lon or max_east
+        min_y::Float64    # min_lat or min_north
+        max_y::Float64    # max_lat or max_north
+        min_x::Float64    # min_lon or min_east
+        max_x::Float64    # max_lon or max_east
     end
 
 Point Types
@@ -110,13 +110,13 @@ Used to store node data in OpenStreetMap XML files.
 .. code-block:: python
 
     type LLA
-        lat
-        lon
-        alt
+        lat::Float64
+        lon::Float64
+        alt::Float64
     end
 
 Because OpenStreetMap typically does not store altitude data, the following alias is available for convenience:
-``LLA(lat, lon) = LLA(lat, lon, 0)``
+``LLA(lat, lon) = LLA(lat, lon, 0.0)``
 
 Earth-Centered-Earth-Fixed (ECEF) Coordinates
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -126,9 +126,9 @@ Global cartesian coordinate system rotating with the Earth.
 .. code-block:: python
 
     type ECEF
-        x
-        y
-        z
+        x::Float64
+        y::Float64
+        z::Float64
     end
 
 East-North-Up (ENU) Coordinates
@@ -139,9 +139,9 @@ Local cartesian coordinate system, centered on a reference point.
 .. code-block:: python
 
     type ENU
-        east
-        north
-        up
+        east::Float64
+        north::Float64
+        up::Float64
     end
 
 Additional Types

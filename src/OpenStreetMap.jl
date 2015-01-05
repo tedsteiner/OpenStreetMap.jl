@@ -7,6 +7,7 @@
 module OpenStreetMap
 
 import LightXML
+import LibExpat
 import Winston
 import Graphs
 import Compat
