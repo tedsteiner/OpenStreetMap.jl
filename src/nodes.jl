@@ -82,3 +82,30 @@ function addNewNode{T<:Union(LLA,ENU)}(nodes::Dict{Int,T}, loc::T)
     msg = "Unable to add new node to map, $(typemax(Int)) nodes is the current limit."
     throw(OverflowError(msg))
 end
+
+### Compute centroid of list of nodes ###
+function centroid{T<:Union(LLA,ENU)}(nodes::Dict{Int,T}, node_list::Vector{Int})
+    sum_1 = 0
+    sum_2 = 0
+    sum_3 = 0
+
+    for k = 1:length(node_list)
+        if typeof(nodes) == Dict{Int,LLA}
+            sum_1 += nodes[node_list[k]].lat
+            sum_2 += nodes[node_list[k]].lon
+            sum_3 += nodes[node_list[k]].alt
+        else
+            sum_1 += nodes[node_list[k]].east
+            sum_2 += nodes[node_list[k]].north
+            sum_3 += nodes[node_list[k]].up
+        end
+    end
+
+    if typeof(nodes) == Dict{Int,LLA}
+        return LLA(sum_1/length(node_list),sum_2/length(node_list),sum_3/length(node_list))
+    else
+        return ENU(sum_1/length(node_list),sum_2/length(node_list),sum_3/length(node_list))
+    end
+end
+
+
