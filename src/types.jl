@@ -40,7 +40,7 @@ type Intersection
 end
 Intersection() = Intersection(Set{Int}())
 
-type HighwayCluster # Multiple highways representing a single "street" with a common name
+type HighwaySet # Multiple highways representing a single "street" with a common name
     highways::Set{Int}
 end
 

@@ -39,7 +39,7 @@ function findIntersections(highways::Dict{Int,Highway})
 end
 
 ### Generate a new list of highways divided up by intersections
-function segmentHighways(nodes, highways, intersections, classes, levels=Set(1:10))
+function segmentHighways(nodes, highways::Dict{Int,Highway}, intersections, classes, levels=Set(1:10))
     segments = Segment[]
     inters = Set(keys(intersections))
 
@@ -70,7 +70,7 @@ function segmentHighways(nodes, highways, intersections, classes, levels=Set(1:1
 end
 
 ### Generate a list of highways from segments, for plotting purposes
-function highwaySegments(segments::Vector{Segment})
+function highwaySegments( segments::Vector{Segment} )
     highways = Dict{Int,Highway}()
 
     for k = 1:length(segments)
@@ -82,7 +82,10 @@ end
 
 
 ### Cluster highway intersections into higher-level intersections ###
-function findIntersectionClusters(nodes, intersections_in, highway_clusters; max_dist=15.0)
+function findIntersectionClusters( nodes::Dict{Int,ENU}, 
+                                   intersections_in::Dict{Int,Intersection}, 
+                                   highway_clusters::Vector{HighwaySet}; 
+                                   max_dist=15.0 )
     hwy_cluster_mapping = Dict{Int,Int}()
     for k = 1:length(highway_clusters)
         hwys = [highway_clusters[k].highways...]
@@ -176,7 +179,7 @@ end
 
 
 ### Replace Nodes in Highways Using Node Remapping
-function replaceHighwayNodes!(highways::Dict{Int,Highway}, node_map::Dict{Int,Int})
+function replaceHighwayNodes!( highways::Dict{Int,Highway}, node_map::Dict{Int,Int} )
     for (key,hwy) in highways
         all_equal = true
         for k = 1:length(hwy.nodes)

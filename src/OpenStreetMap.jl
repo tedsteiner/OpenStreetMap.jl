@@ -19,6 +19,7 @@ export lla2enu, lla2ecef, ecef2lla, ecef2enu
 export roadways, walkways, cycleways, classify
 export createGraph, shortestRoute, fastestRoute, distance, routeEdges
 export nodesWithinRange, nodesWithinDrivingDistance, nodesWithinDrivingTime
+export findHighwaySets, findIntersectionClusters, replaceHighwayNodes!
 export simCityGrid
 
 include("types.jl")

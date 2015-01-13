@@ -36,6 +36,20 @@ The only required input is the highway dictionary returned by "getOSMData()." A
 dictionary of "Intersection" types is returned, intexed by the node ID of the
 intersection.
 
+In some cases, such as boulevards and other divided roads, OpenStreetMap represents a street as two one-way highways.  This can result in multiple "intersections" detected per true intersection. If desired, these intersections can be "clustered," replacing these multiple intersection-lets with a single node. To do this, we must first cluster the highways, by gathering all highways with a common name (note that this is dependent on the quality of street name tags in your source data). 
+We then search for proximal instances of these highway sets crossing one another. Flag max_dist can be used to change the required proximity of the nodes to be considered an intersection (the default is 15 meters). Note that this proximity is the maximum distance the node can be from the centroid of all nodes in the intersection at the time the node is added.
+
+The code to accomplish this is as follows:
+
+.. code-block:: python 
+
+    highway_sets = findHighwaySets(highways)
+    intersection_mapping, intersection_nodes = findIntersectionClusters(nodes,intersections,highway_sets,max_dist=15)
+    replaceHighwayNodes!(highways,intersection_mapping)
+
+The optional flag "max_dist" is in the units of your "nodes" object. 
+
+
 Working with Segments
 ---------------------
 

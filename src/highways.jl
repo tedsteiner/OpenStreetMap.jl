@@ -53,9 +53,9 @@ function cycleways(highways::Dict{Int,Highway})
     return cycles
 end
 
-### Find Highway Pairs (two one-way highways with same name) ###
-function findHighwayPairs( highways::Dict{Int,Highway} )
-    clusters = HighwayCluster[]
+### Find sets of same-named highways ###
+function findHighwaySets( highways::Dict{Int,Highway} )
+    clusters = HighwaySet[]
 
     street_names = (String,String,Int)[]
     
@@ -84,7 +84,7 @@ function findHighwayPairs( highways::Dict{Int,Highway} )
         end
         
         if length(cluster) > 1
-            push!(clusters,HighwayCluster(Set(cluster)))
+            push!(clusters,HighwaySet(Set(cluster)))
         end
     end
 

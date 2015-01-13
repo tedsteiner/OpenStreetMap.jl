@@ -4,6 +4,7 @@ tests = [
     "crop_map",
     "classes",
     "coordinates",
+    "intersections",
     "routes",
     "plots" ]
 
