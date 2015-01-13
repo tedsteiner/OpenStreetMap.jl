@@ -180,10 +180,12 @@ end
 function drawWayLayer(p::Winston.FramedPlot, nodes::Dict, ways, classes, layer, km=false, realtime=false)
     for (key, class) in classes
         # Get coordinates of all nodes for object
-        coords = getNodeCoords(nodes, ways[key].nodes, km)
+        if haskey(ways,key)
+            coords = getNodeCoords(nodes, ways[key].nodes, km)
 
-        # Add line(s) to plot
-        drawNodes(p, coords, layer[class], realtime)
+            # Add line(s) to plot
+            drawNodes(p, coords, layer[class], realtime)
+        end
     end
 end
 
