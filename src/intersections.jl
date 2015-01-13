@@ -83,22 +83,17 @@ end
 
 ### Cluster highway intersections into higher-level intersections ###
 function findIntersectionClusters(nodes, intersections_in, highway_clusters; max_dist=15.0)
-    clustered_highways = Int[]
     hwy_cluster_mapping = Dict{Int,Int}()
     for k = 1:length(highway_clusters)
-        push!(clustered_highways,highway_clusters[k].highways...)
-
         hwys = [highway_clusters[k].highways...]
         for kk = 1:length(hwys)
             hwy_cluster_mapping[hwys[kk]] = k
         end
     end
-    clustered_highways = unique(clustered_highways)
 
     # Deep copy intersections dictionary and replace highways with highway 
     # clusters where available
     intersections = deepcopy(intersections_in)
-    if true
     for (node,inter) in intersections
         hwys = [inter.highways...]
         for k = 1:length(hwys)
@@ -108,11 +103,9 @@ function findIntersectionClusters(nodes, intersections_in, highway_clusters; max
         end
         inter.highways = Set(hwys)
     end
-    end
 
     # Group intersections by number of streets contained
     hwy_counts = Vector{Int}[]
-
     for (node,inter) in intersections
         hwy_cnt = length(inter.highways)
         if hwy_cnt > length(hwy_counts)
@@ -120,7 +113,6 @@ function findIntersectionClusters(nodes, intersections_in, highway_clusters; max
                 push!(hwy_counts,Int[])
             end
         end
-
         push!(hwy_counts[hwy_cnt], node)
     end
 
@@ -128,8 +120,9 @@ function findIntersectionClusters(nodes, intersections_in, highway_clusters; max
     clusters = Set{Int}[]
     clusters_nodes = Set{Int}[]
 
-    for kk = 1:length(hwy_counts)
+    for kk = 1:(length(hwy_counts)-1)
         k = length(hwy_counts)+1-kk
+        # Skip intersections with only 1 highway (road ends)
 
         for inter in hwy_counts[k]
             found = false
@@ -185,10 +178,20 @@ end
 ### Replace Nodes in Highways Using Node Remapping
 function replaceHighwayNodes!(highways::Dict{Int,Highway}, node_map::Dict{Int,Int})
     for (key,hwy) in highways
+        all_equal = true
         for k = 1:length(hwy.nodes)
             if haskey(node_map,hwy.nodes[k])
                 hwy.nodes[k] = node_map[hwy.nodes[k]]
             end
+
+            if k > 1 && hwy.nodes[k] != hwy.nodes[k-1]
+                all_equal = false
+            end
+        end
+
+        # If all nodes in hwy are now equal, delete it.
+        if all_equal
+            delete!(highways,key)
         end
     end
     return nothing
