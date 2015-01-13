@@ -44,7 +44,7 @@ function segmentHighways(nodes, highways, intersections, classes, levels=Set(1:1
     inters = Set(keys(intersections))
 
     for (i, class) in classes
-        if in(class, levels)
+        if in(class, levels) && haskey(highways,i)
             highway = highways[i]
             first = 1
             for j = 2:length(highway.nodes)
