@@ -26,10 +26,19 @@ highway_sets = findHighwaySets(hwys)
 @test length(highway_sets) == 4
 
 # Cluster intersections
-intersection_cluster_mapping, intersection_cluster_nodes = findIntersectionClusters(nodes,intersections,highway_sets,max_dist=15)
+intersection_cluster_mapping = findIntersectionClusters(nodes,intersections,highway_sets,max_dist=15)
+intersection_clusters = unique(collect(values(intersection_cluster_mapping)))
+@test sort!(intersection_clusters) == [1,2,3,4,5]
+@test length(intersection_clusters) == 5
+
+# Replace Nodes in Highways
 replaceHighwayNodes!(hwys,intersection_cluster_mapping)
 intersections_clustered = findIntersections(hwys)
 @test length(intersections_clustered) == 82
+
+# Check how many semi-redundant intersections we were able to remove
+removed = length(intersections) - length(intersections_clustered)
+@test removed == 9
 
 end # module TestIntersections
 

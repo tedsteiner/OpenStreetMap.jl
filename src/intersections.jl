@@ -82,6 +82,9 @@ end
 
 
 ### Cluster highway intersections into higher-level intersections ###
+# Note that there may be multiple intersection clusters containing the same 
+# streets, due to curved streets. Parameter max_dist controls how far apart an 
+# intersection must be from an existing cluster to create a new cluster.
 function findIntersectionClusters( nodes::Dict{Int,ENU}, 
                                    intersections_in::Dict{Int,Intersection}, 
                                    highway_clusters::Vector{HighwaySet}; 
@@ -95,7 +98,7 @@ function findIntersectionClusters( nodes::Dict{Int,ENU},
     end
 
     # Deep copy intersections dictionary and replace highways with highway 
-    # clusters where available
+    # sets where available
     intersections = deepcopy(intersections_in)
     for (node,inter) in intersections
         hwys = [inter.highways...]
@@ -119,13 +122,16 @@ function findIntersectionClusters( nodes::Dict{Int,ENU},
         push!(hwy_counts[hwy_cnt], node)
     end
 
-    cluster_mapping = Dict{Int,Int}()
-    clusters = Set{Int}[]
-    clusters_nodes = Set{Int}[]
+    clusters = Set{Int}[]                   # Array of sets of highway IDs in each cluster
+    clusters_nodes = Set{Int}[]             # Array of sets of node IDs in each cluster
+    intersection_mapping = Dict{Int,Int}()  # [intersection id => index in `clusters`]
 
     for kk = 1:(length(hwy_counts)-1)
+        # Start with intersections with most highways, as they are the best 
+        # "seeds" for new clusters because all intersection nodes added to the cluster 
+        # must have their highways be a subset of the highways already in the cluster.
+        # Skip checking intersections with only 1 highway (road ends)
         k = length(hwy_counts)+1-kk
-        # Skip intersections with only 1 highway (road ends)
 
         for inter in hwy_counts[k]
             found = false
@@ -133,9 +139,9 @@ function findIntersectionClusters( nodes::Dict{Int,ENU},
                 if issubset(intersections[inter].highways,clusters[index])
                     # Check distance to cluster centroid
                     c = centroid(nodes,[clusters_nodes[index]...])
-                    dist = distance(c,nodes[inter])
-                    if dist < max_dist
-                        cluster_mapping[inter] = index
+                    c_dist = distance(c,nodes[inter])
+                    if c_dist < max_dist
+                        intersection_mapping[inter] = index
                         clusters_nodes[index] = Set([clusters_nodes[index]...,inter])
                         found = true
                         break
@@ -145,36 +151,26 @@ function findIntersectionClusters( nodes::Dict{Int,ENU},
             if !found
                 push!(clusters,intersections[inter].highways)
                 push!(clusters_nodes,Set(inter))
-                cluster_mapping[inter] = length(clusters)
+                intersection_mapping[inter] = length(clusters)
             end
         end
     end
 
-    cluster_nodes = Int[]
-    cluster_map = Dict{Int,Int}()
+    # Create new node at centroid of each intersection cluster
+    cluster_map = Dict{Int,Int}()   # [Intersection Node ID => Cluster Node ID]
     for k = 1:length(clusters_nodes)
         if length(clusters_nodes[k]) > 1
             n = [clusters_nodes[k]...]
             c = centroid(nodes,n)
-            push!(cluster_nodes,addNewNode(nodes,c))
+            cluster_node_id = addNewNode(nodes,c)
 
             for j = 1:length(n)
-                cluster_map[n[j]] = cluster_nodes[end]
-            end
-
-            if false
-                println("#####")
-                nds = [clusters_nodes[k]...]
-                for kk = 1:length(nds)
-                    println("node: $(nds[kk]), loc: $(nodes[nds[kk]]), dist: $(distance(nodes,cluster_nodes[end],nds[kk]))")
-                end
-                println("centroid: $c")
-                println("node ID: $(cluster_nodes[end])")
+                cluster_map[n[j]] = cluster_node_id
             end
         end
     end
 
-    return cluster_map, cluster_nodes
+    return cluster_map
 end
 
 
