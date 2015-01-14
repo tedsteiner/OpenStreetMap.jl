@@ -9,12 +9,12 @@ type OSMattributes
     visible::Bool
     lanes::Int
 
-    name::String
-    class::String
-    detail::String
-    cycleway::String
-    sidewalk::String
-    bicycle::String
+    name::UTF8String
+    class::UTF8String
+    detail::UTF8String
+    cycleway::UTF8String
+    sidewalk::UTF8String
+    bicycle::UTF8String
 
     # XML elements
     element::Symbol # :None, :Node, :Way, :Tag[, :Relation]
