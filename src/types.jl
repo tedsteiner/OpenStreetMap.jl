@@ -36,9 +36,13 @@ type Building
 end
 
 type Intersection
-    highways::Set{Int} # Set of highway IDs
+    highways::Set{Int}  # Set of highway IDs
 end
 Intersection() = Intersection(Set{Int}())
+
+type HighwaySet # Multiple highways representing a single "street" with a common name
+    highways::Set{Int}
+end
 
 type Bounds{T}
     min_y::Float64
