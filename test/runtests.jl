@@ -1,3 +1,6 @@
+using OpenStreetMap
+using Base.Test
+
 tests = [
     "read_data",
     "simcity",
