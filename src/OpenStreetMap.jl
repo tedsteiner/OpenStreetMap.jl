@@ -6,11 +6,11 @@
 
 module OpenStreetMap
 
-import LightXML
-import LibExpat
-import Winston
-import Graphs
-import Compat
+using LightXML
+using LibExpat
+using Winston
+using Graphs
+using Compat
 
 export parseMapXML, getOSMData, getBounds
 export plotMap, cropMap!
