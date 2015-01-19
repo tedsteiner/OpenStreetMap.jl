@@ -181,7 +181,7 @@ function collectValues(handler::LibExpat.XPStreamHandler, name::String)
             if attr.oneway_reverse
                 reverse!(attr.way_nodes)
             end
-            osm.highways[attr.id] = Highway(attr.class, attr.lanes, 
+            osm.highways[attr.id] = Highway(attr.class, attr.lanes,
                                             (attr.oneway && !attr.oneway_override),
                                             attr.sidewalk, attr.cycleway, attr.bicycle,
                                             attr.name, copy(attr.way_nodes))
@@ -207,7 +207,7 @@ end
 
 function getOSMData(filename::String; args...)
     osm = OSMdata()
-    
+
     callbacks = LibExpat.XPCallbacks()
     callbacks.start_element = parseElement
     callbacks.end_element = collectValues

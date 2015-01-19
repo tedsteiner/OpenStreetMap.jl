@@ -105,53 +105,6 @@ function crop!(nodes::Dict, bounds::Bounds, features::Dict{Int,Feature})
     return nothing
 end
 
-### Check whether a location is within bounds ###
-function inBounds{T<:Union(LLA,ENU)}(loc::T, bounds::Bounds{T})
-    x, y = getX(loc), getY(loc)
-
-    bounds.min_x <= x <= bounds.max_x &&
-    bounds.min_y <= y <= bounds.max_y
-end
-
-function onBounds{T<:Union(LLA,ENU)}(loc::T, bounds::Bounds{T})
-    x, y = getX(loc), getY(loc)
-
-    x == bounds.min_x || x == bounds.max_x ||
-    y == bounds.min_y || y == bounds.max_y
-end
-
-function boundaryPoint{T<:Union(LLA,ENU)}(p1::T, p2::T, bounds::Bounds)
-    x1, y1 = getX(p1), getY(p1)
-    x2, y2 = getX(p2), getY(p2)
-
-    x, y = x1, y1
-
-    # checks assume inBounds(p1) != inBounds(p2)
-    if x1 < bounds.min_x < x2 || x1 > bounds.min_x > x2
-        x = bounds.min_x
-        y = y1 + (y2 - y1) * (bounds.min_x - x1) / (x2 - x1)
-    elseif x1 < bounds.max_x < x2 || x1 > bounds.max_x > x2
-        x = bounds.max_x
-        y = y1 + (y2 - y1) * (bounds.max_x - x1) / (x2 - x1)
-    end
-
-    p3 = T(XY(x, y))
-    inBounds(p3, bounds) && return p3
-
-    if y1 < bounds.min_y < y2 || y1 > bounds.min_y > y2
-        x = x1 + (x2 - x1) * (bounds.min_y - y1) / (y2 - y1)
-        y = bounds.min_y
-    elseif y1 < bounds.max_y < y2 || y1 > bounds.max_y > y2
-        x = x1 + (x2 - x1) * (bounds.max_y - y1) / (y2 - y1)
-        y = bounds.max_y
-    end
-
-    p3 = T(XY(x, y))
-    inBounds(p3, bounds) && return p3
-
-    error("Failed to find boundary point.")
-end
-
 function cropHighway!(nodes::Dict, bounds::Bounds, highway::Highway, valids::BitVector)
     prev_id, prev_valid = highway.nodes[1], valids[1]
     ni = 1
@@ -164,8 +117,9 @@ function cropHighway!(nodes::Dict, bounds::Bounds, highway::Highway, valids::Bit
         end
         if valid != prev_valid
             prev_node, node = nodes[prev_id], nodes[id]
-            if !(onBounds(prev_node, bounds) || onBounds(node, bounds))
-                new_node = boundaryPoint(prev_node, node, bounds)
+            if !(Geodesy.onBounds(prev_node, bounds) ||
+                 Geodesy.onBounds(node, bounds))
+                new_node = Geodesy.boundaryPoint(prev_node, node, bounds)
                 new_id = addNewNode(nodes, new_node)
                 insert!(highway.nodes, ni + !valid, new_id)
                 ni += 1

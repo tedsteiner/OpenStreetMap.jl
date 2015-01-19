@@ -46,10 +46,10 @@ Converting Map Coordinate Systems
 
 OpenStreetMap.jl is capable of converting map data between LLA, ECEF, and ENU coordinates (see "Data Types") for definitions of these standard coordinates. Because point location data is ONLY stored in the ``nodes`` dictionary (type ``Dict{Int,Point-Type}``), only this object needs to be converted. Note that Bounds objects also need to be converted, although they don't technically store map data. The following functions can be used to convert between coordinate systems:
 
-* ``lla2ecef(nodes::Dict{Int,LLA})``
-* ``ecef2lla(nodes::Dict{Int,ECEF})``
-* ``ecef2enu(nodes::Dict{Int,ECEF}, reference::LLA)``
-* ``lla2enu(nodes::Dict{Int,LLA}, reference::LLA)``
+* ``ECEF(nodes::Dict{Int,LLA})``
+* ``LLA(nodes::Dict{Int,ECEF})``
+* ``ENU(nodes::Dict{Int,ECEF}, reference::LLA)``
+* ``ENU(nodes::Dict{Int,LLA}, reference::LLA)``
 
 East-North-Up coordinates require an additional input parameter, ``reference``, which gives the origin of the ENU coordinate system. LLA and ECEF coordinates both have their origins fixed at the center of the earth.
 

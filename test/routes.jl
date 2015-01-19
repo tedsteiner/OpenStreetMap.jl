@@ -13,7 +13,7 @@ bounds = getBounds(parseMapXML(MAP_FILENAME))
 cropMap!(nodes, bounds, highways=hwys, buildings=builds, features=feats, delete_nodes=true)
 
 # Convert Nodes to ENU Coordinates
-nodesENU = lla2enu(nodes, OpenStreetMap.centerBounds(bounds))
+nodesENU = ENU(nodes, center(bounds))
 
 # Form transportation network
 roads = roadways(hwys)
@@ -22,8 +22,8 @@ network = createGraph(nodesENU, hwys, roads, Set(1:8))
 @test Graphs.num_vertices(network.g) == 155
 @test Graphs.num_edges(network.g) == 273
 
-loc_start = OpenStreetMap.ENU(-5000, 5500, 0)
-loc_end = OpenStreetMap.ENU(5500, -4000, 0)
+loc_start = ENU(-5000, 5500, 0)
+loc_end = ENU(5500, -4000, 0)
 
 node0 = nearestNode(nodesENU, loc_start, collect(keys(network.v)))
 node1 = nearestNode(nodesENU, loc_end, collect(keys(network.v)))
@@ -46,7 +46,7 @@ shortest_route, shortest_distance = shortestRoute(network, node0, node1)
 
 # Fastest Route
 fastest_route, fastest_time = fastestRoute(network, node0, node1)
-fastest_distance = OpenStreetMap.distance(nodesENU, fastest_route)
+fastest_distance = distance(nodesENU, fastest_route)
 @test length(fastest_route) == 22
 @test_approx_eq fastest_distance 724.5817003198007
 @test fastest_route[1] == node0
@@ -111,8 +111,8 @@ _, r_fastest_segment_time = fastestRoute(r_segment_network, node1, node0)
 loc0 = nodesENU[node0]
 filteredENU = filter((k,v)->haskey(network.v,k), nodesENU)
 local_indices = nodesWithinRange(filteredENU, loc0, 100.0)
-@test length(local_indices) == 4
-for index in [61317384, 23, 61317383, 17]
+@test length(local_indices) == 3
+for index in [61317384, 23, 61317383]
     @test index in local_indices
 end
 
@@ -142,7 +142,7 @@ end
 # Nodes within driving time
 node_indices, distances = nodesWithinDrivingTime(network, start_index, 50.0)
 @test length(node_indices) == length(distances)
-@test length(node_indices) == 31
+@test length(node_indices) == 30
 for index in [61318572, 33, 270134895, 575440057, 61323886, 473951349, 986189343]
     @test index in node_indices
 end
@@ -153,7 +153,7 @@ end
 # Test nodes within driving time, with multi-start
 node_indices, distances = nodesWithinDrivingTime(network, local_indices, 50.0)
 @test length(node_indices) == length(distances)
-@test length(node_indices) == 42
+@test length(node_indices) == 41
 for index in [575444707, 270134899, 30, 270134936, 986189343]
     @test index in node_indices
 end

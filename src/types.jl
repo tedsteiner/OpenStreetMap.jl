@@ -44,94 +44,12 @@ type HighwaySet # Multiple highways representing a single "street" with a common
     highways::Set{Int}
 end
 
-type Bounds{T}
-    min_y::Float64
-    max_y::Float64
-    min_x::Float64
-    max_x::Float64
-end
-function Bounds(min_lat, max_lat, min_lon, max_lon)
-    if !(-90 <= min_lat <= max_lat <= 90 && -180 <= min_lon <= max_lon <= 180)
-        throw(ArgumentError("Bounds out of range of LLA coordinate system. " *
-                            "Perhaps you're looking for Bounds{ENU}(...)"))
-    end
-    Bounds{LLA}(min_lat, max_lat, min_lon, max_lon)
-end
-
 # Transporation network graph data and helpers to increase routing speed
 type Network
     g                                   # Graph object
     v::Dict{Int,Graphs.KeyVertex{Int}}  # (node id) => (graph vertex)
     w::Vector{Float64}                  # Edge weights, indexed by edge id
     class::Vector{Int}                 # Road class of each edge
-end
-
-###################
-### Point Types ###
-###################
-
-### Point in Latitude-Longitude-Altitude (LLA) coordinates
-# Used to store node data in OpenStreetMap XML files
-type LLA
-    lat::Float64
-    lon::Float64
-    alt::Float64
-end
-LLA(lat, lon) = LLA(lat, lon, 0.0)
-
-### Point in Earth-Centered-Earth-Fixed (ECEF) coordinates
-# Global cartesian coordinate system rotating with the Earth
-type ECEF
-    x::Float64
-    y::Float64
-    z::Float64
-end
-
-### Point in East-North-Up (ENU) coordinates
-# Local cartesian coordinate system
-# Linearized about a reference point
-type ENU
-    east::Float64
-    north::Float64
-    up::Float64
-end
-ENU(x, y) = ENU(x, y, 0.0)
-
-### Helper for creating other point types
-type XYZ
-    x::Float64
-    y::Float64
-    z::Float64
-end
-XY(x, y) = XYZ(x, y, 0.0)
-
-LLA(xyz::XYZ) = LLA(xyz.y, xyz.x, xyz.z)
-ENU(xyz::XYZ) = ENU(xyz.x, xyz.y, xyz.z)
-
-### Point translators
-getX(lla::LLA) = lla.lon
-getY(lla::LLA) = lla.lat
-
-getX(enu::ENU) = enu.east
-getY(enu::ENU) = enu.north
-
-### World Geodetic Coordinate System of 1984 (WGS 84)
-# Standardized coordinate system for Earth
-# Global ellipsoidal reference surface
-type WGS84
-    a::Float64
-    b::Float64
-    e::Float64
-    e_prime::Float64
-    N
-
-    function WGS84()
-        a = 6378137.0                       # Semi-major axis
-        b = 6356752.31424518                # Semi-minor axis
-        e = sqrt((a*a - b*b) / (a*a))       # Eccentricity
-        e_prime = sqrt((a*a - b*b) / (b*b)) # Second eccentricity
-        new(a, b, e, e_prime)
-    end
 end
 
 ### Rendering style data

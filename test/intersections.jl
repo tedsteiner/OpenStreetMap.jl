@@ -6,16 +6,14 @@ using OpenStreetMap
 using Base.Test
 using Compat
 
-import OpenStreetMap: Bounds, centerBounds
-
 MAP_FILENAME = "tech_square.osm"
 
 bounds = Bounds(42.3637, 42.3655, -71.0919, -71.0893)
 
-bounds_ENU = lla2enu(bounds)
+bounds_ENU = ENU(bounds)
 
 nodesLLA, hwys, builds, feats = getOSMData(MAP_FILENAME)
-nodes = lla2enu(nodesLLA,centerBounds(bounds))
+nodes = ENU(nodesLLA, center(bounds))
 
 # Find intersections in map
 intersections = findIntersections(hwys)
