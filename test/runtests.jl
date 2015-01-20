@@ -1,9 +1,11 @@
+using OpenStreetMap
+using Base.Test
+
 tests = [
     "read_data",
     "simcity",
     "crop_map",
     "classes",
-    "coordinates",
     "intersections",
     "routes",
     "plots" ]

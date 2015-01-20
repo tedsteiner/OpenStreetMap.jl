@@ -6,18 +6,19 @@
 
 module OpenStreetMap
 
-import LightXML
-import LibExpat
-import Winston
-import Graphs
-import Compat
+using Reexport
+@reexport using Geodesy
+using LightXML
+using LibExpat
+using Winston
+using Graphs
+using Compat
 
 export parseMapXML, getOSMData, getBounds
 export plotMap, cropMap!
 export findIntersections, nearestNode, segmentHighways, highwaySegments
-export lla2enu, lla2ecef, ecef2lla, ecef2enu
 export roadways, walkways, cycleways, classify
-export createGraph, shortestRoute, fastestRoute, distance, routeEdges
+export createGraph, shortestRoute, fastestRoute, routeEdges
 export nodesWithinRange, nodesWithinDrivingDistance, nodesWithinDrivingTime
 export findHighwaySets, findIntersectionClusters, replaceHighwayNodes!
 export simCityGrid
@@ -41,5 +42,7 @@ include("transforms.jl")
 include("routing.jl")
 
 include("simulate.jl")
+
+include("deprecated.jl")
 
 end # module OpenStreetMap

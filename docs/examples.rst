@@ -16,7 +16,7 @@ Define map boundary and crop:
 
 .. code-block:: python
 
-    bounds = OpenStreetMap.Bounds(42.365, 42.3675, -71.1, -71.094)
+    bounds = Bounds(42.365, 42.3675, -71.1, -71.094)
 
     cropMap!(nodes, bounds, highways=hwys, buildings=builds, features=feats, delete_nodes=false)
 
@@ -42,9 +42,9 @@ Convert map nodes to ENU coordinates:
 
 .. code-block:: python
 
-    reference = OpenStreetMap.centerBounds(bounds)
-    nodesENU = lla2enu(nodes, reference)
-    boundsENU = lla2enu(bounds, reference)
+    reference = center(bounds)
+    nodesENU = ENU(nodes, reference)
+    boundsENU = ENU(bounds, reference)
 
 Create transportation network:
 
@@ -58,8 +58,8 @@ Route planning:
 
 .. code-block:: python
 
-    loc_start = OpenStreetMap.ENU(-5000, 5500, 0)
-    loc_end = OpenStreetMap.ENU(5500, -4000, 0)
+    loc_start = ENU(-5000, 5500, 0)
+    loc_end = ENU(5500, -4000, 0)
 
     node0 = nearestNode(nodesENU, loc_start, network.v_inv)
     node1 = nearestNode(nodesENU, loc_end, network.v_inv)

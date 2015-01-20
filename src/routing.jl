@@ -143,55 +143,21 @@ end
 
 ### Get distance between two nodes ###
 # ENU Coordinates
-function distance(nodes::Dict{Int,ENU}, node0, node1)
+function Geodesy.distance{T<:Union(ENU,ECEF)}(nodes::Dict{Int,T}, node0, node1)
     loc0 = nodes[node0]
     loc1 = nodes[node1]
 
     return distance(loc0, loc1)
-end
-
-function distance(loc0::ENU, loc1::ENU)
-    x0 = loc0.east
-    y0 = loc0.north
-    z0 = loc0.up
-
-    x1 = loc1.east
-    y1 = loc1.north
-    z1 = loc1.up
-
-    return distance(x0, y0, z0, x1, y1, z1)
-end
-
-# ECEF Coordinates
-function distance(nodes::Dict{Int,ECEF}, node0, node1)
-    loc0 = nodes[node0]
-    loc1 = nodes[node1]
-
-    return distance(loc0, loc1)
-end
-
-function distance(loc0::ECEF, loc1::ECEF)
-    x0 = loc0.x
-    y0 = loc0.y
-    z0 = loc0.z
-
-    x1 = loc1.x
-    y1 = loc1.y
-    z1 = loc1.z
-
-    return distance(x0, y0, z0, x1, y1, z1)
-end
-
-# Cartesian coordinates
-function distance(x0, y0, z0, x1, y1, z1)
-    return sqrt((x1-x0)^2 + (y1-y0)^2 + (z1-z0)^2)
 end
 
 ### Compute the distance of a route ###
-function distance(nodes, route)
-    dist = 0
-    for n = 2:length(route)
-        dist += distance(nodes, route[n-1], route[n])
+function Geodesy.distance{T<:Union(ENU,ECEF)}(nodes::Dict{Int,T}, route::Vector{Int})
+    dist = 0.0
+    prev_point = nodes[route[1]]
+    for i = 2:length(route)
+        point = nodes[route[i]]
+        dist += distance(prev_point, point)
+        prev_point = point
     end
 
     return dist

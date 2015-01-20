@@ -1,6 +1,8 @@
-julia 0.3-
+julia 0.3
 Compat
-LightXML
-LibExpat
-Winston
+Reexport
+Geodesy
 Graphs
+LibExpat
+LightXML
+Winston
