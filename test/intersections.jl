@@ -26,7 +26,6 @@ highway_sets = findHighwaySets(hwys)
 # Cluster intersections
 intersection_cluster_mapping = findIntersectionClusters(nodes,intersections,highway_sets,max_dist=15)
 intersection_clusters = unique(collect(values(intersection_cluster_mapping)))
-@test sort!(intersection_clusters) == [1,2,3,4,5]
 @test length(intersection_clusters) == 5
 
 # Replace Nodes in Highways

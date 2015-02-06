@@ -69,8 +69,10 @@ function nodesWithinRange{T<:Union(ENU,ECEF)}(nodes::Dict{Int,T},
 end
 
 ### Add a new node ###
-function addNewNode{T<:Union(LLA,ENU)}(nodes::Dict{Int,T}, loc::T)
-    id = 1
+function addNewNode{T<:Union(LLA,ENU)}(nodes::Dict{Int,T}, 
+                                       loc::T, 
+                                       start_id::Int=abs(int(hash(loc))) )
+    id = start_id
     while id <= typemax(Int)
         if !haskey(nodes, id)
             nodes[id] = loc
