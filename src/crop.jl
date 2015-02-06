@@ -120,7 +120,7 @@ function cropHighway!(nodes::Dict, bounds::Bounds, highway::Highway, valids::Bit
             if !(Geodesy.onBounds(prev_node, bounds) ||
                  Geodesy.onBounds(node, bounds))
                 new_node = Geodesy.boundaryPoint(prev_node, node, bounds)
-                new_id = addNewNode(nodes, new_node)
+                new_id = addNewNode!(nodes, new_node)
                 insert!(highway.nodes, ni + !valid, new_id)
                 ni += 1
             end

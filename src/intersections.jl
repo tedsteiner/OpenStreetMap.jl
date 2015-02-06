@@ -162,7 +162,7 @@ function findIntersectionClusters( nodes::Dict{Int,ENU},
         if length(clusters_nodes[k]) > 1
             n = [clusters_nodes[k]...]
             c = centroid(nodes,n)
-            cluster_node_id = addNewNode(nodes,c)
+            cluster_node_id = addNewNode!(nodes,c)
 
             for j = 1:length(n)
                 cluster_map[n[j]] = cluster_node_id
