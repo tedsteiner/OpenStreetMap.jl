@@ -27,7 +27,7 @@ This package provides basic functionality for parsing, viewing, and working with
 [![Boston](http://i.imgur.com/1pofvuP.png)](http://imgur.com/a/28l5K#0)
 
 ### Documentation
-[OpenStreetMap.jl documentation](http://openstreetmapjl.readthedocs.org/en/latest/) is hosted by ReadTheDocs.
+[OpenStreetMap.jl documentation](http://openstreetmapjl.readthedocs.org/en/stable/) is hosted by ReadTheDocs.
 
 ### Setup
 
