@@ -82,8 +82,8 @@ intersections = findIntersections(hwys)
 segments = segmentHighways(nodesENU, hwys, intersections, roads, Set(1:8))
 segment_network = createGraph(segments, intersections)
 
-node0 = nearestNode(nodesENU, loc_start, collect(keys(segment_network.v)))
-node1 = nearestNode(nodesENU, loc_end, collect(keys(segment_network.v)))
+node0 = nearestNode(nodesENU, loc_start, segment_network)
+node1 = nearestNode(nodesENU, loc_end, segment_network)
 
 # Shortest route
 _, shortest_segment_distance = shortestRoute(segment_network, node0, node1)
