@@ -1,26 +1,17 @@
-language: cpp
-compiler:
-  - clang
+language: julia
+os:
+  - osx
+  - linux
+julia:
+  - 0.4
+  - 0.3
+sudo: required
 notifications:
   email: false
-env:
-  matrix:
-    - JULIAVERSION="juliareleases"
-    - JULIAVERSION="julianightlies"
 before_install:
-  - sudo add-apt-repository ppa:staticfloat/julia-deps -y
-  - sudo add-apt-repository ppa:staticfloat/${JULIAVERSION} -y
-  - sudo apt-get update -qq -y
-  - sudo apt-get install tcl
-  - sudo apt-get install tk
-  - sudo apt-get install julia -y
-  - sudo apt-get install libXxf86vm-dev # GLFW dependencies
+  - if [ $TRAVIS_OS_NAME = "linux" ]; then export DISPLAY=:99.0; sh -e /etc/init.d/xvfb start; fi
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
 script:
-  - julia -e 'versioninfo(); Pkg.init(); Pkg.clone(pwd())'
-  - julia -e 'Pkg.test("OpenStreetMap", coverage=true)'
+  - julia --check-bounds=yes -e 'Pkg.clone(pwd()); Pkg.test("OpenStreetMap", coverage=true)'
 after_success:
-  - julia -e 'cd(Pkg.dir("OpenStreetMap")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
-  - julia -e 'cd(Pkg.dir("OpenStreetMap")); using Coverage; Codecov.submit(Codecov.process_folder())'
+  - julia -e 'cd(Pkg.dir("OpenStreetMap")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder()); Codecov.submit(Codecov.process_folder())'
