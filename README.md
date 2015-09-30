@@ -18,7 +18,7 @@ This package provides basic functionality for parsing, viewing, and working with
 * Filter data by various classes:
   * Ways suitable for driving, walking, or cycling
   * Freeways, major city streets, residential streets, etc.
-  * Accomodations, shops, industry, etc.
+  * Accommodations, shops, industry, etc.
 * Draw detailed maps using Julia's [Winston](https://github.com/nolta/Winston.jl) graphics package
   with a variety of options
 * Compute shortest or fastest driving, cycling, and walking routes using Julia's Graphs package
