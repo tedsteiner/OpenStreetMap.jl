@@ -1,19 +1,16 @@
-language: cpp
-compiler:
-  - clang
+language: julia
+os:
+  - linux
+julia:
+  - 0.4
+  - 0.3
+sudo: required
 notifications:
   email: false
-env:
-  matrix:
-    - JULIAVERSION="juliareleases"
-    - JULIAVERSION="julianightlies"
 before_install:
-  - sudo add-apt-repository ppa:staticfloat/julia-deps -y
-  - sudo add-apt-repository ppa:staticfloat/${JULIAVERSION} -y
   - sudo apt-get update -qq -y
   - sudo apt-get install tcl
   - sudo apt-get install tk
-  - sudo apt-get install julia -y
   - sudo apt-get install libXxf86vm-dev # GLFW dependencies
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
   - "export DISPLAY=:99.0"
