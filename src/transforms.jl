@@ -41,7 +41,7 @@ end
 #####################################
 
 # Given a reference point
-function Geodesy.ENU{T<:Union(LLA,ECEF)}(nodes::Dict{Int,T},
+function Geodesy.ENU{T<:@compat Union{LLA,ECEF}}(nodes::Dict{Int,T},
                                          lla_ref::LLA,
                                          datum::Ellipsoid = WGS84)
     r = Dict{Int,ENU}()

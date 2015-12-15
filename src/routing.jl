@@ -70,7 +70,7 @@ function createGraph(nodes, highways::Dict{Int,Highway}, classes, levels, revers
                     weight = distance(nodes, node0, node1)
                     push!(w, weight)
                     push!(g_classes, class)
-                    node_set = Set(node0, node1)
+                    # node_set = Set(node0, node1)
 
                     if !highway.oneway
                         edge = Graphs.make_edge(g, v[node1], v[node0])
@@ -111,7 +111,7 @@ function createGraph(segments::Vector{Segment}, intersections, reverse::Bool=fal
         weight = segment.dist
         push!(w, weight)
         push!(class, segment.class)
-        node_set = Set(node0, node1)
+        # node_set = Set(node0, node1)
 
         if !segment.oneway
             edge = Graphs.make_edge(g, v[node1], v[node0])
@@ -143,7 +143,7 @@ end
 
 ### Get distance between two nodes ###
 # ENU Coordinates
-function Geodesy.distance{T<:Union(ENU,ECEF)}(nodes::Dict{Int,T}, node0, node1)
+function Geodesy.distance{T<:@compat(Union{ENU,ECEF})}(nodes::Dict{Int,T}, node0, node1)
     loc0 = nodes[node0]
     loc1 = nodes[node1]
 
@@ -151,7 +151,7 @@ function Geodesy.distance{T<:Union(ENU,ECEF)}(nodes::Dict{Int,T}, node0, node1)
 end
 
 ### Compute the distance of a route ###
-function Geodesy.distance{T<:Union(ENU,ECEF)}(nodes::Dict{Int,T}, route::Vector{Int})
+function Geodesy.distance{T<:@compat(Union{ENU,ECEF})}(nodes::Dict{Int,T}, route::Vector{Int})
     dist = 0.0
     prev_point = nodes[route[1]]
     for i = 2:length(route)

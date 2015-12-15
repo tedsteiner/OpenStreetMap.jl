@@ -3,20 +3,19 @@
 ### Copyright 2014              ###
 
 ### Crop map elements without copying data ###
-function cropMap!(nodes::Union(Dict{Int,LLA},Dict{Int,ENU}),
-                  bounds::Bounds;
-                  highways::Union(Nothing,Dict{Int,Highway})=nothing,
-                  buildings::Union(Nothing,Dict{Int,Building})=nothing,
-                  features::Union(Nothing,Dict{Int,Feature})=nothing,
+function cropMap!(nodes::@compat(Union{Dict{Int,LLA},Dict{Int,ENU}}), bounds::Bounds;
+                  highways::@compat(Union{@compat(Void),Dict{Int,Highway}}) = nothing,
+                  buildings::@compat(Union{@compat(Void),Dict{Int,Building}}) = nothing,
+                  features::@compat(Union{@compat(Void),Dict{Int,Feature}}) = nothing,
                   delete_nodes::Bool=true)
 
-    if !isa(highways, Nothing)
+    if !isa(highways, @compat(Void))
         crop!(nodes, bounds, highways)
     end
-    if !isa(buildings, Nothing)
+    if !isa(buildings, @compat(Void))
         crop!(nodes, bounds, buildings)
     end
-    if !isa(features, Nothing)
+    if !isa(features, @compat(Void))
         crop!(nodes, bounds, features)
     end
 

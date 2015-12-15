@@ -32,14 +32,14 @@ function simCityGrid(classes_north, classes_east)
     k = 0 # Highway ID counter
     for n = 1:N
         k += 1
-        col_nodes = [(n*M-(M-1)):n*M]
+        col_nodes = @compat( collect( (n*M-(M-1)):n*M ) )
         highways[k] = Highway("", 1, false, "", "", "", "North_$(n)", col_nodes)
         roadways[k] = classes_north[n]
     end
 
     for m = 1:M
         k += 1
-        row_nodes = [m:M:N*M]
+        row_nodes = @compat( collect(m:M:N*M) )
         highways[k] = Highway("", 1, false, "", "", "", "East_$(m)", row_nodes)
         roadways[k] = classes_east[m]
     end

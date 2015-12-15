@@ -3,13 +3,13 @@
 ### Copyright 2014              ###
 
 type Highway
-    class::String       # Type of highway
+    @compat class::AbstractString       # Type of highway
     lanes::Int          # Number of lanes (1 if unspecified)
     oneway::Bool        # True if road is one-way
-    sidewalk::String    # Sidewalk classifier, if available
-    cycleway::String    # Cycleway classifier, if available
-    bicycle::String     # Bicycle classifier, if available
-    name::String        # Name, if available
+    @compat sidewalk::AbstractString    # Sidewalk classifier, if available
+    @compat cycleway::AbstractString    # Cycleway classifier, if available
+    @compat bicycle::AbstractString     # Bicycle classifier, if available
+    @compat name::AbstractString        # Name, if available
     nodes::Vector{Int}  # List of nodes
 end
 
@@ -24,14 +24,14 @@ type Segment
 end
 
 type Feature
-    class::String       # Shop, amenity, crossing, etc.
-    detail::String      # Class qualifier
-    name::String        # Name
+    @compat class::AbstractString       # Shop, amenity, crossing, etc.
+    @compat detail::AbstractString      # Class qualifier
+    @compat name::AbstractString        # Name
 end
 
 type Building
-    class::String       # Building type (usually "yes")
-    name::String        # Building name (usually unavailable)
+    @compat class::AbstractString       # Building type (usually "yes")
+    @compat name::AbstractString        # Building name (usually unavailable)
     nodes::Vector{Int}  # List of nodes
 end
 
@@ -54,8 +54,8 @@ end
 
 ### Rendering style data
 type Style
-    color::Uint32
+    @compat color::UInt32
     width::Real
-    spec::String
+    @compat spec::AbstractString
 end
 Style(x, y) = Style(x, y, "-")
