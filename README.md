@@ -7,7 +7,7 @@
 
 This package provides basic functionality for parsing, viewing, and working with [OpenStreetMap](http://www.openstreetmap.org) map data. The package is intended mainly for researchers who want to incorporate this rich, global data into their work, and has been designed with both speed and simplicity in mind, especially for those who might be new to Julia.
 
-**Note:** Our automated tests currently fail on Julia 0.4, but these problems appear to be contained to the test system and are caused by a dependent package. OpenStreetMap.jl should run without issue on both Julia 0.3 and 0.4.
+**Note:** Our automated tests currently fail on Julia 0.4, but these problems appear to be contained to the Travis test system and are caused by a dependent package. OpenStreetMap.jl should run without issue on both Julia 0.3 and 0.4, and the tests pass on local machines for Julia 0.3.7 and 0.4.2 on OS X 10.11 and Ubuntu 14.04.
 
 ### Capabilities
 * Parse an [OpenStreetMap XML datafile](http://wiki.openstreetmap.org/wiki/OSM_XML) (OSM files)
