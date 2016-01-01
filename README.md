@@ -2,8 +2,9 @@
 
 [![Build Status](https://travis-ci.org/tedsteiner/OpenStreetMap.jl.svg)](https://travis-ci.org/tedsteiner/OpenStreetMap.jl)
 [![Coverage Status](http://img.shields.io/coveralls/tedsteiner/OpenStreetMap.jl.svg)](https://coveralls.io/r/tedsteiner/OpenStreetMap.jl)
-[![OpenStreetMap](http://pkg.julialang.org/badges/OpenStreetMap_release.svg)](http://pkg.julialang.org/?pkg=OpenStreetMap&ver=release)
-[![OpenStreetMap](http://pkg.julialang.org/badges/OpenStreetMap_nightly.svg)](http://pkg.julialang.org/?pkg=OpenStreetMap&ver=nightly)
+[![OpenStreetMap](http://pkg.julialang.org/badges/OpenStreetMap_0.3.svg)](http://pkg.julialang.org/?pkg=OpenStreetMap&ver=0.3)
+[![OpenStreetMap](http://pkg.julialang.org/badges/OpenStreetMap_0.4.svg)](http://pkg.julialang.org/?pkg=OpenStreetMap&ver=0.4)
+[![OpenStreetMap](http://pkg.julialang.org/badges/OpenStreetMap_0.5.svg)](http://pkg.julialang.org/?pkg=OpenStreetMap&ver=0.5)
 
 This package provides basic functionality for parsing, viewing, and working with [OpenStreetMap](http://www.openstreetmap.org) map data. The package is intended mainly for researchers who want to incorporate this rich, global data into their work, and has been designed with both speed and simplicity in mind, especially for those who might be new to Julia.
 
