@@ -152,6 +152,10 @@ end
 
 ### Compute the distance of a route ###
 function Geodesy.distance{T<:@compat(Union{ENU,ECEF})}(nodes::Dict{Int,T}, route::Vector{Int})
+    if length(route) == 0
+        return Inf
+    end
+
     dist = 0.0
     prev_point = nodes[route[1]]
     for i = 2:length(route)

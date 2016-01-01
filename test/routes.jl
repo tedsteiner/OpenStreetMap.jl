@@ -56,6 +56,9 @@ fastest_distance = distance(nodesENU, fastest_route)
 @test fastest_route[20] == 2472339219
 @test fastest_route[end] == node1
 
+# Empty route
+@test distance(nodesENU, Int[]) == Inf
+
 # Get route edge list
 shortest_edges = routeEdges(network, shortest_route)
 @test length(shortest_edges) == 22
