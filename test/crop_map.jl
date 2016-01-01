@@ -31,7 +31,7 @@ let bounds = Bounds(0, 1, 0, 1)
     ]
 
     hwy = first(values(hwys))
-    hwy.nodes = [1:length(coords)]
+    hwy.nodes = collect(1:length(coords))
     highways = Compat.@Dict(1 => hwy)
 
     nodes = Dict{Int,LLA}([(hwy.nodes[i], coords[i]) for i in 1:length(coords)])
@@ -43,7 +43,11 @@ let bounds = Bounds(0, 1, 0, 1)
     @test isempty(symdiff(keys(nodes), hwy_nodes))
 
     # everything ends up in bounds
-    @test all(map(x -> inBounds(x, bounds), values(nodes)))
+    if VERSION.minor < 4
+        @test all(map(x -> inBounds(x, bounds), values(nodes)))        
+    else
+        @test all(x -> inBounds(x, bounds), values(nodes))
+    end
 
     # proper interpolation
     @test getY(nodes[hwy_nodes[1]]) == 0.0

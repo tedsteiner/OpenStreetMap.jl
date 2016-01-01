@@ -4,25 +4,25 @@
 
 ### Functions for plotting using the Winston package ###
 
-typealias Styles Union(Style, Dict{Int,Style})
+typealias Styles @compat(Union{Style, Dict{Int,Style}})
 
 ### Generic Map Plot ###
-function plotMap(nodes::Union(Dict{Int,LLA},Dict{Int,ENU});
-                 highways::Union(Nothing,Dict{Int,Highway})=nothing,
-                 buildings::Union(Nothing,Dict{Int,Building})=nothing,
-                 features::Union(Nothing,Dict{Int,Feature})=nothing,
-                 bounds::Union(Nothing,Bounds)=nothing,
-                 intersections::Union(Nothing,Dict{Int,Intersection})=nothing,
+function plotMap(nodes::@compat(Union{Dict{Int,LLA},Dict{Int,ENU}}) ;
+                 highways::@compat(Union{@compat(Void),Dict{Int,Highway}}) = nothing,
+                 buildings::@compat(Union{@compat(Void),Dict{Int,Building}}) = nothing,
+                 features::@compat(Union{@compat(Void),Dict{Int,Feature}}) = nothing,
+                 bounds::@compat(Union{@compat(Void),Bounds}) = nothing,
+                 intersections::@compat(Union{@compat(Void),Dict{Int,Intersection}}) = nothing,
                  roadways=nothing,
                  cycleways=nothing,
                  walkways=nothing,
-                 feature_classes::Union(Nothing,Dict{Int,Int})=nothing,
-                 building_classes::Union(Nothing,Dict{Int,Int})=nothing,
-                 route::Union(Nothing,Vector{Int},Vector{Vector{Int}})=nothing,
+                 feature_classes::@compat(Union{@compat(Void),Dict{Int,Int}}) = nothing,
+                 building_classes::@compat(Union{@compat(Void),Dict{Int,Int}}) = nothing,
+                 route::@compat(Union{@compat(Void),Vector{Int},Vector{Vector{Int}}}) = nothing,
                  highway_style::Styles=Style(0x007CFF, 1.5, "-"),
                  building_style::Styles=Style(0x000000, 1, "-"),
                  feature_style::Styles=Style(0xCC0000, 2.5, "."),
-                 route_style::Union(Style,Vector{Style})=Style(0xFF0000, 3, "-"),
+                 route_style::@compat(Union{Style,Vector{Style}}) = Style(0xFF0000, 3, "-"),
                  intersection_style::Style=Style(0x000000, 3, "."),
                  width::Integer=500,
                  fontsize::Integer=0,
@@ -39,12 +39,16 @@ function plotMap(nodes::Union(Dict{Int,LLA},Dict{Int,ENU});
     end
 
     # Waiting for Winston to add capability to force equal scales. For now:
-    height = isa(bounds, Nothing) ? width : int(width / aspectRatio(bounds))
+    if VERSION.minor < 4
+        height = isa(bounds, @compat(Void)) ? width : int(width / aspectRatio(bounds))
+    else
+        height = isa(bounds, @compat(Void)) ? width : round(Int, width / aspectRatio(bounds))
+    end
 
     # Create the figure
     fignum = Winston.figure(name="OpenStreetMap Plot", width=width, height=height)
 
-    if isa(bounds, Nothing)
+    if isa(bounds, @compat(Void))
         p = Winston.FramedPlot("xlabel", xlab, "ylabel", ylab)
     else # Limit plot to specified bounds
         Winston.xlim(bounds.min_x, bounds.max_x)
@@ -62,8 +66,8 @@ function plotMap(nodes::Union(Dict{Int,LLA},Dict{Int,ENU});
     end
 
     # Iterate over all buildings and draw
-    if !isa(buildings, Nothing)
-        if !isa(building_classes, Nothing)
+    if !isa(buildings, @compat(Void))
+        if !isa(building_classes, @compat(Void))
             if isa(building_style, Dict{Int,Style})
                 drawWayLayer(p, nodes, buildings, building_classes, building_style, km, realtime)
             else
@@ -81,23 +85,23 @@ function plotMap(nodes::Union(Dict{Int,LLA},Dict{Int,ENU});
     end
 
     # Iterate over all highways and draw
-    if !isa(highways, Nothing)
+    if !isa(highways, @compat(Void))
         if !(nothing == roadways == cycleways == walkways)
-            if !isa(roadways, Nothing)
+            if !isa(roadways, @compat(Void))
                 if isa(highway_style, Dict{Int,Style})
                     drawWayLayer(p, nodes, highways, roadways, highway_style, km, realtime)
                 else
                     drawWayLayer(p, nodes, highways, roadways, LAYER_STANDARD, km, realtime)
                 end
             end
-            if !isa(cycleways, Nothing)
+            if !isa(cycleways, @compat(Void))
                 if isa(highway_style, Dict{Int,Style})
                     drawWayLayer(p, nodes, highways, cycleways, highway_style, km, realtime)
                 else
                     drawWayLayer(p, nodes, highways, cycleways, LAYER_CYCLE, km, realtime)
                 end
             end
-            if !isa(walkways, Nothing)
+            if !isa(walkways, @compat(Void))
                 if isa(highway_style, Dict{Int,Style})
                     drawWayLayer(p, nodes, highways, walkways, highway_style, km, realtime)
                 else
@@ -116,8 +120,8 @@ function plotMap(nodes::Union(Dict{Int,LLA},Dict{Int,ENU});
     end
 
     # Iterate over all features and draw
-    if !isa(features, Nothing)
-        if !isa(feature_classes, Nothing)
+    if !isa(features, @compat(Void))
+        if !isa(feature_classes, @compat(Void))
             if isa(feature_style, Dict{Int,Style})
                 drawFeatureLayer(p, nodes, features, feature_classes, feature_style, km, realtime)
             else
@@ -150,7 +154,7 @@ function plotMap(nodes::Union(Dict{Int,LLA},Dict{Int,ENU});
     end
 
     # Iterate over all intersections and draw
-    if !isa(intersections, Nothing)
+    if !isa(intersections, @compat(Void))
         coords = Array(Float64, length(intersections), 2)
         k = 1
         for key in keys(intersections)

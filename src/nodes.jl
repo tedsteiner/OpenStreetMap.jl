@@ -4,7 +4,7 @@
 
 
 ### Find the nearest node to a given location ###
-function nearestNode{T<:Union(ENU,ECEF)}(nodes::Dict{Int,T}, loc::T)
+function nearestNode{T<:@compat(Union{ENU,ECEF})}(nodes::Dict{Int,T}, loc::T)
     min_dist = Inf
     best_ind = 0
 
@@ -21,7 +21,7 @@ end
 
 
 ### Find nearest node in a list of nodes ###
-function nearestNode{T<:Union(ENU,ECEF)}(nodes::Dict{Int,T},
+function nearestNode{T<:@compat(Union{ENU,ECEF})}(nodes::Dict{Int,T},
                                          loc::T,
                                          node_list::Vector{Int})
     min_dist = Inf
@@ -40,7 +40,7 @@ end
 
 
 ### Find nearest node serving as a vertex in a routing network ###
-function nearestNode{T<:Union(ENU,ECEF)}( nodes::Dict{Int,T},
+function nearestNode{T<:@compat(Union{ENU,ECEF})}( nodes::Dict{Int,T},
                                           loc::T,
                                           network::Network )
     return nearestNode(nodes,loc,collect(keys(network.v)))
@@ -48,7 +48,7 @@ end
 
 
 ### Find all nodes within range of a location ###
-function nodesWithinRange{T<:Union(ENU,ECEF)}(nodes::Dict{Int,T},
+function nodesWithinRange{T<:@compat(Union{ENU,ECEF})}(nodes::Dict{Int,T},
                                              loc::T,
                                              range::Float64=Inf)
     if range == Inf
@@ -63,10 +63,10 @@ function nodesWithinRange{T<:Union(ENU,ECEF)}(nodes::Dict{Int,T},
     end
     return indices
 end
- 
+
 
 ### Find nodes within range of a location using a subset of nodes ###
-function nodesWithinRange{T<:Union(ENU,ECEF)}(nodes::Dict{Int,T},
+function nodesWithinRange{T<:@compat(Union{ENU,ECEF})}(nodes::Dict{Int,T},
                                               loc::T,
                                               node_list::Vector{Int},
                                               range::Float64=Inf)
@@ -85,7 +85,7 @@ end
 
 
 ### Find vertices of a routing network within range of a location ###
-function nodesWithinRange{T<:Union(ENU,ECEF)}(nodes::Dict{Int,T},
+function nodesWithinRange{T <: @compat(Union{ENU,ECEF}) }(nodes::Dict{Int,T},
                                               loc::T,
                                               network::Network,
                                               range::Float64=Inf)
@@ -94,9 +94,9 @@ end
 
 
 ### Add a new node ###
-function addNewNode!{T<:Union(LLA,ENU)}(nodes::Dict{Int,T}, 
-                                        loc::T, 
-                                        start_id::Int=abs(int(hash(loc))) )
+function addNewNode!{T <: @compat(Union{LLA,ENU}) }(nodes::Dict{Int,T},
+                                        loc::T,
+                                        start_id::Int = reinterpret(@compat(Int), hash(loc)) )
     id = start_id
     while id <= typemax(Int)
         if !haskey(nodes, id)
@@ -107,12 +107,12 @@ function addNewNode!{T<:Union(LLA,ENU)}(nodes::Dict{Int,T},
     end
 
     msg = "Unable to add new node to map, $(typemax(Int)) nodes is the current limit."
-    throw(OverflowError(msg))
+    throw(error(msg))
 end
 
 
 ### Compute centroid of list of nodes ###
-function centroid{T<:Union(LLA,ENU)}(nodes::Dict{Int,T}, node_list::Vector{Int})
+function centroid{T<:@compat(Union{LLA,ENU})}(nodes::Dict{Int,T}, node_list::Vector{Int})
     sum_1 = 0
     sum_2 = 0
     sum_3 = 0
@@ -135,5 +135,3 @@ function centroid{T<:Union(LLA,ENU)}(nodes::Dict{Int,T}, node_list::Vector{Int})
         return ENU(sum_1/length(node_list),sum_2/length(node_list),sum_3/length(node_list))
     end
 end
-
-

@@ -48,31 +48,31 @@ end
 
 ### PARSE XML ELEMENTS ###
 
-function parse_node(attr::OSMattributes, attrs_in::Dict{String,String})
+function parse_node(attr::OSMattributes, attrs_in::Dict{@compat(AbstractString),@compat(AbstractString)})
     attr.visible = true
     attr.element = :Node
     if haskey(attrs_in, "id")
-        attr.id = int(attrs_in["id"])
+        attr.id = @compat( parse(Int,attrs_in["id"]) )
         attr.lat = float(attrs_in["lat"])
         attr.lon = float(attrs_in["lon"])
     end
 end
 
-function parse_way(attr::OSMattributes, attrs_in::Dict{String,String})
+function parse_way(attr::OSMattributes, attrs_in::Dict{@compat(AbstractString),@compat(AbstractString)})
     attr.visible = true
     attr.element = :Way
     if haskey(attrs_in, "id")
-        attr.id = int(attrs_in["id"])
+        attr.id = @compat( parse(Int,attrs_in["id"]) )
     end
 end
 
-function parse_nd(attr::OSMattributes, attrs_in::Dict{String,String})
+function parse_nd(attr::OSMattributes, attrs_in::Dict{@compat(AbstractString),@compat(AbstractString)})
     if haskey(attrs_in, "ref")
-        push!(attr.way_nodes, int64(attrs_in["ref"]))
+        push!(attr.way_nodes, @compat( parse(Int64,attrs_in["ref"]) ) )
     end
 end
 
-function parse_tag(attr::OSMattributes, attrs_in::Dict{String,String})
+function parse_tag(attr::OSMattributes, attrs_in::Dict{@compat(AbstractString),@compat(AbstractString)})
     if haskey(attrs_in, "k") && haskey(attrs_in, "v")
         k, v = attrs_in["k"], attrs_in["v"]
         if k == "name"
@@ -97,7 +97,7 @@ end
 
 ### PARSE OSM ENTITIES ###
 
-function parse_highway(attr::OSMattributes, k::String, v::String)
+function parse_highway(attr::OSMattributes, k::@compat(AbstractString), v::@compat(AbstractString))
     if k == "highway"
         attr.class = v
         if v == "services" # Highways marked "services" are not traversable
@@ -126,21 +126,21 @@ function parse_highway(attr::OSMattributes, k::String, v::String)
     elseif k == "bicycle"
         attr.bicycle = v
     elseif k == "lanes" && length(v)==1 && '1' <= v[1] <= '9'
-        attr.lanes = int(v)
+        attr.lanes = @compat parse(Int,v)
     else
         return
     end
     attr.parent = :Highway
 end
 
-function parse_building(attr::OSMattributes, v::String)
+function parse_building(attr::OSMattributes, v::@compat(AbstractString))
     attr.parent = :Building
     if isempty(attr.class)
         attr.class = v
     end
 end
 
-function parse_feature(attr::OSMattributes, k::String, v::String)
+function parse_feature(attr::OSMattributes, k::@compat(AbstractString), v::@compat(AbstractString))
     attr.parent = :Feature
     attr.class = k
     attr.detail = v
@@ -148,7 +148,7 @@ end
 
 ### LibExpat.XPStreamHandlers ###
 
-function parseElement(handler::LibExpat.XPStreamHandler, name::String, attrs_in::Dict{String,String})
+function parseElement(handler::LibExpat.XPStreamHandler, name::@compat(AbstractString), attrs_in::Dict{@compat(AbstractString),@compat(AbstractString)})
     attr = handler.data.attr::OSMattributes
     if attr.visible
         if name == "nd"
@@ -165,7 +165,7 @@ function parseElement(handler::LibExpat.XPStreamHandler, name::String, attrs_in:
     end # no work done for "relations" yet
 end
 
-function collectValues(handler::LibExpat.XPStreamHandler, name::String)
+function collectValues(handler::LibExpat.XPStreamHandler, name::@compat(AbstractString))
     # println(typeof(name))
     osm = handler.data::OSMdata
     attr = osm.attr::OSMattributes
@@ -193,7 +193,7 @@ function collectValues(handler::LibExpat.XPStreamHandler, name::String)
 end
 
 ### Parse the data from an openStreetMap XML file ###
-function parseMapXML(filename::String)
+function parseMapXML(filename::@compat(AbstractString))
 
     # Parse the file
     street_map = LightXML.parse_file(filename)
@@ -205,7 +205,7 @@ function parseMapXML(filename::String)
     return street_map
 end
 
-function getOSMData(filename::String; args...)
+function getOSMData(filename::@compat(AbstractString); args...)
     osm = OSMdata()
 
     callbacks = LibExpat.XPCallbacks()

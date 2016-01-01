@@ -57,8 +57,8 @@ end
 function findHighwaySets( highways::Dict{Int,Highway} )
     clusters = HighwaySet[]
 
-    street_names = (String,String,Int)[]
-    
+    street_names = @compat Tuple{@compat(AbstractString), @compat(AbstractString), Int}[]
+
     for (key, highway) in highways
         if length(highway.name) > 0 && highway.oneway
             push!(street_names,(highway.name,highway.class,key))
@@ -82,7 +82,7 @@ function findHighwaySets( highways::Dict{Int,Highway} )
                 end
             end
         end
-        
+
         if length(cluster) > 1
             push!(clusters,HighwaySet(Set(cluster)))
         end
@@ -90,5 +90,3 @@ function findHighwaySets( highways::Dict{Int,Highway} )
 
     return clusters
 end
-
-
