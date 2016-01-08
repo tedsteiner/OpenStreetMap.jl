@@ -3,8 +3,12 @@ os:
   - osx
   - linux
 julia:
-  - 0.4
   - 0.3
+  - 0.4
+  - nightly
+matrix:
+  allow_failures:
+    - julia: nightly
 sudo: required
 notifications:
   email: false
