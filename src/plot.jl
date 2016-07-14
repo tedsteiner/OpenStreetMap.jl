@@ -44,9 +44,11 @@ function plotMap(nodes::@compat(Union{Dict{Int,LLA},Dict{Int,ENU}}) ;
     else
         height = isa(bounds, @compat(Void)) ? width : round(Int, width / aspectRatio(bounds))
     end
-
-    # Create the figure
-    fignum = Winston.figure(name="OpenStreetMap Plot", width=width, height=height)
+    
+    if Winston.output_surface != :none # Allow for plotting in IJulia/Jupyter to work
+        # Create the figure
+        fignum = Winston.figure(name="OpenStreetMap Plot", width=width, height=height)
+    end
 
     if isa(bounds, @compat(Void))
         p = Winston.FramedPlot("xlabel", xlab, "ylabel", ylab)
